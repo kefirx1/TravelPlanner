@@ -4,43 +4,41 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import pl.bla.dev.travelplanner.ui.theme.TravelPlannerTheme
+import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import pl.bla.dev.common.activityconnector.ActivityConnector
+import pl.bla.dev.common.intents.domain.usecase.OpenAppSettingsIntentUC
+import pl.bla.dev.common.permission.PermissionsManager
+import pl.bla.dev.common.ui.theming.TravelPlannerTheme
+import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+  @Inject
+  lateinit var connectActivityUC: ActivityConnector
+
+  @Inject
+  lateinit var permissionsManager: PermissionsManager
+
+  @Inject
+  lateinit var openAppSettingsIntentUC: OpenAppSettingsIntentUC
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    lifecycleScope.launch {
+      connectActivityUC.connect(this@MainActivity)
+    }
+
     enableEdgeToEdge()
     setContent {
       TravelPlannerTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          Greeting(
-            name = "Android",
-            modifier = Modifier.padding(innerPadding)
-          )
-        }
+        MainAppNavGraph()
       }
     }
   }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-  Text(
-    text = "Hello $name!",
-    modifier = modifier
-  )
-}
-
-@Composable
-fun GreetingPreview() {
-  TravelPlannerTheme {
-    Greeting("Android")
-  }
 }
