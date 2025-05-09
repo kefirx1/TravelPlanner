@@ -9,3 +9,7 @@ sealed interface AuthDestinations {
   @Serializable
   data object Login : AuthDestinations
 }
+
+sealed interface AuthResults {
+  data object LoginSuccess : AuthResults
+}

@@ -32,6 +32,8 @@ android {
 }
 
 dependencies {
+  implementation(libs.lifecycle.viewmodel.compose)
+  implementation(libs.lifecycle.viewmodel)
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
 }

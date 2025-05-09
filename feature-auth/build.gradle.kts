@@ -36,6 +36,11 @@ android {
 }
 
 dependencies {
+  implementation(project(":common:ui"))
+  implementation(project(":common:usecase"))
+
+  implementation(libs.lifecycle.viewmodel.compose)
+  implementation(libs.lifecycle.viewmodel)
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.activity.compose)
@@ -51,6 +56,7 @@ dependencies {
   implementation(libs.androidx.hilt.work)
   implementation(libs.dagger.hilt)
   ksp(libs.dagger.hilt.compiler)
+  implementation(libs.kotlinx.coroutines)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

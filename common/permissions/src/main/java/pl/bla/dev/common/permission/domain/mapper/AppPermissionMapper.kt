@@ -8,7 +8,7 @@ import pl.bla.dev.common.usecase.Mapper
 interface AppPermissionMapper : Mapper<AppPermission, Array<String>>
 
 internal class AppPermissionMapperImpl : AppPermissionMapper {
-  override fun invoke(from: AppPermission): Array<String> = when (from) {
+  override fun invoke(params: AppPermission): Array<String> = when (params) {
     AppPermission.CAMERA -> arrayOf(Manifest.permission.CAMERA)
     AppPermission.GALLERY -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       arrayOf(
