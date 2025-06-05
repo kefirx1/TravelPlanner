@@ -10,6 +10,7 @@ import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapp
 @Module
 @InstallIn(SingletonComponent::class)
 object AuthModule {
+
   @Provides
   fun provideLoginScreenMapper(): LoginScreenMapper = LoginScreenMapperImpl()
 }

@@ -21,10 +21,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "TravelPlanner"
 include(":app")
-include(":common:ui")
 include(":feature-auth")
+include(":feature-dashboard")
+
+include(":common:ui")
 include(":common:permissions")
-include(":common:usecase")
 include(":common:activityconnector")
 include(":common:intents")
-include(":feature-dashboard")
+include(":common:core")

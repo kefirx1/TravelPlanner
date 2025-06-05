@@ -1,35 +1,33 @@
 package pl.bla.dev.feature.login.presentation
 
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.map
-import pl.bla.dev.common.ui.viewmodel.NavActionHandler
+import pl.bla.dev.common.core.navigation.AppNavController
+import pl.bla.dev.common.core.navigation.DestinationType
+import pl.bla.dev.common.core.navigation.createDestination
 import pl.bla.dev.feature.login.presentation.screen.login.LoginScreen
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVMImpl
 
 fun NavGraphBuilder.authNavGraph(
-  navController: NavController,
+  navController: AppNavController,
   onResult: (AuthResults) -> Unit,
-  onBack: () -> Unit,
 ) {
   navigation<AuthDestinations.AuthGraph>(
     startDestination = AuthDestinations.Login,
   ) {
-    composable<AuthDestinations.Login> {
-      val viewModel = hiltViewModel<LoginVMImpl>()
-
-      NavActionHandler(viewModel = viewModel) { action ->
+    createDestination<AuthDestinations.Login, LoginVMImpl, LoginVM.Action.Navigation>(
+      destinationType = DestinationType.Screen,
+      setupFactoryData = false,
+      content = { viewModel ->
+        LoginScreen(viewModel = viewModel)
+      },
+      navActionHandler = { action ->
         when (action) {
-          is LoginVM.Action.Navigation.Back -> onBack()
+          is LoginVM.Action.Navigation.ToDashboard -> onResult(AuthResults.LoginSuccess)
+          is LoginVM.Action.Navigation.Back -> onResult(AuthResults.ExitApp)
         }
-      }
-
-      LoginScreen(viewModel = viewModel)
-    }
+      },
+    )
   }
 }

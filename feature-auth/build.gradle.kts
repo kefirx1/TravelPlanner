@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.kotlin.ksp)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.kotlin.parclization)
   alias(libs.plugins.dagger)
 }
 
@@ -37,7 +38,7 @@ android {
 
 dependencies {
   implementation(project(":common:ui"))
-  implementation(project(":common:usecase"))
+  implementation(project(":common:core"))
 
   implementation(libs.lifecycle.viewmodel.compose)
   implementation(libs.lifecycle.viewmodel)
@@ -57,6 +58,8 @@ dependencies {
   implementation(libs.dagger.hilt)
   ksp(libs.dagger.hilt.compiler)
   implementation(libs.kotlinx.coroutines)
+  implementation(libs.gson)
+  implementation(libs.lifecycle.runtime.compose)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

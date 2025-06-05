@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.kotlin.ksp)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.kotlin.parclization)
   alias(libs.plugins.dagger)
 }
 
@@ -43,8 +44,8 @@ dependencies {
   implementation(project(":common:ui"))
   implementation(project(":common:permissions"))
   implementation(project(":common:activityconnector"))
-  implementation(project(":common:usecase"))
   implementation(project(":common:intents"))
+  implementation(project(":common:core"))
   implementation(project(":feature-auth"))
   implementation(project(":feature-dashboard"))
 

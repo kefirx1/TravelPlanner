@@ -1,6 +1,7 @@
 [versions]
-agp = "8.9.2"
+agp = "8.10.1"
 kotlin = "2.1.20"
+parcelize = "2.2.0-RC"
 ksp = "2.1.20-2.0.1"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -56,7 +57,7 @@ androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNav" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNav" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger" }
 
 squareup-okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
@@ -69,6 +70,7 @@ osmdroid-geopackage = { group = "org.osmdroid", name = "osmdroid-geopackage", ve
 osmdroid-compose = { group = "tech.utsmankece", name = "osm-android-compose", version.ref = "osmdroidCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewModel"}
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleViewModelCompose"}
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewModelCompose"}
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 
@@ -78,6 +80,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-parclization = { id = "kotlin-parcelize" }
 dagger = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }

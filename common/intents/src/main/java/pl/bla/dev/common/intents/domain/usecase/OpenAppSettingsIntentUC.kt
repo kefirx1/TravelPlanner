@@ -1,7 +1,7 @@
 package pl.bla.dev.common.intents.domain.usecase
 
+import pl.bla.dev.common.core.usecase.UseCase
 import pl.bla.dev.common.intents.IntentsManager
-import pl.bla.dev.common.usecase.UseCase
 
 interface OpenAppSettingsIntentUC: UseCase<UseCase.Params.Empty, Unit>
 

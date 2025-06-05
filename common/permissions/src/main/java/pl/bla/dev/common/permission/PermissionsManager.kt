@@ -25,7 +25,7 @@ class PermissionManagerImpl(
 
   override suspend fun requestPermission(permission: AppPermission): PermissionResult {
     launchActivityForResult(
-      intent = appPermissionMapper(from = permission)
+      intent = appPermissionMapper(permission)
     ).let { result ->
       return when (result.values.all { it }) {
         true -> PermissionResult.GRANTED
@@ -45,7 +45,7 @@ class PermissionManagerImpl(
   }
 
   override suspend fun isPermissionGranted(permission: AppPermission): Boolean =
-    appPermissionMapper(from = permission).all { mappedPermission ->
+    appPermissionMapper(permission).all { mappedPermission ->
       when (activity?.checkSelfPermission(mappedPermission)) {
         PackageManager.PERMISSION_GRANTED -> PermissionResult.GRANTED
         PackageManager.PERMISSION_DENIED -> PermissionResult.DENIED

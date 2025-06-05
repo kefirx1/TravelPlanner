@@ -2,8 +2,8 @@ package pl.bla.dev.common.permission.domain.mapper
 
 import android.Manifest
 import android.os.Build
+import pl.bla.dev.common.core.usecase.Mapper
 import pl.bla.dev.common.permission.domain.model.AppPermission
-import pl.bla.dev.common.usecase.Mapper
 
 interface AppPermissionMapper : Mapper<AppPermission, Array<String>>
 

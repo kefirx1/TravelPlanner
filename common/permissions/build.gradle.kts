@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.kotlin.ksp)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.kotlin.parclization)
   alias(libs.plugins.dagger)
 }
 
@@ -36,8 +37,8 @@ android {
 }
 
 dependencies {
-  implementation(project(":common:usecase"))
   implementation(project(":common:activityconnector"))
+  implementation(project(":common:core"))
 
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)

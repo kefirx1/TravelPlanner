@@ -8,8 +8,6 @@ import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import pl.bla.dev.common.activityconnector.ActivityConnector
-import pl.bla.dev.common.intents.domain.usecase.OpenAppSettingsIntentUC
-import pl.bla.dev.common.permission.PermissionsManager
 import pl.bla.dev.common.ui.theming.TravelPlannerTheme
 import javax.inject.Inject
 
@@ -19,12 +17,6 @@ class MainActivity : ComponentActivity() {
 
   @Inject
   lateinit var connectActivityUC: ActivityConnector
-
-  @Inject
-  lateinit var permissionsManager: PermissionsManager
-
-  @Inject
-  lateinit var openAppSettingsIntentUC: OpenAppSettingsIntentUC
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.kotlin.ksp)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.kotlin.parclization)
   alias(libs.plugins.dagger)
 }
 
@@ -37,6 +38,7 @@ android {
 
 dependencies {
   implementation(project(":common:ui"))
+  implementation(project(":common:core"))
 
   implementation(libs.lifecycle.viewmodel.compose)
   implementation(libs.lifecycle.viewmodel)

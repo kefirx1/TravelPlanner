@@ -3,33 +3,41 @@ package pl.bla.dev.travelplanner
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import pl.bla.dev.feature.dashboard.DashboardDestinations
-import pl.bla.dev.feature.dashboard.dashboardNavGraph
+import pl.bla.dev.common.core.navigation.AppNavController
+import pl.bla.dev.feature.dashboard.presentation.DashboardDestinations
+import pl.bla.dev.feature.dashboard.presentation.DashboardResults
+import pl.bla.dev.feature.dashboard.presentation.dashboardNavGraph
 import pl.bla.dev.feature.login.presentation.AuthDestinations
 import pl.bla.dev.feature.login.presentation.AuthResults
 import pl.bla.dev.feature.login.presentation.authNavGraph
 
 @Composable
 fun MainAppNavGraph() {
-  val navController = rememberNavController()
+  val appNavController = AppNavController(
+    navController = rememberNavController(),
+  )
 
   NavHost(
-    navController = navController,
+    navController = appNavController.navController,
     startDestination = AuthDestinations.AuthGraph,
   ) {
     authNavGraph(
-      navController = navController,
+      navController = appNavController,
       onResult = { result ->
         when (result) {
-          AuthResults.LoginSuccess -> navController.navigate(DashboardDestinations.DashboardGraph)
+          AuthResults.LoginSuccess -> appNavController.navigate(DashboardDestinations.DashboardGraph)
+          AuthResults.ExitApp -> appNavController.popBackStack()
         }
       },
-      onBack = { navController.popBackStack() },
     )
+
     dashboardNavGraph(
-      navController = navController,
-      onResult = {},
-      onBack = {},
+      navController = appNavController,
+      onResult = { result ->
+        when (result) {
+          DashboardResults.Logout -> appNavController.popBackStack()
+        }
+      },
     )
   }
 }
