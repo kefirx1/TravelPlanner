@@ -47,6 +47,8 @@ class MainActivity : ComponentActivity() {
         Box {
           Loader(visibility = loaderManager.visibilityMonitor())
 
+
+
           MainAppNavGraph()
         }
       }

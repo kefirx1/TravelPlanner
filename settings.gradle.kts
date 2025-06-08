@@ -23,6 +23,8 @@ rootProject.name = "TravelPlanner"
 include(":app")
 include(":feature:auth")
 include(":feature:dashboard")
+include(":feature:user")
+include(":feature:user:contract")
 
 include(":common:ui")
 include(":common:permissions")
@@ -30,3 +32,6 @@ include(":common:activityconnector")
 include(":common:intents")
 include(":common:core")
 include(":common:loader")
+include(":common:storage")
+
+include(":common:security")
