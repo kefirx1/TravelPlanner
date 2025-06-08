@@ -1,6 +1,8 @@
 package pl.bla.dev.common.ui.componenst.button
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import pl.bla.dev.common.ui.componenst.text.CustomText
 import pl.bla.dev.common.ui.theming.AppColors
 
@@ -48,7 +51,7 @@ fun LargeButton(
   buttonData: LargeButtonData,
 ) {
   Button(
-    modifier = modifier,
+    modifier = modifier.fillMaxWidth(),
     onClick = buttonData.onClick,
     shape = when (buttonData) {
       is LargeButtonData.Primary -> ButtonDefaults.shape
@@ -72,8 +75,11 @@ fun LargeButton(
     ),
     content = {
       CustomText(
+        modifier = Modifier.padding(vertical = 5.dp),
         text = buttonData.text,
-        style = MaterialTheme.typography.labelLarge,
+        style = MaterialTheme.typography.labelLarge.copy(
+          fontSize = 20.sp,
+        ),
         color = when (buttonData) {
           is LargeButtonData.Primary,
           is LargeButtonData.Secondary -> AppColors.black

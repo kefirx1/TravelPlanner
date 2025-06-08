@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.ContextualSerializer
 import kotlinx.serialization.Serializable
@@ -60,15 +61,19 @@ fun Dialog(
         ) {
           CustomText(
             text = dialogData.title,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(
+              fontSize = 24.sp,
+            ),
           )
-          Spacer(modifier = Modifier.height(15.dp))
+          Spacer(modifier = Modifier.height(20.dp))
 
           CustomText(
             text = dialogData.content,
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelSmall.copy(
+              fontSize = 14.sp,
+            ),
           )
-          Spacer(modifier = Modifier.height(10.dp))
+          Spacer(modifier = Modifier.height(20.dp))
 
           Row(
             modifier = Modifier.fillMaxWidth(),

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.TextUnit
 import pl.bla.dev.common.ui.theming.AppColors
 
 @Composable
@@ -15,11 +16,12 @@ fun CustomText(
   text: String,
   style: TextStyle = MaterialTheme.typography.bodyMedium,
   color: Color = AppColors.white,
+  customSize: TextUnit? = null,
 ) {
   Text(
     modifier = modifier,
     text = text,
     color = color,
-    style = style,
+    style = style.copy(fontSize = customSize ?: style.fontSize),
   )
 }

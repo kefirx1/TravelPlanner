@@ -25,6 +25,7 @@ fun NavGraphBuilder.authNavGraph(
       navActionHandler = { action ->
         when (action) {
           is LoginVM.Action.Navigation.ToDashboard -> onResult(AuthResults.LoginSuccess)
+          is LoginVM.Action.Navigation.ToRegistration -> {}
           is LoginVM.Action.Navigation.Back -> onResult(AuthResults.ExitApp)
         }
       },

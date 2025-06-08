@@ -43,6 +43,11 @@ class DashboardDialogVMImpl @AssistedInject constructor(
 
   override val screenData: StateFlow<DashboardDialogVM.ScreenData> = _screenData
 
+  override suspend fun onStateEnter(newState: DashboardDialogVM.State) = when (newState) {
+    DashboardDialogVM.State -> {}
+    else -> {}
+  }
+
   override fun mapScreenData(): DashboardDialogVM.ScreenData = dashboardDialogMapper(
     params = DashboardDialogMapper.Params(
       dialogType = setupData.type,

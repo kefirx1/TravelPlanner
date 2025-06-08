@@ -48,6 +48,7 @@ dependencies {
   implementation(libs.androidx.work)
   implementation(libs.osmdroid.android)
   implementation(libs.osmdroid.compose)
+  implementation(libs.coil)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
