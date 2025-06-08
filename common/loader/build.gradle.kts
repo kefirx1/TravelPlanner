@@ -1,16 +1,14 @@
 plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.kotlin.android)
-  alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.kotlin.ksp)
-  alias(libs.plugins.kotlin.serialization)
-  alias(libs.plugins.kotlin.parclization)
   alias(libs.plugins.dagger)
+  alias(libs.plugins.kotlin.compose)
 }
 
 
 android {
-  namespace = "pl.bla.dev.common.core"
+  namespace = "pl.bla.dev.common.loader"
   compileSdk = libs.versions.compileSdk.get().toInt()
 
   defaultConfig {
@@ -48,13 +46,11 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.androidx.work)
-  implementation(libs.osmdroid.android)
-  implementation(libs.osmdroid.compose)
-  implementation(libs.gson)
-  implementation(libs.androidx.hilt.navigation.compose)
-  implementation(libs.dagger.hilt)
+  implementation(libs.androidx.core.ktx)
+  implementation(libs.androidx.lifecycle.runtime.ktx)
   ksp(libs.dagger.hilt.compiler)
-  implementation(libs.lifecycle.runtime.compose)
+  implementation(libs.dagger.hilt)
+
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

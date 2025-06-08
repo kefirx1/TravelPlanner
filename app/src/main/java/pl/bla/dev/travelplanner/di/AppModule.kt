@@ -6,8 +6,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import pl.bla.dev.common.activityconnector.ActivityConnector
 import pl.bla.dev.common.intents.IntentsActivityConnector
+import pl.bla.dev.common.loader.LoaderManager
 import pl.bla.dev.common.permission.PermissionsActivityConnector
 import pl.bla.dev.travelplanner.lifecycle.ActivityConnectorImpl
+import pl.bla.dev.travelplanner.loader.LoaderManagerImpl
 import javax.inject.Singleton
 
 @Module
@@ -23,4 +25,8 @@ object AppModule {
     permissionsActivityConnector = permissionsActivityConnector,
     intentsActivityConnector = intentsActivityConnector,
   )
+
+  @Singleton
+  @Provides
+  fun provideLoaderManager(): LoaderManager = LoaderManagerImpl()
 }

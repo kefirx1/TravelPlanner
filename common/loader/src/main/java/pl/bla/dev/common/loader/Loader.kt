@@ -1,4 +1,4 @@
-package pl.bla.dev.common.core.loader
+package pl.bla.dev.common.loader
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

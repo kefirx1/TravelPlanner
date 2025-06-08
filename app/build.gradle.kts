@@ -46,8 +46,10 @@ dependencies {
   implementation(project(":common:activityconnector"))
   implementation(project(":common:intents"))
   implementation(project(":common:core"))
-  implementation(project(":feature-auth"))
-  implementation(project(":feature-dashboard"))
+  implementation(project(":common:loader"))
+
+  implementation(project(":feature:auth"))
+  implementation(project(":feature:dashboard"))
 
   implementation(libs.lifecycle.viewmodel.compose)
   implementation(libs.lifecycle.viewmodel)

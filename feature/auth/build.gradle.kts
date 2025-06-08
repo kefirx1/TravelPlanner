@@ -39,6 +39,7 @@ android {
 dependencies {
   implementation(project(":common:ui"))
   implementation(project(":common:core"))
+  implementation(project(":common:loader"))
 
   implementation(libs.lifecycle.viewmodel.compose)
   implementation(libs.lifecycle.viewmodel)

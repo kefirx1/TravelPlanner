@@ -8,13 +8,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import pl.bla.dev.common.activityconnector.ActivityConnector
+import pl.bla.dev.common.loader.Loader
+import pl.bla.dev.common.loader.LoaderManager
 import pl.bla.dev.common.ui.theming.AppColors
 import pl.bla.dev.common.ui.theming.TravelPlannerTheme
 import javax.inject.Inject
@@ -25,6 +27,9 @@ class MainActivity : ComponentActivity() {
 
   @Inject
   lateinit var connectActivityUC: ActivityConnector
+
+  @Inject
+  lateinit var loaderManager: LoaderManager
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -39,7 +44,11 @@ class MainActivity : ComponentActivity() {
     )
     setContent {
       TravelPlannerTheme {
-        MainAppNavGraph()
+        Box {
+          Loader(visibility = loaderManager.visibilityMonitor())
+
+          MainAppNavGraph()
+        }
       }
     }
   }

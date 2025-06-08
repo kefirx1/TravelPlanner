@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import pl.bla.dev.common.core.usecase.UseCase
 import pl.bla.dev.common.core.usecase.fold
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
+import pl.bla.dev.common.loader.domain.RunWithLoaderUC
 import pl.bla.dev.common.ui.componenst.button.LargeButtonData
 import pl.bla.dev.common.ui.componenst.input.TextFieldData
 import pl.bla.dev.common.ui.componenst.input.ValidationState
@@ -66,6 +67,7 @@ class LoginVMImpl @Inject constructor(
   private val loginScreenMapper: LoginScreenMapper,
   private val getSavedUserNameUC: GetSavedUserNameUC,
   private val validateUserPasswordUC: ValidateUserPasswordUC,
+  private val runWithLoaderUC: RunWithLoaderUC,
 ) : CustomViewModel<State, ScreenData, Action.Navigation>(
   initialStateValue = State.Initial,
 ), LoginVM {
@@ -82,28 +84,30 @@ class LoginVMImpl @Inject constructor(
         is State.Login -> {
           when (action) {
             is Action.LoginToApp -> {
-              validateUserPasswordUC(
-                param = ValidateUserPasswordUC.Params(
-                  typedPassword = currentState.typedPassword
-                ),
-              ).fold(
-                onRight = { result ->
-                  when (result) {
-                    ValidateUserPasswordUC.Result.Success -> {
-                      dispatchAction(Action.UpdatePassword(password = ""))
-                      Action.Navigation.ToDashboard.emit()
+              runWithLoaderUC {
+                validateUserPasswordUC(
+                  param = ValidateUserPasswordUC.Params(
+                    typedPassword = currentState.typedPassword
+                  ),
+                ).fold(
+                  onRight = { result ->
+                    when (result) {
+                      ValidateUserPasswordUC.Result.Success -> {
+                        dispatchAction(Action.UpdatePassword(password = ""))
+                        Action.Navigation.ToDashboard.emit()
+                      }
+                      ValidateUserPasswordUC.Result.WrongPassword -> {
+                        currentState.copy(
+                          passwordState = ValidationState.Invalid("Złe hasło!"),
+                        ).mutate()
+                      }
                     }
-                    ValidateUserPasswordUC.Result.WrongPassword -> {
-                      currentState.copy(
-                        passwordState = ValidationState.Invalid("Złe hasło!"),
-                      ).mutate()
-                    }
+                  },
+                  onLeft = {
+                    //TODO show error dialog
                   }
-                },
-                onLeft = {
-                  //TODO show error dialog
-                }
-              )
+                )
+              }
             }
             is Action.ToRegistration -> {
               Action.Navigation.ToRegistration.emit()
