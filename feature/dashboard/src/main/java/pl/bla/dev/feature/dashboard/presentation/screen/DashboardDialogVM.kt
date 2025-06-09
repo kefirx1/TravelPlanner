@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.core.viewmodel.CustomViewModelFactory
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
-import pl.bla.dev.feature.dashboard.presentation.DashboardDestinations
+import pl.bla.dev.feature.dashboard.presentation.screen.DashboardDialogVM.DialogSetupData
 import pl.bla.dev.feature.dashboard.presentation.screen.DashboardDialogVMImpl.DialogVMFactory
 import pl.bla.dev.feature.dashboard.presentation.screen.mapper.DashboardDialogMapper
 
@@ -27,18 +27,22 @@ interface DashboardDialogVM {
   )
 
   val screenData: StateFlow<ScreenData>
+
+  data class DialogSetupData(
+    val dialogData: DialogData,
+  )
 }
 
 @HiltViewModel(assistedFactory = DialogVMFactory::class)
 class DashboardDialogVMImpl @AssistedInject constructor(
   private val dashboardDialogMapper: DashboardDialogMapper,
-  @Assisted val setupData: DashboardDestinations.DashboardDialog,
+  @Assisted val setupData: DialogSetupData,
 ) : CustomViewModel<DashboardDialogVM.State, DashboardDialogVM.ScreenData, DashboardDialogVM.Action.Navigation>(
   initialStateValue = DashboardDialogVM.State,
 ), DashboardDialogVM {
   @AssistedFactory
-  interface DialogVMFactory: CustomViewModelFactory<DashboardDestinations.DashboardDialog, DashboardDialogVMImpl> {
-    override fun setup(setupData: DashboardDestinations.DashboardDialog) : DashboardDialogVMImpl
+  interface DialogVMFactory: CustomViewModelFactory<DialogSetupData, DashboardDialogVMImpl> {
+    override fun setup(setupData: DialogSetupData) : DashboardDialogVMImpl
   }
 
   override val screenData: StateFlow<DashboardDialogVM.ScreenData> = _screenData
@@ -50,7 +54,6 @@ class DashboardDialogVMImpl @AssistedInject constructor(
 
   override fun mapScreenData(): DashboardDialogVM.ScreenData = dashboardDialogMapper(
     params = DashboardDialogMapper.Params(
-      dialogType = setupData.type,
       onDismiss = {
         DashboardDialogVM.Action.Navigation.OnDismiss.emit()
       },

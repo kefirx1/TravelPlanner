@@ -7,9 +7,10 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContentItem
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.core.viewmodel.CustomViewModelFactory
-import pl.bla.dev.feature.login.presentation.AuthDestinations
+import pl.bla.dev.feature.login.presentation.screen.registration.RegistrationVM.RegistrationSetupData
 import pl.bla.dev.feature.login.presentation.screen.registration.mapper.RegistrationScreenMapper
 
 interface RegistrationVM {
@@ -30,18 +31,23 @@ interface RegistrationVM {
   )
 
   val screenData: StateFlow<ScreenData>
+
+  data class RegistrationSetupData(
+    val selectedChips: List<OnboardingContentItem>,
+  )
 }
 
 @HiltViewModel(assistedFactory = RegistrationVMImpl.RegistrationVMFactory::class)
 class RegistrationVMImpl @AssistedInject constructor(
   private val registrationScreenMapper: RegistrationScreenMapper,
-  @Assisted val setupData: AuthDestinations.Registration,
+  @Assisted val setupData: RegistrationSetupData,
 ) : CustomViewModel<RegistrationVM.State, RegistrationVM.ScreenData, RegistrationVM.Action.Navigation>(
   initialStateValue = RegistrationVM.State(userName = ""),
 ), RegistrationVM {
+
   @AssistedFactory
-  interface RegistrationVMFactory: CustomViewModelFactory<AuthDestinations.Registration, RegistrationVMImpl> {
-    override fun setup(setupData: AuthDestinations.Registration): RegistrationVMImpl
+  interface RegistrationVMFactory: CustomViewModelFactory<RegistrationSetupData, RegistrationVMImpl> {
+    override fun setup(setupData: RegistrationSetupData): RegistrationVMImpl
   }
 
 
@@ -65,6 +71,7 @@ class RegistrationVMImpl @AssistedInject constructor(
   override suspend fun onStateEnter(newState: RegistrationVM.State) {
     when (newState) {
       is RegistrationVM.State -> {
+        println(setupData)
       }
     }
   }

@@ -1,7 +1,6 @@
 package pl.bla.dev.feature.dashboard.presentation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.material3.Text
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -21,19 +20,18 @@ fun NavGraphBuilder.dashboardNavGraph(
   ) {
     composable<DashboardDestinations.MainDashboard> {
       BackHandler {
-        navController.navigate(DashboardDestinations.DashboardDialog(
-          DashboardDestinations.DashboardDialog.Types.LOGOUT_DIALOG)
-        )
+        navController.navigate(DashboardDestinations.DashboardDialog)
       }
     }
 
-    createDestination<DashboardDestinations.DashboardDialog, DashboardDialogVMImpl, DashboardDialogVM.Action.Navigation>(
+    createDestination<DashboardDialogVM.DialogSetupData, DashboardContractVM,  DashboardDialogVMImpl, DashboardDialogVM.Action.Navigation>(
+      destination = DashboardDestinations.DashboardDialog,
       destinationType = DestinationType.Dialog,
-      setupFactoryData = true,
+      navController = navController,
       content = { viewModel ->
         DashboardDialogScreen(viewModel = viewModel)
       },
-      navActionHandler = { action ->
+      navActionHandler = { action, sharedViewModel ->
         when (action) {
           is DashboardDialogVM.Action.Navigation.OnDismiss -> {
             navController.popBackStack()

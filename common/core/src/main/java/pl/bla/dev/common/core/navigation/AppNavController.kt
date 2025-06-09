@@ -7,15 +7,15 @@ import pl.bla.dev.common.core.logger.Log
 data class AppNavController(
   val navController: NavHostController,
 ) {
-  fun <T : Any> navigate(destination: T) {
+  fun navigate(destination: Destination) {
     Log.i(tag = "AppNavController", message = "before navigate: $destination")
 
     navController.currentBackStack.value.forEachIndexed { index, entry ->
       Log.i(tag = "AppNavController", message = "- $index: ${entry.destination.route}")
     }
 
-    navController.navigate(destination) {
-      popUpTo(destination) {
+    navController.navigate(destination.route) {
+      popUpTo(destination.route) {
         saveState = false
       }
       launchSingleTop = true

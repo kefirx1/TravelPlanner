@@ -22,7 +22,7 @@ fun MainAppNavGraph(
 
   NavHost(
     navController = appNavController.navController,
-    startDestination = AuthDestinations.AuthGraph,
+    startDestination = AuthDestinations.AuthGraph.route,
   ) {
     authNavGraph(
       navController = appNavController,

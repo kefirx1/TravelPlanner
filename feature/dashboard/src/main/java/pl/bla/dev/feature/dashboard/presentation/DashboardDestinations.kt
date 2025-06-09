@@ -5,19 +5,13 @@ import pl.bla.dev.common.core.navigation.Destination
 
 sealed interface DashboardDestinations : Destination {
   @Serializable
-  object DashboardGraph
+  data object DashboardGraph : Destination
 
   @Serializable
-  object MainDashboard : DashboardDestinations
+  data object MainDashboard : DashboardDestinations
 
   @Serializable
-  data class DashboardDialog(
-    val type: Types,
-  ) : DashboardDestinations {
-    enum class Types {
-      LOGOUT_DIALOG
-    }
-  }
+  data object DashboardDialog : DashboardDestinations
 }
 
 sealed interface DashboardResults {

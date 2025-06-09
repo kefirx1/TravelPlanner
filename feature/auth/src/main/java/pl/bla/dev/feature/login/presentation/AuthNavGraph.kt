@@ -3,7 +3,6 @@ package pl.bla.dev.feature.login.presentation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import pl.bla.dev.common.core.navigation.AppNavController
-import pl.bla.dev.common.core.navigation.DestinationType
 import pl.bla.dev.common.core.navigation.createDestination
 import pl.bla.dev.feature.login.presentation.screen.login.LoginScreen
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM
@@ -19,16 +18,17 @@ fun NavGraphBuilder.authNavGraph(
   navController: AppNavController,
   onResult: (AuthResults) -> Unit,
 ) {
-  navigation<AuthDestinations.AuthGraph>(
-    startDestination = AuthDestinations.Login,
+  navigation(
+    route = AuthDestinations.AuthGraph.route,
+    startDestination = AuthDestinations.Login.route,
   ) {
-    createDestination<AuthDestinations.Login, LoginVMImpl, LoginVM.Action.Navigation>(
-      destinationType = DestinationType.Screen,
-      setupFactoryData = false,
+    createDestination<Nothing, AuthContractVM, LoginVMImpl, LoginVM.Action.Navigation>(
+      destination = AuthDestinations.Login,
+      navController = navController,
       content = { viewModel ->
         LoginScreen(viewModel = viewModel)
       },
-      navActionHandler = { action ->
+      navActionHandler = { action, contractViewModel ->
         when (action) {
           is LoginVM.Action.Navigation.ToDashboard -> onResult(AuthResults.LoginSuccess)
           is LoginVM.Action.Navigation.ToOnboarding -> navController.navigate(
@@ -39,34 +39,41 @@ fun NavGraphBuilder.authNavGraph(
       },
     )
 
-    createDestination<AuthDestinations.Registration, RegistrationVMImpl, RegistrationVM.Action.Navigation>(
-      destinationType = DestinationType.Screen,
-      setupFactoryData = true,
+    createDestination<RegistrationVM.RegistrationSetupData, AuthContractVM, RegistrationVMImpl, RegistrationVM.Action.Navigation>(
+      destination = AuthDestinations.Registration,
+      navController = navController,
       content = { viewModel ->
         RegistrationScreen(viewModel = viewModel)
       },
-      navActionHandler = { action ->
+      navActionHandler = { action, sharedViewModel ->
         when (action) {
           is RegistrationVM.Action.Navigation.Back -> navController.navigate(AuthDestinations.Onboarding)
         }
       }
     )
 
-    createDestination<AuthDestinations.Onboarding, OnboardingVMImpl, OnboardingVM.Action.Navigation>(
-      destinationType = DestinationType.Screen,
-      setupFactoryData = false,
+    createDestination<Nothing, AuthContractVM, OnboardingVMImpl, OnboardingVM.Action.Navigation>(
+      destination = AuthDestinations.Onboarding,
+      navController = navController,
       content = { viewModel ->
         OnboardingScreen(viewModel = viewModel)
       },
-      navActionHandler = { action ->
+      navActionHandler = { action, sharedViewModel ->
         when (action) {
-          is OnboardingVM.Action.Navigation.ToRegistration -> navController.navigate(
-            destination = AuthDestinations.Registration,
-          )
+          is OnboardingVM.Action.Navigation.ToRegistration -> {
+            sharedViewModel.setContractData(
+              destination = AuthDestinations.Registration,
+              data = RegistrationVM.RegistrationSetupData(
+                action.selectedChips,
+              ),
+            )
+            navController.navigate(
+              destination = AuthDestinations.Registration,
+            )
+          }
           is OnboardingVM.Action.Navigation.Back -> navController.popBackStack()
         }
       }
     )
-
   }
 }

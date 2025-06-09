@@ -6,7 +6,7 @@ import pl.bla.dev.common.core.navigation.Destination
 sealed interface AuthDestinations : Destination {
 
   @Serializable
-  data object AuthGraph
+  data object AuthGraph : Destination
 
   @Serializable
   data object Login : AuthDestinations

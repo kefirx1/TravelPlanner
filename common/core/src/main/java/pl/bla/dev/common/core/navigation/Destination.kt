@@ -1,3 +1,6 @@
 package pl.bla.dev.common.core.navigation
 
-interface Destination {}
+interface Destination {
+  val route: String
+    get() = this.toString()
+}
