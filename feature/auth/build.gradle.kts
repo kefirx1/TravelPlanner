@@ -41,6 +41,8 @@ dependencies {
   implementation(project(":common:core"))
   implementation(project(":common:loader"))
 
+  implementation(project(":be:backendservice:contract"))
+
   implementation(project(":feature:user:contract"))
 
   implementation(libs.lifecycle.viewmodel.compose)

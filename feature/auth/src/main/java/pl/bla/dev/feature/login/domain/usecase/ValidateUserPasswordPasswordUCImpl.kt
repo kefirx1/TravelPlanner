@@ -1,4 +1,4 @@
-package pl.bla.dev.feature.login.domain.usecae
+package pl.bla.dev.feature.login.domain.usecase
 
 import pl.bla.dev.common.core.error.AppError
 import pl.bla.dev.common.core.usecase.Either

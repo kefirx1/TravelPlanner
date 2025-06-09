@@ -4,10 +4,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import pl.bla.dev.feature.login.domain.usecae.ValidateUserPasswordUC
-import pl.bla.dev.feature.login.domain.usecae.ValidateUserPasswordUCImpl
+import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUC
+import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUCImpl
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapper
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapperImpl
+import pl.bla.dev.feature.login.presentation.screen.onboarding.mapper.OnboardingScreenMapper
+import pl.bla.dev.feature.login.presentation.screen.onboarding.mapper.OnboardingScreenMapperImpl
+import pl.bla.dev.feature.login.presentation.screen.registration.mapper.RegistrationScreenMapper
+import pl.bla.dev.feature.login.presentation.screen.registration.mapper.RegistrationScreenMapperImpl
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
 
 @Module
@@ -15,7 +19,16 @@ import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInje
 object AuthModule {
 
   @Provides
-  fun provideLoginScreenMapper(): LoginScreenMapper = LoginScreenMapperImpl()
+  fun provideLoginScreenMapper(): LoginScreenMapper =
+    LoginScreenMapperImpl()
+
+  @Provides
+  fun provideOnboardingScreenMapper(): OnboardingScreenMapper =
+    OnboardingScreenMapperImpl()
+
+  @Provides
+  fun provideRegistrationScreenMapper(): RegistrationScreenMapper =
+    RegistrationScreenMapperImpl()
 
   @Provides
   fun provideValidateUserPasswordUC(

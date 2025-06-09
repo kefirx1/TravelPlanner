@@ -2,6 +2,10 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="21">
+      <module name="TravelPlanner.backendservice.main" target="11" />
+      <module name="TravelPlanner.backendservice.test" target="11" />
+      <module name="TravelPlanner.be.backendservice.contract.test" target="17" />
+      <module name="TravelPlanner.be.backendservice.test" target="17" />
       <module name="TravelPlanner.common.main" target="11" />
       <module name="TravelPlanner.common.permissions.test" target="11" />
       <module name="TravelPlanner.common.test" target="11" />

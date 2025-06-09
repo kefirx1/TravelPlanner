@@ -55,6 +55,7 @@ fun BaseScaffold(
           .padding(paddingValues = padding)
           .padding(
             horizontal = 20.dp,
+            vertical = 5.dp,
           )
       ) {
         content()

@@ -12,16 +12,19 @@ interface LoginScreenMapper : Mapper<Params, LoginVM.ScreenData> {
   data class Params(
     val state: LoginVM.State,
     val onLoginClick: () -> Unit,
-    val onRegisterClick: () -> Unit,
+    val onStartClick: () -> Unit,
     val onPasswordValueChanged: (String) -> Unit,
     val onForgotPasswordClick: () -> Unit,
+    val onBackClick: () -> Unit,
   )
 }
 
 class LoginScreenMapperImpl : LoginScreenMapper {
   override fun invoke(params: Params): LoginVM.ScreenData =
     when (params.state) {
-      LoginVM.State.Initial -> LoginVM.ScreenData.Initial
+      LoginVM.State.Initial -> LoginVM.ScreenData.Initial(
+        onBackClick = params.onBackClick,
+      )
       is LoginVM.State.Login -> LoginVM.ScreenData.LoginScreen(
         appName = "TravelPlanner",
         welcomeLabel = "Witaj ${params.state.userName}!",
@@ -43,15 +46,17 @@ class LoginScreenMapperImpl : LoginScreenMapper {
             params.onLoginClick()
           },
         ),
+        onBackClick = params.onBackClick,
       )
       is LoginVM.State.Registration -> LoginVM.ScreenData.RegistrationScreen(
         appName = "TravelPlanner",
         buttonData = LargeButtonData.Primary(
-          text = "Zarejestruj",
+          text = "Rozpocznij",
           onClick = {
-            params.onRegisterClick()
+            params.onStartClick()
           },
-        )
+        ),
+        onBackClick = params.onBackClick,
       )
     }
 }

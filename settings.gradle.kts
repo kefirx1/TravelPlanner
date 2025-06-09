@@ -33,5 +33,7 @@ include(":common:intents")
 include(":common:core")
 include(":common:loader")
 include(":common:storage")
-
 include(":common:security")
+
+include(":be:backendservice")
+include(":be:backendservice:contract")

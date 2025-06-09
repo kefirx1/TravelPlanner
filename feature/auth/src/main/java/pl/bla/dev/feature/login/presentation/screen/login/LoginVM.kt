@@ -11,7 +11,7 @@ import pl.bla.dev.common.loader.domain.RunWithLoaderUC
 import pl.bla.dev.common.ui.componenst.button.LargeButtonData
 import pl.bla.dev.common.ui.componenst.input.TextFieldData
 import pl.bla.dev.common.ui.componenst.input.ValidationState
-import pl.bla.dev.feature.login.domain.usecae.ValidateUserPasswordUC
+import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUC
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.Action
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.ScreenData
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.State
@@ -33,12 +33,13 @@ interface LoginVM {
   sealed interface Action {
     sealed interface Navigation : Action {
       data object ToDashboard : Navigation
-      data object ToRegistration : Navigation
+      data object ToOnboarding : Navigation
       data object Back : Navigation
     }
 
+    data object Back : Action
     data object LoginToApp : Action
-    data object ToRegistration : Action
+    data object ToOnboarding : Action
     data class UpdatePassword(val password: String) : Action
   }
 
@@ -48,14 +49,18 @@ interface LoginVM {
       val welcomeLabel: String,
       val buttonData: LargeButtonData,
       val textFieldData: TextFieldData,
+      val onBackClick: () -> Unit,
     ) : ScreenData
 
     data class RegistrationScreen(
       val appName: String,
       val buttonData: LargeButtonData,
+      val onBackClick: () -> Unit,
     ) : ScreenData
 
-    data object Initial : ScreenData
+    data class Initial(
+      val onBackClick: () -> Unit,
+    ) : ScreenData
   }
 
   val screenData: StateFlow<ScreenData>
@@ -80,7 +85,10 @@ class LoginVMImpl @Inject constructor(
   fun dispatchAction(action: Action) {
     viewModelScope.launch {
       when (val currentState = state.value) {
-        State.Initial -> {}
+        State.Initial -> when (action) {
+          is Action.Back -> Action.Navigation.Back.emit()
+          else ->  {}
+        }
         is State.Login -> {
           when (action) {
             is Action.LoginToApp -> {
@@ -109,19 +117,23 @@ class LoginVMImpl @Inject constructor(
                 )
               }
             }
-            is Action.ToRegistration -> {
-              Action.Navigation.ToRegistration.emit()
-            }
             is Action.UpdatePassword -> {
               currentState.copy(
                 typedPassword = action.password,
                 passwordState = ValidationState.UnVerified,
               ).mutate()
             }
+            is Action.Back -> Action.Navigation.Back.emit()
             else -> {}
           }
         }
-        State.Registration -> {}
+        State.Registration -> when (action) {
+          is Action.Back -> Action.Navigation.Back.emit()
+          is Action.ToOnboarding -> {
+            Action.Navigation.ToOnboarding.emit()
+          }
+          else -> {}
+        }
       }
     }
   }
@@ -151,8 +163,8 @@ class LoginVMImpl @Inject constructor(
       onLoginClick = {
         dispatchAction(Action.LoginToApp)
       },
-      onRegisterClick = {
-        dispatchAction(Action.ToRegistration)
+      onStartClick = {
+        dispatchAction(Action.ToOnboarding)
       },
       onPasswordValueChanged = { password ->
         dispatchAction(Action.UpdatePassword(password = password))
@@ -160,6 +172,9 @@ class LoginVMImpl @Inject constructor(
       onForgotPasswordClick = {
         //TODO dialog
         State.Registration.override()
+      },
+      onBackClick = {
+        dispatchAction(Action.Back)
       }
     ),
   )

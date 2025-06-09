@@ -1,5 +1,6 @@
 package pl.bla.dev.feature.login.presentation.screen.login
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +28,13 @@ fun LoginScreen(viewModel: LoginVM) {
   val state by viewModel.screenData.collectAsStateWithLifecycle()
 
   when (val screenData = state) {
-    LoginVM.ScreenData.Initial -> EmptyScreen()
+    is LoginVM.ScreenData.Initial -> {
+      BackHandler {
+        screenData.onBackClick()
+      }
+
+      EmptyScreen()
+    }
     is LoginVM.ScreenData.LoginScreen -> LoginScreenContent(
       data = screenData,
     )
@@ -41,6 +48,10 @@ fun LoginScreen(viewModel: LoginVM) {
 fun LoginScreenContent(
   data: LoginVM.ScreenData.LoginScreen,
 ) {
+
+  BackHandler {
+    data.onBackClick()
+  }
 
   BaseScaffold(
     content = {
@@ -99,6 +110,10 @@ fun LoginScreenContent(
 fun RegistrationScreenContent(
   data: LoginVM.ScreenData.RegistrationScreen,
 ) {
+
+  BackHandler {
+    data.onBackClick()
+  }
 
   BaseScaffold(
     content = {
