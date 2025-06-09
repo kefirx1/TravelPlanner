@@ -6,8 +6,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import pl.bla.dev.common.security.CryptoManager
 import pl.bla.dev.common.security.CryptoManagerImpl
-import pl.bla.dev.common.security.KeyStoreProvider
-import pl.bla.dev.common.security.KeyStoreProviderImpl
+import pl.bla.dev.common.security.MasterKeyProvider
+import pl.bla.dev.common.security.MasterKeyProviderImpl
+import pl.bla.dev.common.security.SecretKeyProvider
+import pl.bla.dev.common.security.SecretKeyProviderImpl
+import pl.bla.dev.common.security.data.MasterKeyDataStore
+import pl.bla.dev.common.security.domain.GenerateSaltUC
+import pl.bla.dev.common.security.domain.GenerateSaltUCImpl
 import javax.inject.Singleton
 
 @Module
@@ -16,12 +21,22 @@ object SecurityModule {
 
   @Singleton
   @Provides
-  fun provideKeyStoreProvider(): KeyStoreProvider = KeyStoreProviderImpl()
+  fun provideKeyStoreProvider(): SecretKeyProvider = SecretKeyProviderImpl()
 
   @Provides
   fun provideCryptoManager(
-    keyStoreProvider: KeyStoreProvider,
+    keyStoreProvider: SecretKeyProvider,
   ): CryptoManager = CryptoManagerImpl(
-    keyStoreProvider = keyStoreProvider,
+    secretKeyProvider = keyStoreProvider,
+  )
+
+  @Provides
+  fun provideGenerateSaltUC(): GenerateSaltUC = GenerateSaltUCImpl()
+
+  @Provides
+  fun provideMasterKeyProvider(
+    masterKeyDataStore: MasterKeyDataStore,
+  ): MasterKeyProvider = MasterKeyProviderImpl(
+    masterKeyDataStore = masterKeyDataStore,
   )
 }

@@ -8,11 +8,15 @@ object UserMapper {
   fun UserSettingsDto.toDomain(): UserSettings =
     UserSettings(
       userName = userName,
+      salt = salt,
+      ivDek = ivDek,
     )
 
   fun UserSettings.toDto(): UserSettingsDto =
     UserSettingsDto(
       userName = userName,
+      salt = salt,
+      ivDek = ivDek,
     )
 
 }

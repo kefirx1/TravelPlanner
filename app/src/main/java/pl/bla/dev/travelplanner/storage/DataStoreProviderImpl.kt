@@ -9,7 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import pl.bla.dev.common.security.CryptoManager
 import pl.bla.dev.common.security.Cryptography
@@ -30,9 +30,7 @@ internal class DataStoreProviderImpl(
 
   override suspend fun <T> getDataStoreData(dataStoreKey: String): T? {
     return try {
-       getDataStore().data.firstOrNull { prefs ->
-        prefs.contains(key = stringPreferencesKey(name = dataStoreKey))
-      }?.let { prefs ->
+      getDataStore().data.first().let { prefs ->
         gson.fromJson<T>(prefs.get(key = stringPreferencesKey(name = dataStoreKey)), object : TypeToken<T>(){}.type)
       }
     } catch (e: Exception) {
@@ -49,8 +47,8 @@ internal class DataStoreProviderImpl(
           val decodedData = Base64.getDecoder().decode(data)
           val decryptedData = cryptoManager.decryptData(
             data = decodedData,
-            cryptography = Cryptography.AES,
-          ).decodeToString()
+            cryptography = Cryptography.AES_CBC_PKCS7,
+          )?.decodeToString()
 
           gson.fromJson<T>(decryptedData, object : TypeToken<T>(){}.type)
         }
@@ -67,7 +65,7 @@ internal class DataStoreProviderImpl(
     try {
       val encryptedData = cryptoManager.encryptData(
         data = gson.toJson(data).toByteArray(),
-        cryptography = Cryptography.AES,
+        cryptography = Cryptography.AES_CBC_PKCS7,
       )
 
       getDataStore().edit { prefs ->

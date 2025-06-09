@@ -15,10 +15,16 @@ fun Either<*, *>.onRight(action : () -> Unit) = when (this) {
   is Either.Right<*> -> action()
 }
 
-suspend fun <A, B> Either<A, B>.fold(
-  onLeft: suspend (A) -> Unit,
-  onRight: suspend (B) -> Unit,
-) = when (this) {
-  is Either.Left<A> -> onLeft(this.value)
-  is Either.Right<B> -> onRight(this.value)
+suspend fun <A, B, C> Either<A, B>.fold(
+  onLeft: suspend (A) -> C,
+  onRight: suspend (B) -> C,
+): C = when (this) {
+  is Either.Left<A> -> {
+    println("1")
+    onLeft(this.value)
+  }
+  is Either.Right<B> -> {
+    println("2")
+    onRight(this.value)
+  }
 }

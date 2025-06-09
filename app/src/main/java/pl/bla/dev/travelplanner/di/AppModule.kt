@@ -12,15 +12,22 @@ import pl.bla.dev.common.intents.IntentsActivityConnector
 import pl.bla.dev.common.loader.LoaderManager
 import pl.bla.dev.common.permission.PermissionsActivityConnector
 import pl.bla.dev.common.security.CryptoManager
+import pl.bla.dev.common.security.data.MasterKeyDataStore
 import pl.bla.dev.common.storage.datastore.DataStoreProvider
+import pl.bla.dev.common.storage.room.DatabaseProvider
 import pl.bla.dev.travelplanner.lifecycle.ActivityConnectorImpl
 import pl.bla.dev.travelplanner.loader.LoaderManagerImpl
+import pl.bla.dev.travelplanner.security.MasterKeyCacheDataStore
 import pl.bla.dev.travelplanner.storage.DataStoreProviderImpl
+import pl.bla.dev.travelplanner.storage.DatabaseProviderImpl
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+  @Provides
+  fun provideContext(@ApplicationContext context: Context): Context = context
 
   @Singleton
   @Provides
@@ -51,4 +58,15 @@ object AppModule {
     gson = gson,
     cryptoManager = cryptoManager,
   )
+
+  @Provides
+  fun provideDatabaseProvider(
+    context: Context,
+  ): DatabaseProvider = DatabaseProviderImpl(
+    context = context,
+  )
+
+  @Singleton
+  @Provides
+  fun provideMasterKeyCacheDataStore(): MasterKeyDataStore = MasterKeyCacheDataStore()
 }

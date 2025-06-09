@@ -41,6 +41,7 @@ dependencies {
   implementation(project(":common:core"))
   implementation(project(":common:loader"))
   implementation(project(":common:storage"))
+  implementation(project(":common:security"))
 
   implementation(project(":feature:user:contract"))
 
@@ -64,6 +65,9 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.gson)
   implementation(libs.lifecycle.runtime.compose)
+  implementation(libs.androidx.room.runtime)
+  implementation(libs.androidx.room.ktx)
+  ksp(libs.androidx.room.compiler)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

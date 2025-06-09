@@ -6,4 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserSettingsDto(
   @SerializedName("userName") val userName: String,
+  @SerializedName("salt") val salt: ByteArray,
+  @SerializedName("ivDek") val ivDek: ByteArray,
 )

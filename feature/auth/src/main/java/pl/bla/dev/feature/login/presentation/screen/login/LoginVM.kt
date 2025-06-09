@@ -11,12 +11,12 @@ import pl.bla.dev.common.loader.domain.RunWithLoaderUC
 import pl.bla.dev.common.ui.componenst.button.LargeButtonData
 import pl.bla.dev.common.ui.componenst.input.TextFieldData
 import pl.bla.dev.common.ui.componenst.input.ValidationState
-import pl.bla.dev.feature.login.domain.usecae.GetSavedUserNameUC
 import pl.bla.dev.feature.login.domain.usecae.ValidateUserPasswordUC
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.Action
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.ScreenData
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.State
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapper
+import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
 import javax.inject.Inject
 
 interface LoginVM {
@@ -135,7 +135,7 @@ class LoginVMImpl @Inject constructor(
               userName = name,
             ).override()
           },
-          onLeft = {
+          onLeft = { error ->
             State.Registration.override()
           }
         )

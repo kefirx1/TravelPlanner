@@ -7,6 +7,7 @@
       <module name="TravelPlanner.common.test" target="11" />
       <module name="TravelPlanner.feature.settings.contract.main" target="11" />
       <module name="TravelPlanner.feature.settings.contract.test" target="11" />
+      <module name="TravelPlanner.feature.user.contract.test" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>
