@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextField
@@ -12,9 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -23,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import pl.bla.dev.common.ui.componenst.button.SmallButton
 import pl.bla.dev.common.ui.componenst.button.SmallButtonData
 import pl.bla.dev.common.ui.componenst.card.BaseCard
@@ -70,6 +75,8 @@ fun TextField(
 ) {
   var textValue by remember { mutableStateOf(TextFieldValue(text = textFieldData.initialText)) }
   var hasFocus by remember { mutableStateOf(false) }
+  var viewRequester = remember { BringIntoViewRequester() }
+  val scope = rememberCoroutineScope()
 
   BaseCard {
     Column(
@@ -93,10 +100,16 @@ fun TextField(
 
         TextField(
           modifier = Modifier
-            .onFocusChanged { focusState ->
+            .bringIntoViewRequester(viewRequester)
+            .onFocusEvent { focusState ->
               if (focusState.isFocused) {
                 hasFocus = true
+
+                scope.launch {
+                  viewRequester.bringIntoView()
+                }
               }
+
 
               if (hasFocus) {
                 textFieldData.onFocusChanged(focusState.isFocused)

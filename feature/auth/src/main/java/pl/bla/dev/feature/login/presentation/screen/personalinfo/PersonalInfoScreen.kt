@@ -1,4 +1,4 @@
-package pl.bla.dev.feature.login.presentation.screen.registration
+package pl.bla.dev.feature.login.presentation.screen.personalinfo
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
@@ -22,19 +22,19 @@ import pl.bla.dev.common.ui.componenst.tab.CustomTopAppBar
 import pl.bla.dev.common.ui.componenst.text.CustomText
 
 @Composable
-fun RegistrationScreen(viewModel: RegistrationVM) {
+fun PersonalInfoScreen(viewModel: PersonalInfoVM) {
   val state by viewModel.screenData.collectAsStateWithLifecycle()
 
   when (val screenData = state) {
-    is RegistrationVM.ScreenData -> RegistrationScreenContent(
+    is PersonalInfoVM.ScreenData -> PersonalInfoScreenContent(
       data = screenData,
     )
   }
 }
 
 @Composable
-fun RegistrationScreenContent(
-  data: RegistrationVM.ScreenData,
+fun PersonalInfoScreenContent(
+  data: PersonalInfoVM.ScreenData,
 ) {
   BackHandler {
     data.onBackClick()
@@ -53,23 +53,17 @@ fun RegistrationScreenContent(
       ) {
         CustomText(
           text = data.screenDescription,
-          style = MaterialTheme.typography.headlineSmall,
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        CustomText(
-          text = data.screenBody,
-          style = MaterialTheme.typography.bodyMedium,
+          style = MaterialTheme.typography.titleLarge,
         )
         Spacer(modifier = Modifier.height(50.dp))
 
         TextField(
-          textFieldData = data.passwordInput,
+          textFieldData = data.nameInput,
         )
         Spacer(modifier = Modifier.height(20.dp))
 
         TextField(
-          textFieldData = data.passwordRepeatInput,
+          textFieldData = data.emailInput,
         )
       }
     },
@@ -80,9 +74,8 @@ fun RegistrationScreenContent(
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
-        LargeButton(buttonData = data.registerButtonData)
+        LargeButton(buttonData = data.nextButtonData)
       }
     }
   )
-
 }

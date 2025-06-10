@@ -21,6 +21,8 @@ import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapp
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapperImpl
 import pl.bla.dev.feature.login.presentation.screen.onboarding.mapper.OnboardingScreenMapper
 import pl.bla.dev.feature.login.presentation.screen.onboarding.mapper.OnboardingScreenMapperImpl
+import pl.bla.dev.feature.login.presentation.screen.personalinfo.mapper.PersonalInfoScreenMapper
+import pl.bla.dev.feature.login.presentation.screen.personalinfo.mapper.PersonalInfoScreenMapperImpl
 import pl.bla.dev.feature.login.presentation.screen.registration.mapper.RegistrationScreenMapper
 import pl.bla.dev.feature.login.presentation.screen.registration.mapper.RegistrationScreenMapperImpl
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
@@ -66,9 +68,11 @@ object AuthModule {
     textValidator: TextValidator,
   ): ValidateRepeatPasswordUC = ValidateRepeatPasswordUCImpl(textValidator = textValidator)
 
-
   @Provides
   fun provideValidateUserNameUC(
     textValidator: TextValidator,
   ): ValidateUserNameUC = ValidateUserNameUCImpl(textValidator = textValidator)
+
+  @Provides
+  fun providePersonalInfoScreenMapper(): PersonalInfoScreenMapper = PersonalInfoScreenMapperImpl()
 }

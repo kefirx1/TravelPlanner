@@ -17,6 +17,7 @@ internal class ValidateRepeatPasswordUCImpl(
 ): ValidateRepeatPasswordUC {
   override suspend fun invoke(param: ValidateRepeatPasswordUC.Params): ValidationResult {
     return textValidator
+      .addRule(rule = TextValidatorRule.Required)
       .addRule(rule = TextValidatorRule.EqualPasswords(otherPassword = param.password))
       .validate(value = param.repeatedPassword)
   }

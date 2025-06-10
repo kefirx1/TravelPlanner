@@ -12,6 +12,9 @@ sealed interface AuthDestinations : Destination {
   data object Login : AuthDestinations
 
   @Serializable
+  data object PersonalInfo : AuthDestinations
+
+  @Serializable
   data object Registration : AuthDestinations
 
   @Serializable

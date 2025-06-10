@@ -15,6 +15,9 @@ import pl.bla.dev.feature.login.presentation.screen.login.LoginVMImpl
 import pl.bla.dev.feature.login.presentation.screen.onboarding.OnboardingScreen
 import pl.bla.dev.feature.login.presentation.screen.onboarding.OnboardingVM
 import pl.bla.dev.feature.login.presentation.screen.onboarding.OnboardingVMImpl
+import pl.bla.dev.feature.login.presentation.screen.personalinfo.PersonalInfoScreen
+import pl.bla.dev.feature.login.presentation.screen.personalinfo.PersonalInfoVM
+import pl.bla.dev.feature.login.presentation.screen.personalinfo.PersonalInfoVMImpl
 import pl.bla.dev.feature.login.presentation.screen.registration.RegistrationScreen
 import pl.bla.dev.feature.login.presentation.screen.registration.RegistrationVM
 import pl.bla.dev.feature.login.presentation.screen.registration.RegistrationVMImpl
@@ -52,6 +55,32 @@ fun NavGraphBuilder.authNavGraph(
       },
     )
 
+    createDestination<PersonalInfoVM.PersonalInfoSetupData, AuthContractVM, PersonalInfoVMImpl, PersonalInfoVM.Action.Navigation>(
+      destination = AuthDestinations.PersonalInfo,
+      navController = navController,
+      content = { viewModel ->
+        PersonalInfoScreen(viewModel = viewModel)
+      },
+      navActionHandler = { action, sharedViewModel ->
+        when (action) {
+          is PersonalInfoVM.Action.Navigation.ToRegistration -> {
+            sharedViewModel.setContractData(
+              destination = AuthDestinations.Registration,
+              data = RegistrationVM.RegistrationSetupData(
+                selectedChips = action.selectedChips,
+                email = action.email,
+                userName = action.userName,
+              ),
+            )
+            navController.navigate(
+              destination = AuthDestinations.Registration,
+            )
+          }
+          is PersonalInfoVM.Action.Navigation.Back -> navController.navigate(AuthDestinations.Onboarding)
+        }
+      }
+    )
+
     createDestination<RegistrationVM.RegistrationSetupData, AuthContractVM, RegistrationVMImpl, RegistrationVM.Action.Navigation>(
       destination = AuthDestinations.Registration,
       navController = navController,
@@ -61,7 +90,7 @@ fun NavGraphBuilder.authNavGraph(
       navActionHandler = { action, sharedViewModel ->
         when (action) {
           is RegistrationVM.Action.Navigation.RegistrationCompleted -> onResult(AuthResults.RegistrationSuccess)
-          is RegistrationVM.Action.Navigation.Back -> navController.navigate(AuthDestinations.Onboarding)
+          is RegistrationVM.Action.Navigation.Back -> navController.navigate(AuthDestinations.PersonalInfo)
         }
       }
     )
@@ -74,15 +103,15 @@ fun NavGraphBuilder.authNavGraph(
       },
       navActionHandler = { action, sharedViewModel ->
         when (action) {
-          is OnboardingVM.Action.Navigation.ToRegistration -> {
+          is OnboardingVM.Action.Navigation.ToPersonalInfo -> {
             sharedViewModel.setContractData(
-              destination = AuthDestinations.Registration,
-              data = RegistrationVM.RegistrationSetupData(
+              destination = AuthDestinations.PersonalInfo,
+              data = PersonalInfoVM.PersonalInfoSetupData(
                 action.selectedChips,
               ),
             )
             navController.navigate(
-              destination = AuthDestinations.Registration,
+              destination = AuthDestinations.PersonalInfo,
             )
           }
           is OnboardingVM.Action.Navigation.Back -> navController.popBackStack()

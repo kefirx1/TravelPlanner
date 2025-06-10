@@ -29,7 +29,7 @@ interface OnboardingVM {
 
   sealed interface Action {
     sealed interface Navigation : Action {
-      data class ToRegistration(
+      data class ToPersonalInfo(
         val selectedChips: List<OnboardingContentSection>,
       ) : Navigation
 
@@ -39,7 +39,7 @@ interface OnboardingVM {
       val chips: OnboardingContentItem,
       val selected: Boolean,
     ) : Action
-    data object ToRegistration : Action
+    data object ToPersonalInfo : Action
     data object Back : Action
   }
 
@@ -94,8 +94,8 @@ class OnboardingVMImpl @Inject constructor(
               selectedChips = selectedChips,
             ).mutate()
           }
-          is OnboardingVM.Action.ToRegistration -> {
-            OnboardingVM.Action.Navigation.ToRegistration(
+          is OnboardingVM.Action.ToPersonalInfo -> {
+            OnboardingVM.Action.Navigation.ToPersonalInfo(
               selectedChips = getSelectedSections(currentState = currentState)
             ).emit()
           }
@@ -133,7 +133,7 @@ class OnboardingVMImpl @Inject constructor(
       onChipsSelect = { selected, chips ->
         dispatchAction(OnboardingVM.Action.ChipsSelected(selected = selected, chips = chips))
       },
-      onNextClick = { dispatchAction(OnboardingVM.Action.ToRegistration) }
+      onNextClick = { dispatchAction(OnboardingVM.Action.ToPersonalInfo) }
     )
   )
 

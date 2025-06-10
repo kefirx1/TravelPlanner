@@ -17,10 +17,6 @@ interface RegistrationScreenMapper : Mapper<Params, RegistrationVM.ScreenData> {
     val onPasswordFocusChanged: (Boolean) -> Unit,
     val onPasswordRepeatValueChanged: (String) -> Unit,
     val onPasswordRepeatFocusChanged: (Boolean) -> Unit,
-    val onEmailValueChanged: (String) -> Unit,
-    val onEmailFocusChanged: (Boolean) -> Unit,
-    val onNameValueChanged: (String) -> Unit,
-    val onNameFocusChanged: (Boolean) -> Unit,
   )
 }
 
@@ -31,22 +27,11 @@ class RegistrationScreenMapperImpl : RegistrationScreenMapper {
         tabData = TopAppBarData.Back(
           onNavigationIconClick = params.onBackClick,
         ),
-        screenDescription = "Uzupełnij poniższe pola, aby się zarejestrować i móc korzystać z aplikacji!",
+        screenDescription = "Ustaw silne hasło do aplikacji, aby móc bezpiecznie z niej korzystać",
+        screenBody = "Hasło powinno mieć minimum 6 znaków, zawierać wielkie i małe litery cyfrę oraz znak specjalny",
         registerButtonData = LargeButtonData.Primary(
           text = "Zarejestruj się",
           onClick = params.onRegisterClick,
-        ),
-        nameInput = TextFieldData(
-          label = "Wpisz swoje imię",
-          onValueChanged = params.onNameValueChanged,
-          validationState = params.state.typedNameState,
-          onFocusChanged = params.onNameFocusChanged,
-        ),
-        emailInput = TextFieldData(
-          label = "Wpisz email",
-          onValueChanged = params.onEmailValueChanged,
-          validationState = params.state.emailState,
-          onFocusChanged = params.onEmailFocusChanged,
         ),
         passwordInput = TextFieldData(
           label = "Wpisz hasło",
