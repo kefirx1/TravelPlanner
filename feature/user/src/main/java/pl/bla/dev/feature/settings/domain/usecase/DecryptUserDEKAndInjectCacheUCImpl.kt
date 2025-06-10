@@ -1,5 +1,6 @@
 package pl.bla.dev.feature.settings.domain.usecase
 
+import pl.bla.dev.common.core.converters.Base64Coder
 import pl.bla.dev.common.core.error.AppError
 import pl.bla.dev.common.core.usecase.Either
 import pl.bla.dev.common.security.CryptoManager
@@ -15,6 +16,7 @@ class DecryptUserDEKAndInjectCacheUCImpl(
   private val cryptoManager: CryptoManager,
   private val secretKeyProvider: SecretKeyProvider,
   private val masterKeyProvider: MasterKeyProvider,
+  private val base64Coder: Base64Coder,
 ) : DecryptUserDEKAndInjectCacheUC {
   override suspend fun invoke(param: DecryptUserDEKAndInjectCacheUC.Params): Either<AppError, Unit> {
     try {
@@ -23,12 +25,12 @@ class DecryptUserDEKAndInjectCacheUCImpl(
 
       val kek = secretKeyProvider.getSecretKeyFromBase(
         cryptography = Cryptography.AES_GCM_NoPadding,
-        salt = userSettings.salt,
+        salt = base64Coder.decode(data = userSettings.salt),
         base = param.password.toCharArray(),
       )
 
       val dek = cryptoManager.decryptWithKey(
-        data = userSettings.ivDek,
+        data = base64Coder.decode(data = userSettings.ivDek),
         key = kek,
       ) ?: return Either.Left(AppError.DefaultError(Exception("Decryption failed wrong password")))
 

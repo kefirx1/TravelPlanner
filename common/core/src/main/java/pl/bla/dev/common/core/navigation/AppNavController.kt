@@ -7,6 +7,7 @@ import pl.bla.dev.common.core.logger.Log
 data class AppNavController(
   val navController: NavHostController,
 ) {
+
   fun navigate(destination: Destination) {
     Log.i(tag = "AppNavController", message = "before navigate: $destination")
 

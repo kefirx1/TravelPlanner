@@ -32,4 +32,6 @@ android {
 
 dependencies {
   implementation(project(":common:core"))
+
+  implementation(project(":be:backendservice:contract"))
 }

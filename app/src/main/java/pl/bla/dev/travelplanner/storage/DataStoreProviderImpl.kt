@@ -6,20 +6,21 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
+import pl.bla.dev.common.core.converters.Base64Coder
+import pl.bla.dev.common.core.converters.JsonSerializer
 import pl.bla.dev.common.security.CryptoManager
 import pl.bla.dev.common.security.Cryptography
 import pl.bla.dev.common.storage.datastore.DataStoreProvider
-import java.util.Base64
+import java.lang.reflect.Type
 
 internal class DataStoreProviderImpl(
   private val cryptoManager: CryptoManager,
   private val context: Context,
-  private val gson: Gson,
+  private val jsonSerializer: JsonSerializer,
+  private val base64Coder: Base64Coder,
 ): DataStoreProvider {
 
   companion object {
@@ -28,10 +29,18 @@ internal class DataStoreProviderImpl(
 
   val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = APP_DATA_STORE_PREFS_NAME)
 
-  override suspend fun <T> getDataStoreData(dataStoreKey: String): T? {
+  override suspend fun <T> getDataStoreData(dataStoreKey: String, type: Type): T? {
     return try {
       getDataStore().data.first().let { prefs ->
-        gson.fromJson<T>(prefs.get(key = stringPreferencesKey(name = dataStoreKey)), object : TypeToken<T>(){}.type)
+        (prefs.get(key = stringPreferencesKey(dataStoreKey)) ?: return null).let { data ->
+          val decodedData = base64Coder.decode(data = data)
+          val decryptedData = cryptoManager.decryptData(
+            data = decodedData,
+            cryptography = Cryptography.AES_CBC_PKCS7,
+          )?.decodeToString()
+
+          jsonSerializer.deserialize(serializedData = decryptedData, type = type)
+        }
       }
     } catch (e: Exception) {
       null
@@ -39,18 +48,19 @@ internal class DataStoreProviderImpl(
   }
 
   override suspend fun <T> getDataStoreDataFlow(
-    dataStoreKey: String
+    dataStoreKey: String,
+    type: Type,
   ): Flow<T>? {
     return try {
        getDataStore().data.mapNotNull { prefs ->
         (prefs.get(key = stringPreferencesKey(dataStoreKey)) ?: return@mapNotNull null).let { data ->
-          val decodedData = Base64.getDecoder().decode(data)
+          val decodedData = base64Coder.decode(data = data)
           val decryptedData = cryptoManager.decryptData(
             data = decodedData,
             cryptography = Cryptography.AES_CBC_PKCS7,
           )?.decodeToString()
 
-          gson.fromJson<T>(decryptedData, object : TypeToken<T>(){}.type)
+          jsonSerializer.deserialize(serializedData = decryptedData, type = type)
         }
       }
     } catch (e: Exception) {
@@ -64,13 +74,13 @@ internal class DataStoreProviderImpl(
   ) {
     try {
       val encryptedData = cryptoManager.encryptData(
-        data = gson.toJson(data).toByteArray(),
+        data = jsonSerializer.serialize(data = data).toByteArray(),
         cryptography = Cryptography.AES_CBC_PKCS7,
       )
 
       getDataStore().edit { prefs ->
         prefs[stringPreferencesKey(name = dataStoreKey)] =
-          Base64.getEncoder().encodeToString(encryptedData) //TODO Base64 to security module
+          base64Coder.encode(data = encryptedData)
       }
     } catch (e: Exception) {
 

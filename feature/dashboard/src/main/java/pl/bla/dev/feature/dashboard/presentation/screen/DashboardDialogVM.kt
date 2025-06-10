@@ -8,18 +8,13 @@ import kotlinx.coroutines.flow.StateFlow
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.core.viewmodel.CustomViewModelFactory
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
-import pl.bla.dev.feature.dashboard.presentation.screen.DashboardDialogVM.DialogSetupData
 import pl.bla.dev.feature.dashboard.presentation.screen.DashboardDialogVMImpl.DialogVMFactory
-import pl.bla.dev.feature.dashboard.presentation.screen.mapper.DashboardDialogMapper
 
 interface DashboardDialogVM {
   data object State
 
   sealed interface Action {
-    sealed interface Navigation : Action {
-      data object OnLogout : Navigation
-      data object OnDismiss : Navigation
-    }
+    sealed interface Navigation : Action
   }
 
   data class ScreenData(
@@ -27,40 +22,25 @@ interface DashboardDialogVM {
   )
 
   val screenData: StateFlow<ScreenData>
-
-  data class DialogSetupData(
-    val dialogData: DialogData,
-  )
 }
 
 @HiltViewModel(assistedFactory = DialogVMFactory::class)
 class DashboardDialogVMImpl @AssistedInject constructor(
-  private val dashboardDialogMapper: DashboardDialogMapper,
-  @Assisted val setupData: DialogSetupData,
+  @Assisted val setupData: DialogData,
 ) : CustomViewModel<DashboardDialogVM.State, DashboardDialogVM.ScreenData, DashboardDialogVM.Action.Navigation>(
   initialStateValue = DashboardDialogVM.State,
 ), DashboardDialogVM {
   @AssistedFactory
-  interface DialogVMFactory: CustomViewModelFactory<DialogSetupData, DashboardDialogVMImpl> {
-    override fun setup(setupData: DialogSetupData) : DashboardDialogVMImpl
+  interface DialogVMFactory: CustomViewModelFactory<DialogData, DashboardDialogVMImpl> {
+    override fun setup(setupData: DialogData) : DashboardDialogVMImpl
   }
 
   override val screenData: StateFlow<DashboardDialogVM.ScreenData> = _screenData
 
-  override suspend fun onStateEnter(newState: DashboardDialogVM.State) = when (newState) {
-    DashboardDialogVM.State -> {}
-    else -> {}
-  }
+  override suspend fun onStateEnter(newState: DashboardDialogVM.State) {}
 
-  override fun mapScreenData(): DashboardDialogVM.ScreenData = dashboardDialogMapper(
-    params = DashboardDialogMapper.Params(
-      onDismiss = {
-        DashboardDialogVM.Action.Navigation.OnDismiss.emit()
-      },
-      onLogout = {
-        DashboardDialogVM.Action.Navigation.OnLogout.emit()
-      },
-    ),
-  )
-
+  override fun mapScreenData(): DashboardDialogVM.ScreenData =
+    DashboardDialogVM.ScreenData(
+      dialogData = setupData,
+    )
 }

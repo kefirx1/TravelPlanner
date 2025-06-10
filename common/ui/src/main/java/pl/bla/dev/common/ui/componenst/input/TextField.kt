@@ -53,7 +53,7 @@ sealed interface TextFieldType {
 
 data class TextFieldData(
   val onValueChanged: (String) -> Unit = {},
-  val hint: String,
+  val hint: String = "",
   val label: String? = null,
   val initialText: String = "",
   val linkTextButton: SmallButtonData.Tertiary? = null,

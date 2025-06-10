@@ -45,6 +45,8 @@ dependencies {
 
   implementation(project(":feature:user:contract"))
 
+  implementation(project(":be:backendservice:contract"))
+
   implementation(libs.lifecycle.viewmodel.compose)
   implementation(libs.lifecycle.viewmodel)
   implementation(libs.androidx.core.ktx)
@@ -63,7 +65,6 @@ dependencies {
   implementation(libs.dagger.hilt)
   ksp(libs.dagger.hilt.compiler)
   implementation(libs.kotlinx.coroutines)
-  implementation(libs.gson)
   implementation(libs.lifecycle.runtime.compose)
   implementation(libs.androidx.room.runtime)
   implementation(libs.androidx.room.ktx)

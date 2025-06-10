@@ -47,6 +47,7 @@ fun NavGraphBuilder.authNavGraph(
       },
       navActionHandler = { action, sharedViewModel ->
         when (action) {
+          is RegistrationVM.Action.Navigation.RegistrationCompleted -> onResult(AuthResults.RegistrationSuccess)
           is RegistrationVM.Action.Navigation.Back -> navController.navigate(AuthDestinations.Onboarding)
         }
       }

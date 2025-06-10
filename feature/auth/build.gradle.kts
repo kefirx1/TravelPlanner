@@ -63,7 +63,6 @@ dependencies {
   implementation(libs.dagger.hilt)
   ksp(libs.dagger.hilt.compiler)
   implementation(libs.kotlinx.coroutines)
-  implementation(libs.gson)
   implementation(libs.lifecycle.runtime.compose)
 
   testImplementation(libs.junit)

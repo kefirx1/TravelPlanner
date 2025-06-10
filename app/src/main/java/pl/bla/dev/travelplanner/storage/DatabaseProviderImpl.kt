@@ -14,6 +14,7 @@ internal class DatabaseProviderImpl(
     databaseName: String,
     databaseClass: Class<T>,
     masterKey: SecretKey,
+    typeConverters: List<Any>,
   ): T {
     val factory = SupportFactory(masterKey.encoded)
 
@@ -22,6 +23,11 @@ internal class DatabaseProviderImpl(
       databaseClass,
       databaseName,
     ).openHelperFactory(factory)
+      .apply {
+        typeConverters.forEach { converter ->
+          addTypeConverter(converter)
+        }
+      }
       .build()
   }
 }

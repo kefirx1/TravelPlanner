@@ -4,6 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import pl.bla.dev.common.core.converters.Base64Coder
+import pl.bla.dev.common.core.converters.JsonSerializer
 import pl.bla.dev.common.security.CryptoManager
 import pl.bla.dev.common.security.MasterKeyProvider
 import pl.bla.dev.common.security.SecretKeyProvider
@@ -13,6 +15,7 @@ import pl.bla.dev.common.storage.room.DatabaseProvider
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
+import pl.bla.dev.feature.settings.data.model.OnboardingPreferencesConverter
 import pl.bla.dev.feature.settings.data.repository.UserRepository
 import pl.bla.dev.feature.settings.data.repository.UserRepositoryImpl
 import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
@@ -28,6 +31,14 @@ object UserModule {
 
   @Singleton
   @Provides
+  fun provideOnboardingPreferencesConverter(
+    jsonSerializer: JsonSerializer,
+  ) = OnboardingPreferencesConverter(
+    jsonSerializer = jsonSerializer,
+  )
+
+  @Singleton
+  @Provides
   fun provideSettingsDataStore(
     dataStoreProvider: DataStoreProvider,
   ): UserSettingsDataStore = UserSettingsPreferencesDataStore(
@@ -39,10 +50,12 @@ object UserModule {
     userSettingsDataStore: UserSettingsDataStore,
     masterKeyProvider: MasterKeyProvider,
     databaseProvider: DatabaseProvider,
+    onboardingPreferencesConverter: OnboardingPreferencesConverter,
   ): UserRepository = UserRepositoryImpl(
     userSettingsDataStore = userSettingsDataStore,
     masterKeyProvider = masterKeyProvider,
     databaseProvider = databaseProvider,
+    onboardingPreferencesConverter = onboardingPreferencesConverter,
   )
 
   @Provides
@@ -52,12 +65,14 @@ object UserModule {
     generateSaltUC: GenerateSaltUC,
     cryptoManager: CryptoManager,
     masterKeyProvider: MasterKeyProvider,
+    base64Coder: Base64Coder,
   ): RegisterNewUserUC = RegisterNewUserUCImpl(
     userRepository = userRepository,
     secretKeyProvider = secretKeyProvider,
     generateSaltUC = generateSaltUC,
     cryptoManager = cryptoManager,
     masterKeyProvider = masterKeyProvider,
+    base64Coder = base64Coder,
   )
 
   @Provides
@@ -66,11 +81,13 @@ object UserModule {
     cryptoManager: CryptoManager,
     secretKeyProvider: SecretKeyProvider,
     masterKeyProvider: MasterKeyProvider,
+    base64Coder: Base64Coder,
   ): DecryptUserDEKAndInjectCacheUC = DecryptUserDEKAndInjectCacheUCImpl(
     userRepository = userRepository,
     cryptoManager = cryptoManager,
     secretKeyProvider = secretKeyProvider,
     masterKeyProvider = masterKeyProvider,
+    base64Coder = base64Coder,
   )
 
   @Provides

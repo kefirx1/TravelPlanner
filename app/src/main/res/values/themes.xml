@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Theme.TravelPlanner" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowSplashScreenBackground">@color/black</item>
+<!--        <item name="android:windowSplashScreenBackground">@color/black</item>-->
         <item name="android:windowBackground">@color/grey</item>
     </style>
 </resources>

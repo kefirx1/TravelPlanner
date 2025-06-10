@@ -1,11 +1,9 @@
 package pl.bla.dev.feature.settings.data.model
 
-import com.google.gson.annotations.SerializedName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
-@Serializable
 data class UserSettingsDto(
-  @SerializedName("userName") val userName: String,
-  @SerializedName("salt") val salt: ByteArray,
-  @SerializedName("ivDek") val ivDek: ByteArray,
+  @SerialName("userName") val userName: String,
+  @SerialName("salt") val salt: String,
+  @SerialName("ivDek") val ivDek: String,
 )

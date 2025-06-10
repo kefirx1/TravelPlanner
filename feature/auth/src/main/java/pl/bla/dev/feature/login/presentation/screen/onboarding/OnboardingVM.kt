@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContent
 import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContentItem
+import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContentSection
 import pl.bla.dev.be.backendservice.contract.domain.usecase.GetOnboardingContentUC
 import pl.bla.dev.common.core.usecase.UseCase
 import pl.bla.dev.common.core.usecase.fold
@@ -29,7 +30,7 @@ interface OnboardingVM {
   sealed interface Action {
     sealed interface Navigation : Action {
       data class ToRegistration(
-        val selectedChips: List<OnboardingContentItem>,
+        val selectedChips: List<OnboardingContentSection>,
       ) : Navigation
 
       data object Back : Navigation
@@ -93,9 +94,11 @@ class OnboardingVMImpl @Inject constructor(
               selectedChips = selectedChips,
             ).mutate()
           }
-          is OnboardingVM.Action.ToRegistration -> OnboardingVM.Action.Navigation.ToRegistration(
-            selectedChips = currentState.selectedChips,
-          ).emit()
+          is OnboardingVM.Action.ToRegistration -> {
+            OnboardingVM.Action.Navigation.ToRegistration(
+              selectedChips = getSelectedSections(currentState = currentState)
+            ).emit()
+          }
           is OnboardingVM.Action.Back -> OnboardingVM.Action.Navigation.Back.emit()
           else -> {}
         }
@@ -133,5 +136,22 @@ class OnboardingVMImpl @Inject constructor(
       onNextClick = { dispatchAction(OnboardingVM.Action.ToRegistration) }
     )
   )
+
+  private fun getSelectedSections(
+    currentState: OnboardingVM.State.Initialized,
+  ): List<OnboardingContentSection> =
+    currentState.onboardingContent.content.mapNotNull { section ->
+      section.content.mapNotNull { content ->
+        content.takeIf { content.valueId in currentState.selectedChips.map { it.valueId } }
+      }.let {
+        if (it.isEmpty()) return@mapNotNull null
+
+        OnboardingContentSection(
+          sectionId = section.sectionId,
+          title = section.title,
+          content = it,
+        )
+      }
+    }
 
 }

@@ -1,5 +1,6 @@
 package pl.bla.dev.feature.settings.domain.usecase
 
+import pl.bla.dev.common.core.converters.Base64Coder
 import pl.bla.dev.common.core.error.AppError
 import pl.bla.dev.common.core.usecase.Either
 import pl.bla.dev.common.core.usecase.UseCase
@@ -11,7 +12,9 @@ import pl.bla.dev.common.security.domain.GenerateSaltUC
 import pl.bla.dev.feature.settings.contract.domain.model.UserSettings
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
 import pl.bla.dev.feature.settings.data.model.UserInfo
+import pl.bla.dev.feature.settings.data.model.UserOnboardingPreferences
 import pl.bla.dev.feature.settings.data.repository.UserRepository
+import pl.bla.dev.feature.settings.domain.mapper.UserMapper.toDto
 
 internal class RegisterNewUserUCImpl(
   private val userRepository: UserRepository,
@@ -19,6 +22,7 @@ internal class RegisterNewUserUCImpl(
   private val masterKeyProvider: MasterKeyProvider,
   private val generateSaltUC: GenerateSaltUC,
   private val cryptoManager: CryptoManager,
+  private val base64Coder: Base64Coder,
 ): RegisterNewUserUC {
   override suspend fun invoke(param: RegisterNewUserUC.Params): Either<AppError, Unit> {
     val newSalt: ByteArray = generateSaltUC(UseCase.Params.Empty)
@@ -36,15 +40,18 @@ internal class RegisterNewUserUCImpl(
 
     userRepository.saveNewUserSettings(
       userSettings = UserSettings(
-        userName = param.firstName,
-        salt = newSalt,
-        ivDek = ivWithEncryptedDEK,
+        userName = param.userName,
+        salt = base64Coder.encode(data = newSalt),
+        ivDek = base64Coder.encode(data = ivWithEncryptedDEK),
       ),
     )
     userRepository.registerNewUser(
       userInfo = UserInfo(
-        firstName = param.firstName,
-        sureName = param.sureName,
+        firstName = param.userName,
+        email = param.userEmail,
+        onboardingPreferences = UserOnboardingPreferences(
+          content = param.selectedChips.map { it.toDto() },
+        ),
       ),
     )
 

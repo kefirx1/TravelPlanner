@@ -8,5 +8,7 @@ import androidx.room.PrimaryKey
 data class UserInfo(
   @PrimaryKey(autoGenerate = true) val uid: Int = 0,
   @ColumnInfo(name = "first_name") val firstName: String,
-  @ColumnInfo(name = "sure_name") val sureName: String,
+  @ColumnInfo(name = "sure_name") val sureName: String = "",
+  @ColumnInfo(name = "email") val email: String,
+  @ColumnInfo(name = "onboarding_preferences") val onboardingPreferences: UserOnboardingPreferences,
 )

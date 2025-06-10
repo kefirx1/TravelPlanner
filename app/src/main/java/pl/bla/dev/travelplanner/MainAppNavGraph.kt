@@ -1,7 +1,6 @@
 package pl.bla.dev.travelplanner
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import pl.bla.dev.common.core.navigation.AppNavController
@@ -28,7 +27,12 @@ fun MainAppNavGraph(
       navController = appNavController,
       onResult = { result ->
         when (result) {
-          AuthResults.LoginSuccess -> appNavController.navigate(DashboardDestinations.DashboardGraph)
+          AuthResults.LoginSuccess -> appNavController.navigate(
+            destination = DashboardDestinations.DashboardGraph,
+          )
+          AuthResults.RegistrationSuccess -> appNavController.navigate(
+            destination = DashboardDestinations.DashboardGraph,
+          )
           AuthResults.ExitApp -> onAppExit()
         }
       },
@@ -38,7 +42,9 @@ fun MainAppNavGraph(
       navController = appNavController,
       onResult = { result ->
         when (result) {
-          DashboardResults.Logout -> appNavController.popBackStack()
+          DashboardResults.Logout -> appNavController.navigate(
+            destination = AuthDestinations.AuthGraph,
+          )
         }
       },
     )

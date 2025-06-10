@@ -42,7 +42,7 @@ class CryptoManagerImpl(
       }
       val encryptedBytes = encryptCipher.doFinal(data)
 
-      encryptCipher.iv + encryptedBytes
+      byteArrayOf(encryptCipher.iv.size.toByte()) + encryptCipher.iv + encryptedBytes
     } catch (e: Exception) {
       null
     }
@@ -55,8 +55,9 @@ class CryptoManagerImpl(
     return try {
       val cipher = getCipher(cryptography = cryptography)
 
-      val iv = data.copyOfRange(0, cipher.blockSize)
-      val data = data.copyOfRange(cipher.blockSize, data.size)
+      val ivSize = data[0].toInt()
+      val iv = data.copyOfRange(1, ivSize + 1)
+      val data = data.copyOfRange(ivSize + 1, data.size)
 
       cipher.init(Cipher.DECRYPT_MODE, secretKeyProvider.getKeyStoreSecretKey(cryptography = cryptography), IvParameterSpec(iv))
       cipher.doFinal(data)
@@ -76,7 +77,7 @@ class CryptoManagerImpl(
       }
 
       val encryptedData = cipher.doFinal(data)
-      cipher.iv + encryptedData
+      byteArrayOf(cipher.iv.size.toByte()) + cipher.iv + encryptedData
     } catch (e: Exception) {
       null
     }
@@ -89,8 +90,9 @@ class CryptoManagerImpl(
     return try {
       val cipher = getCipher(cryptography = Cryptography.AES_GCM_NoPadding)
 
-      val iv = concatenatedData.copyOfRange(0, cipher.blockSize)
-      val data = concatenatedData.copyOfRange(cipher.blockSize, concatenatedData.size)
+      val ivSize = concatenatedData[0].toInt()
+      val iv = concatenatedData.copyOfRange(1, ivSize + 1)
+      val data = concatenatedData.copyOfRange(ivSize + 1, concatenatedData.size)
 
       cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
 

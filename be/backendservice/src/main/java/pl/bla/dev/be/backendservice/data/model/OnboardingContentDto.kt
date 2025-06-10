@@ -1,18 +1,23 @@
 package pl.bla.dev.be.backendservice.data.model
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
+
 //TODO swagger generate DTO with openApi
-
+@Serializable
 data class OnboardingContentDto(
-  val content: List<OnboardingContentSectionDto>,
+  @SerialName("content") val content: List<OnboardingContentSectionDto>,
 )
 
+@Serializable
 data class OnboardingContentSectionDto(
-  val sectionId: Int,
-  val title: String,
-  val content: List<OnboardingContentItemDto>
+  @SerialName("sectionId") val sectionId: Int,
+  @SerialName("title") val title: String,
+  @SerialName("content") val content: List<OnboardingContentItemDto>
 )
 
+@Serializable
 data class OnboardingContentItemDto(
-  val label: String,
-  val valueId: Int,
+  @SerialName("label") val label: String,
+  @SerialName("valueId") val valueId: Int,
 )

@@ -20,5 +20,6 @@ sealed interface AuthDestinations : Destination {
 
 sealed interface AuthResults {
   data object LoginSuccess : AuthResults
+  data object RegistrationSuccess : AuthResults
   data object ExitApp : AuthResults
 }

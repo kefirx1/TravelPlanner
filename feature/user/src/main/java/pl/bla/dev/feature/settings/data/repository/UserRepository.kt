@@ -3,6 +3,7 @@ package pl.bla.dev.feature.settings.data.repository
 import pl.bla.dev.common.security.MasterKeyProvider
 import pl.bla.dev.common.storage.room.DatabaseProvider
 import pl.bla.dev.feature.settings.contract.domain.model.UserSettings
+import pl.bla.dev.feature.settings.data.model.OnboardingPreferencesConverter
 import pl.bla.dev.feature.settings.data.model.UserInfo
 import pl.bla.dev.feature.settings.data.source.UserDatabase
 import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
@@ -18,13 +19,17 @@ internal class UserRepositoryImpl(
   val userSettingsDataStore: UserSettingsDataStore,
   val databaseProvider: DatabaseProvider,
   masterKeyProvider: MasterKeyProvider,
+  onboardingPreferencesConverter: OnboardingPreferencesConverter
 ) : UserRepository {
 
   private val userDatabase: UserDatabase by lazy {
     databaseProvider.buildDatabase(
       databaseName = UserDatabase.USER_DATABASE_NAME,
       databaseClass = UserDatabase::class.java,
-      masterKey = masterKeyProvider.getMasterKey() ?: throw NullPointerException("Master key cannot be null")
+      masterKey = masterKeyProvider.getMasterKey() ?: throw NullPointerException("Master key cannot be null"),
+      typeConverters = listOf(
+        onboardingPreferencesConverter,
+      )
     )
   }
 

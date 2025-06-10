@@ -30,6 +30,7 @@ internal class UserSettingsPreferencesDataStore(
   override suspend fun load(): UserSettings? =
     dataStoreProvider.getDataStoreData<UserSettingsDto>(
       dataStoreKey = STORE_NAME,
+      type = UserSettingsDto::class.java,
     )?.toDomain()
 
 }

@@ -32,7 +32,7 @@ inline fun <CONTRACT: Any?, reified CVM: ContractViewModel, reified VM: CustomVi
   destination: Destination,
   destinationType: DestinationType = DestinationType.Screen,
   navController: AppNavController,
-  noinline navActionHandler: (NAV, ContractViewModel) -> Unit,
+  noinline navActionHandler: (NAV, ContractViewModel) -> Unit = { _, _ -> },
   crossinline content: @Composable (VM) -> Unit
 ) {
   when (destinationType) {
