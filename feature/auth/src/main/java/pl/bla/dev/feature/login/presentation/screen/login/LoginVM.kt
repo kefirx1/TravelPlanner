@@ -9,12 +9,14 @@ import pl.bla.dev.common.core.usecase.fold
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.loader.domain.RunWithLoaderUC
 import pl.bla.dev.common.ui.componenst.button.LargeButtonData
+import pl.bla.dev.common.ui.componenst.dialog.DialogData
 import pl.bla.dev.common.ui.componenst.input.TextFieldData
 import pl.bla.dev.common.ui.componenst.input.ValidationState
 import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUC
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.Action
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.ScreenData
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.State
+import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenDialogMapper
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapper
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
 import javax.inject.Inject
@@ -34,9 +36,13 @@ interface LoginVM {
     sealed interface Navigation : Action {
       data object ToDashboard : Navigation
       data object ToOnboarding : Navigation
+      data class ShowDialog(
+        val dialogData: DialogData,
+      ) : Navigation
       data object Back : Navigation
     }
 
+    data class ShowDialog(val dialogType: LoginScreenDialogMapper.LoginDialogType) : Action
     data object Back : Action
     data object LoginToApp : Action
     data object ToOnboarding : Action
@@ -73,6 +79,7 @@ class LoginVMImpl @Inject constructor(
   private val getSavedUserNameUC: GetSavedUserNameUC,
   private val validateUserPasswordUC: ValidateUserPasswordUC,
   private val runWithLoaderUC: RunWithLoaderUC,
+  private val loginScreenDialogMapper: LoginScreenDialogMapper,
 ) : CustomViewModel<State, ScreenData, Action.Navigation>(
   initialStateValue = State.Initial,
 ), LoginVM {
@@ -91,6 +98,18 @@ class LoginVMImpl @Inject constructor(
         }
         is State.Login -> {
           when (action) {
+            is Action.ShowDialog -> {
+              Action.Navigation.ShowDialog(
+                dialogData = loginScreenDialogMapper(
+                  params = LoginScreenDialogMapper.Params(
+                    dialogType = action.dialogType,
+                    onResetClick = {
+                      State.Registration.override()
+                    },
+                  )
+                ),
+              ).emit()
+            }
             is Action.LoginToApp -> {
               runWithLoaderUC {
                 validateUserPasswordUC(
@@ -170,8 +189,7 @@ class LoginVMImpl @Inject constructor(
         dispatchAction(Action.UpdatePassword(password = password))
       },
       onForgotPasswordClick = {
-        //TODO dialog
-        State.Registration.override()
+        dispatchAction(Action.ShowDialog(dialogType = LoginScreenDialogMapper.LoginDialogType.ForgotPassword))
       },
       onBackClick = {
         dispatchAction(Action.Back)

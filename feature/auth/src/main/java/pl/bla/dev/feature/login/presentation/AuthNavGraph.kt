@@ -3,7 +3,12 @@ package pl.bla.dev.feature.login.presentation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import pl.bla.dev.common.core.navigation.AppNavController
+import pl.bla.dev.common.core.navigation.DestinationType
 import pl.bla.dev.common.core.navigation.createDestination
+import pl.bla.dev.common.ui.componenst.dialog.DialogData
+import pl.bla.dev.feature.login.presentation.screen.dialog.AuthDialogScreen
+import pl.bla.dev.feature.login.presentation.screen.dialog.AuthDialogVM
+import pl.bla.dev.feature.login.presentation.screen.dialog.AuthDialogVMImpl
 import pl.bla.dev.feature.login.presentation.screen.login.LoginScreen
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVMImpl
@@ -34,6 +39,14 @@ fun NavGraphBuilder.authNavGraph(
           is LoginVM.Action.Navigation.ToOnboarding -> navController.navigate(
             destination = AuthDestinations.Onboarding,
           )
+          is LoginVM.Action.Navigation.ShowDialog -> {
+            contractViewModel.setContractData(
+              destination = AuthDestinations.AuthDialog,
+              data = action.dialogData,
+            )
+
+            navController.navigate(AuthDestinations.AuthDialog)
+          }
           is LoginVM.Action.Navigation.Back -> onResult(AuthResults.ExitApp)
         }
       },
@@ -73,6 +86,20 @@ fun NavGraphBuilder.authNavGraph(
             )
           }
           is OnboardingVM.Action.Navigation.Back -> navController.popBackStack()
+        }
+      }
+    )
+
+    createDestination<DialogData, AuthContractVM, AuthDialogVMImpl, AuthDialogVM.Action.Navigation>(
+      destination = AuthDestinations.AuthDialog,
+      destinationType = DestinationType.Dialog,
+      navController = navController,
+      content = { viewModel ->
+        AuthDialogScreen(viewModel = viewModel)
+      },
+      navActionHandler = { action, _ ->
+        when (action) {
+          AuthDialogVM.Action.Navigation.OnDialogAction -> navController.popBackStack()
         }
       }
     )

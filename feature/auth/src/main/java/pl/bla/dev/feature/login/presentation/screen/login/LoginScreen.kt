@@ -73,7 +73,7 @@ fun LoginScreenContent(
           style = MaterialTheme.typography.headlineLarge,
           customSize = 40.sp,
         )
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Column(
           modifier = Modifier

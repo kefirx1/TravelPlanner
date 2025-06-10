@@ -10,9 +10,9 @@ import pl.bla.dev.common.core.navigation.createDestination
 import pl.bla.dev.common.core.navigation.rememberContractViewModel
 import pl.bla.dev.common.ui.componenst.button.SmallButtonData
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
-import pl.bla.dev.feature.dashboard.presentation.screen.DashboardDialogScreen
-import pl.bla.dev.feature.dashboard.presentation.screen.DashboardDialogVM
-import pl.bla.dev.feature.dashboard.presentation.screen.DashboardDialogVMImpl
+import pl.bla.dev.feature.dashboard.presentation.screen.dialog.DashboardDialogScreen
+import pl.bla.dev.feature.dashboard.presentation.screen.dialog.DashboardDialogVM
+import pl.bla.dev.feature.dashboard.presentation.screen.dialog.DashboardDialogVMImpl
 
 fun NavGraphBuilder.dashboardNavGraph(
   navController: AppNavController,
@@ -35,21 +35,16 @@ fun NavGraphBuilder.dashboardNavGraph(
           data = DialogData(
             title = "Chcesz się wylogować?",
             content = "Kliknij wyloguj, aby wyjść z aplikacji",
-            onDismiss = {
-              navController.popBackStack()
-            },
+            onDismiss = {},
             onPrimaryButtonData = SmallButtonData.Tertiary(
               text = "Wyloguj",
               onClick = {
-                navController.popBackStack()
                 onResult(DashboardResults.Logout)
               },
             ),
             onSecondaryButtonData = SmallButtonData.Tertiary(
               text = "Nie",
-              onClick = {
-                navController.popBackStack()
-              },
+              onClick = {},
             ),
           )
         )
@@ -58,13 +53,18 @@ fun NavGraphBuilder.dashboardNavGraph(
       }
     }
 
-    createDestination<DialogData, DashboardContractVM,  DashboardDialogVMImpl, DashboardDialogVM.Action.Navigation>(
+    createDestination<DialogData, DashboardContractVM, DashboardDialogVMImpl, DashboardDialogVM.Action.Navigation>(
       destination = DashboardDestinations.DashboardDialog,
       destinationType = DestinationType.Dialog,
       navController = navController,
       content = { viewModel ->
         DashboardDialogScreen(viewModel = viewModel)
       },
+      navActionHandler = { action, _ ->
+        when (action) {
+          DashboardDialogVM.Action.Navigation.OnDialogAction -> navController.popBackStack()
+        }
+      }
     )
 
   }

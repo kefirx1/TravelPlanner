@@ -6,6 +6,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUC
 import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUCImpl
+import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenDialogMapper
+import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenDialogMapperImpl
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapper
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapperImpl
 import pl.bla.dev.feature.login.presentation.screen.onboarding.mapper.OnboardingScreenMapper
@@ -36,4 +38,7 @@ object AuthModule {
   ): ValidateUserPasswordUC = ValidateUserPasswordUCImpl(
     decryptUserDEKAndInjectCacheUC = decryptUserDEKAndInjectCacheUC,
   )
+
+  @Provides
+  fun provideLoginScreenDialogMapper(): LoginScreenDialogMapper = LoginScreenDialogMapperImpl()
 }

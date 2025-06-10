@@ -16,6 +16,9 @@ sealed interface AuthDestinations : Destination {
 
   @Serializable
   data object Onboarding : AuthDestinations
+
+  @Serializable
+  data object AuthDialog : AuthDestinations
 }
 
 sealed interface AuthResults {

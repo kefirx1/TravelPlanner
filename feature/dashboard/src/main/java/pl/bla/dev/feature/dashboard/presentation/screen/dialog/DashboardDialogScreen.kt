@@ -1,4 +1,4 @@
-package pl.bla.dev.feature.dashboard.presentation.screen
+package pl.bla.dev.feature.dashboard.presentation.screen.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
