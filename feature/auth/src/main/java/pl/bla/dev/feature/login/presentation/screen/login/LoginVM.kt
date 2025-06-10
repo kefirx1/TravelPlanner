@@ -60,6 +60,8 @@ interface LoginVM {
 
     data class RegistrationScreen(
       val appName: String,
+      val appDescriptionLabel: String,
+      val appDescriptionBody: String,
       val buttonData: LargeButtonData,
       val onBackClick: () -> Unit,
     ) : ScreenData

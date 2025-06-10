@@ -2,10 +2,12 @@ package pl.bla.dev.feature.login.presentation.screen.login
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,18 +64,22 @@ fun LoginScreenContent(
       ) {
         Spacer(modifier = Modifier.height(70.dp))
 
-        CustomImage(
-          iconRes = R.mipmap.ic_travel_planner_logo,
-          imageSize = ImageSize.EXTRA_LARGE,
-        )
-        Spacer(modifier = Modifier.height(30.dp))
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          CustomImage(
+            iconRes = R.mipmap.ic_travel_planner_logo,
+            imageSize = ImageSize.MEDIUM,
+          )
+          Spacer(modifier = Modifier.width(20.dp))
 
-        CustomText(
-          text = data.appName,
-          style = MaterialTheme.typography.headlineLarge,
-          customSize = 40.sp,
-        )
-        Spacer(modifier = Modifier.height(40.dp))
+          CustomText(
+            text = data.appName,
+            style = MaterialTheme.typography.headlineLarge,
+            customSize = 40.sp,
+          )
+        }
+        Spacer(modifier = Modifier.height(80.dp))
 
         Column(
           modifier = Modifier
@@ -124,16 +130,32 @@ fun RegistrationScreenContent(
       ) {
         Spacer(modifier = Modifier.height(70.dp))
 
-        CustomImage(
-          iconRes = R.mipmap.ic_travel_planner_logo,
-          imageSize = ImageSize.EXTRA_LARGE,
-        )
-        Spacer(modifier = Modifier.height(30.dp))
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          CustomImage(
+            iconRes = R.mipmap.ic_travel_planner_logo,
+            imageSize = ImageSize.MEDIUM,
+          )
+          Spacer(modifier = Modifier.width(20.dp))
+
+          CustomText(
+            text = data.appName,
+            style = MaterialTheme.typography.headlineLarge,
+            customSize = 40.sp,
+          )
+        }
+        Spacer(modifier = Modifier.height(80.dp))
 
         CustomText(
-          text = data.appName,
+          text = data.appDescriptionLabel,
           style = MaterialTheme.typography.headlineLarge,
-          customSize = 40.sp,
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        CustomText(
+          text = data.appDescriptionBody,
+          style = MaterialTheme.typography.titleLarge,
         )
       }
 
