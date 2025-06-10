@@ -28,7 +28,7 @@ class OnboardingScreenMapperImpl : OnboardingScreenMapper {
         topAppBarData = TopAppBarData.Back(
           onNavigationIconClick = params.onBackClick,
         ),
-        screenDescription = "Witaj w aplikacji TravelPlanner, w celu spersonalizowania aplikacji zaznacz interesujące Cie opcje!",
+        screenDescription = "Witaj w aplikacji TravelPlanner, w celu spersonalizowania aplikacji zaznacz interesujące Cie opcje",
         screenDescriptionContext = "(Możesz wybrać tyle opcji ile chcesz)",
         sectionsTitle = params.state.onboardingContent.content.map { it.title },
         onboardingChips = params.state.onboardingContent.content.map { content ->

@@ -51,7 +51,7 @@ class LoginScreenMapperImpl : LoginScreenMapper {
       is LoginVM.State.Registration -> LoginVM.ScreenData.RegistrationScreen(
         appName = "TravelPlanner",
         buttonData = LargeButtonData.Primary(
-          text = "Zaczynajmy!",
+          text = "Zaczynajmy",
           onClick = {
             params.onStartClick()
           },

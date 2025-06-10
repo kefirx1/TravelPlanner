@@ -58,6 +58,8 @@ dependencies {
   implementation(libs.dagger.hilt)
   ksp(libs.dagger.hilt.compiler)
   implementation(libs.kotlinx.coroutines)
+  implementation(libs.osmdroid.android)
+  implementation(libs.osmdroid.compose)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

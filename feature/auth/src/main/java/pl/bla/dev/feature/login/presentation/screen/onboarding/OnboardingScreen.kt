@@ -85,7 +85,8 @@ fun OnboardingScreenContent(
     bottomBar = {
       Column(
         modifier = Modifier.padding(
-          horizontal = 20.dp,
+          horizontal = 40.dp,
+          vertical = 10.dp,
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {

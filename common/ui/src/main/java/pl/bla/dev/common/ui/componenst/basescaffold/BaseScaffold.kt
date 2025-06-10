@@ -68,10 +68,6 @@ fun BaseScaffold(
           .windowInsetsPadding(insets = WindowInsets.navigationBars)
           .fillMaxWidth()
           .background(color = AppColors.grey)
-          .padding(
-            horizontal = 20.dp,
-            vertical = 20.dp,
-          )
       ) {
         bottomBar()
       }

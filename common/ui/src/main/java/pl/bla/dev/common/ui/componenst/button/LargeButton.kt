@@ -8,6 +8,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -50,9 +52,16 @@ fun LargeButton(
   modifier: Modifier = Modifier,
   buttonData: LargeButtonData,
 ) {
+  val keyboardController = LocalSoftwareKeyboardController.current
+  val focusManager = LocalFocusManager.current
+
   Button(
     modifier = modifier.fillMaxWidth(),
-    onClick = buttonData.onClick,
+    onClick = {
+      focusManager.clearFocus()
+      keyboardController?.hide()
+      buttonData.onClick()
+    },
     shape = when (buttonData) {
       is LargeButtonData.Primary -> ButtonDefaults.shape
       is LargeButtonData.Secondary -> ButtonDefaults.shape

@@ -127,7 +127,7 @@ class LoginVMImpl @Inject constructor(
                       }
                       ValidateUserContainerPasswordUC.Result.WrongPassword -> {
                         currentState.copy(
-                          passwordState = ValidationState.Invalid("Złe hasło!"),
+                          passwordState = ValidationState.Invalid("Złe hasło"),
                         ).mutate()
                       }
                     }
