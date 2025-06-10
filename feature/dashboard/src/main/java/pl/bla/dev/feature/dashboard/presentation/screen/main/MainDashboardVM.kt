@@ -1,11 +1,21 @@
 package pl.bla.dev.feature.dashboard.presentation.screen.main
 
+import android.location.Location
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import pl.bla.dev.common.core.logger.Log
+import pl.bla.dev.common.core.usecase.UseCase
+import pl.bla.dev.common.core.usecase.fold
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
+import pl.bla.dev.common.intents.domain.usecase.OpenAppSettingsIntentUC
+import pl.bla.dev.common.permission.PermissionsManager
+import pl.bla.dev.common.permission.domain.model.AppPermission
+import pl.bla.dev.common.permission.domain.model.PermissionResult
+import pl.bla.dev.common.sensor.usecase.GetCurrentLocationUC
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
+import pl.bla.dev.common.ui.componenst.permissions.PermissionRequesterData
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardDialogMapper
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardDialogMapper.DialogType
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardScreenMapper
@@ -14,8 +24,10 @@ import javax.inject.Inject
 
 interface MainDashboardVM {
   sealed class State(val selectedItem: Int) {
-    data object Initial : State(selectedItem = -1)
-    data object MapScreen : State(selectedItem = 0)
+    data class MapScreen(
+      val permissionResult: PermissionResult = PermissionResult.DENIED,
+      val currentLocation: Location? = null,
+    ) : State(selectedItem = 0)
     data object TravelScreen : State(selectedItem = 1)
     data object SettingsScreen : State(selectedItem = 2)
   }
@@ -28,6 +40,9 @@ interface MainDashboardVM {
       ) : Navigation
     }
 
+
+    data object RequestLocationPermission : Action
+    data object OpenAppSettings : Action
     data class OnBottomNavItemClick(
       val id: Int,
     ): Action
@@ -42,15 +57,11 @@ interface MainDashboardVM {
     open val onBackClick: () -> Unit,
     val selectedItem: Int = -1,
   ) {
-    data class Initial(
-      override val onBackClick: () -> Unit,
-    ) : ScreenData(
-      bottomNavItems = emptyList(),
-      onBackClick = onBackClick,
-    )
     data class MapScreen(
       override val bottomNavItems: List<BottomNavItem>,
       override val onBackClick: () -> Unit,
+      val currentLocation: Location?,
+      val permissionRequesterData: PermissionRequesterData?,
     ) : ScreenData(
       bottomNavItems = bottomNavItems,
       onBackClick = onBackClick,
@@ -82,8 +93,11 @@ interface MainDashboardVM {
 class MainDashboardVMImpl @Inject constructor(
   private val mainDashboardScreenMapper: MainDashboardScreenMapper,
   private val mainDashboardDialogMapper: MainDashboardDialogMapper,
+  private val getCurrentLocationUC: GetCurrentLocationUC,
+  private val permissionsManager: PermissionsManager,
+  private val openAppSettingsUC: OpenAppSettingsIntentUC,
 ) : CustomViewModel<MainDashboardVM.State, MainDashboardVM.ScreenData, MainDashboardVM.Action.Navigation>(
-  initialStateValue = MainDashboardVM.State.MapScreen,
+  initialStateValue = MainDashboardVM.State.MapScreen(),
 ), MainDashboardVM {
   override val screenData: StateFlow<MainDashboardVM.ScreenData> = _screenData
 
@@ -91,7 +105,39 @@ class MainDashboardVMImpl @Inject constructor(
     initState()
   }
 
-  override suspend fun onStateEnter(newState: MainDashboardVM.State) {}
+  override suspend fun onStateEnter(newState: MainDashboardVM.State) {
+    when (newState) {
+      is MainDashboardVM.State.MapScreen -> {
+        val result = permissionsManager.requestPermission(
+          permission = AppPermission.LOCATION,
+        )
+
+        when (result) {
+          PermissionResult.GRANTED -> {
+            getCurrentLocationUC(param = UseCase.Params.Empty).fold(
+              onRight = { location ->
+                newState.copy(
+                  currentLocation = location,
+                  permissionResult = result,
+                ).mutate()
+              },
+              onLeft = {
+                //todo error handling
+                Log.e("MainDashboardVMImpl", "onStateEnter: ${it.exception}")
+              }
+            )
+          }
+          PermissionResult.DENIED,
+          PermissionResult.DENIED_FOREVER -> {
+            newState.copy(
+              permissionResult = result,
+            ).mutate()
+          }
+        }
+      }
+      else -> {}
+    }
+  }
 
   override fun mapScreenData(): MainDashboardVM.ScreenData = mainDashboardScreenMapper(
     params = MainDashboardScreenMapper.Params(
@@ -101,6 +147,12 @@ class MainDashboardVMImpl @Inject constructor(
       },
       onBottomNavItemClick = { id ->
         dispatchAction(MainDashboardVM.Action.OnBottomNavItemClick(id = id))
+      },
+      onOpenAppSettings = {
+        dispatchAction(MainDashboardVM.Action.OpenAppSettings)
+      },
+      onRequestPermission = {
+        dispatchAction(MainDashboardVM.Action.RequestLocationPermission)
       }
     )
   )
@@ -108,14 +160,6 @@ class MainDashboardVMImpl @Inject constructor(
   private fun dispatchAction(action: MainDashboardVM.Action) {
     viewModelScope.launch {
       when (val currentState = state.value) {
-        is MainDashboardVM.State.Initial -> when (action) {
-          is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
-          is MainDashboardVM.Action.OnBottomNavItemClick -> onBottomNavItemClick(
-            state = currentState,
-            id = action.id,
-          )
-          is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
-        }
         is MainDashboardVM.State.MapScreen -> when (action) {
           is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
           is MainDashboardVM.Action.OnBottomNavItemClick -> onBottomNavItemClick(
@@ -123,6 +167,40 @@ class MainDashboardVMImpl @Inject constructor(
             id = action.id,
           )
           is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
+          is MainDashboardVM.Action.RequestLocationPermission -> {
+            val result = permissionsManager.requestPermission(
+              permission = AppPermission.LOCATION,
+            )
+
+            when (result) {
+              PermissionResult.GRANTED -> {
+                getCurrentLocationUC(param = UseCase.Params.Empty).fold(
+                  onRight = { location ->
+                    currentState.copy(
+                      currentLocation = location,
+                      permissionResult = result,
+                    ).mutate()
+                  },
+                  onLeft = {
+                    //todo error handling
+                    Log.e("MainDashboardVMImpl", "onStateEnter: ${it.exception}")
+                  }
+                )
+              }
+              PermissionResult.DENIED,
+              PermissionResult.DENIED_FOREVER -> {
+                currentState.copy(
+                  permissionResult = result,
+                ).mutate()
+              }
+            }
+          }
+          is MainDashboardVM.Action.OpenAppSettings -> {
+            openAppSettingsUC(UseCase.Params.Empty)
+            currentState.copy(
+              permissionResult = PermissionResult.DENIED,
+            ).mutate()
+          }
         }
         is MainDashboardVM.State.TravelScreen -> when (action) {
           is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
@@ -131,6 +209,8 @@ class MainDashboardVMImpl @Inject constructor(
             id = action.id,
           )
           is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
+          is MainDashboardVM.Action.RequestLocationPermission -> {}
+          is MainDashboardVM.Action.OpenAppSettings -> {}
         }
         is MainDashboardVM.State.SettingsScreen -> when (action) {
           is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
@@ -139,6 +219,8 @@ class MainDashboardVMImpl @Inject constructor(
             id = action.id,
           )
           is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
+          is MainDashboardVM.Action.RequestLocationPermission -> {}
+          is MainDashboardVM.Action.OpenAppSettings -> {}
         }
       }
     }
@@ -148,7 +230,7 @@ class MainDashboardVMImpl @Inject constructor(
     if (state.selectedItem == id) return
 
     when (id) {
-      0 -> MainDashboardVM.State.MapScreen.override()
+      0 -> MainDashboardVM.State.MapScreen().override()
       1 -> MainDashboardVM.State.TravelScreen.override()
       2 -> MainDashboardVM.State.SettingsScreen.override()
     }

@@ -80,7 +80,7 @@ fun SmallButton(
         style = MaterialTheme.typography.bodyMedium,
         color = when (buttonData) {
           is SmallButtonData.Primary -> AppColors.black
-          is SmallButtonData.Secondary -> AppColors.black
+          is SmallButtonData.Secondary -> AppColors.blue2
           is SmallButtonData.Tertiary -> AppColors.blue2
         },
       )

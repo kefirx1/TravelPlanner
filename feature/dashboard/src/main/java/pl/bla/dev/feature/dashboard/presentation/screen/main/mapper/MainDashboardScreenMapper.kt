@@ -8,6 +8,9 @@ import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import pl.bla.dev.common.core.usecase.Mapper
+import pl.bla.dev.common.permission.domain.model.PermissionResult
+import pl.bla.dev.common.ui.componenst.button.SmallButtonData
+import pl.bla.dev.common.ui.componenst.permissions.PermissionRequesterData
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVM
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardScreenMapper.Params
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.BottomNavItem
@@ -17,18 +20,26 @@ interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData>
     val state: MainDashboardVM.State,
     val onBackClick: () -> Unit,
     val onBottomNavItemClick: (Int) -> Unit,
+    val onOpenAppSettings: () -> Unit,
+    val onRequestPermission: () -> Unit,
   )
 }
 
 class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
   override fun invoke(params: Params): MainDashboardVM.ScreenData =
     when (params.state) {
-      is MainDashboardVM.State.Initial -> MainDashboardVM.ScreenData.Initial(
-        onBackClick = params.onBackClick,
-      )
       is MainDashboardVM.State.MapScreen -> MainDashboardVM.ScreenData.MapScreen(
         bottomNavItems = getBottomItemsNav(onClick = params.onBottomNavItemClick),
         onBackClick = params.onBackClick,
+        currentLocation = params.state.currentLocation,
+        permissionRequesterData = getPermissionRequesterData(
+          foreverDenied = when (params.state.permissionResult) {
+            PermissionResult.DENIED_FOREVER -> true
+            else -> false
+          },
+          openAppSettings = params.onOpenAppSettings,
+          requestPermission = params.onRequestPermission,
+        ).takeIf { params.state.permissionResult != PermissionResult.GRANTED }
       )
       is MainDashboardVM.State.TravelScreen -> MainDashboardVM.ScreenData.TravelScreen(
         bottomNavItems = getBottomItemsNav(onClick = params.onBottomNavItemClick),
@@ -39,6 +50,20 @@ class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
         onBackClick = params.onBackClick,
       )
     }
+
+  private fun getPermissionRequesterData(
+    foreverDenied: Boolean,
+    openAppSettings: () -> Unit,
+    requestPermission: () -> Unit,
+  ) = PermissionRequesterData(
+    label = "Aby użyć map potrzebujesz zezwolić na lokalizację",
+    isDeniedForever = foreverDenied,
+    onOpenSettingsClick = openAppSettings,
+    requestPermissionButtonData = SmallButtonData.Secondary(
+      text = "Zezwól na lokalizację",
+      onClick = requestPermission,
+    )
+  )
 
   private fun getBottomItemsNav(onClick: (Int) -> Unit): List<BottomNavItem> = listOf(
     BottomNavItem(

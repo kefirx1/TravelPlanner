@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-//    setupSplashScreen()
+    setupSplashScreen()
 
     lifecycleScope.launch {
       connectActivityUC.connect(this@MainActivity)

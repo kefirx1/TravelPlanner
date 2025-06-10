@@ -10,7 +10,7 @@ plugins {
 
 
 android {
-  namespace = "pl.bla.dev.feature.dashboard"
+  namespace = "pl.bla.dev.common.sensor"
   compileSdk = libs.versions.compileSdk.get().toInt()
 
   defaultConfig {
@@ -37,14 +37,9 @@ android {
 }
 
 dependencies {
-  implementation(project(":common:ui"))
+  implementation(project(":common:activityconnector"))
   implementation(project(":common:core"))
-  implementation(project(":common:sensor"))
-  implementation(project(":common:permissions"))
-  implementation(project(":common:intents"))
 
-  implementation(libs.lifecycle.viewmodel.compose)
-  implementation(libs.lifecycle.viewmodel)
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.activity.compose)
@@ -56,13 +51,10 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.androidx.work)
-  implementation(libs.androidx.hilt.navigation.compose)
-  implementation(libs.androidx.hilt.work)
-  implementation(libs.dagger.hilt)
   ksp(libs.dagger.hilt.compiler)
-  implementation(libs.kotlinx.coroutines)
-  implementation(libs.osmdroid.android)
-  implementation(libs.osmdroid.compose)
+  implementation(libs.dagger.hilt)
+
+  implementation(libs.google.gms)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

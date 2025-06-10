@@ -7,8 +7,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.utsman.osmandcompose.rememberCameraState
+import org.osmdroid.util.GeoPoint
 import pl.bla.dev.common.ui.componenst.basescaffold.BaseScaffold
 import pl.bla.dev.common.ui.componenst.emptyscreen.EmptyScreen
 import pl.bla.dev.common.ui.componenst.text.CustomText
@@ -18,11 +21,12 @@ import pl.bla.dev.feature.dashboard.presentation.screen.main.screensettings.Sett
 import pl.bla.dev.feature.dashboard.presentation.screen.main.screentravel.TravelScreenContent
 
 private const val DEFAULT_MAP_SPEED = 0L
-private const val DEFAULT_MAP_ZOOM = 10.0
+private const val DEFAULT_MAP_ZOOM = 12.0
 
 @Composable
 fun MainDashboardScreen(viewModel: MainDashboardVM) {
   val state by viewModel.screenData.collectAsStateWithLifecycle()
+  val mapHasAlreadyLoaded = remember { mutableStateOf(false) }
   val mapCameraState = rememberCameraState {
     speed = DEFAULT_MAP_SPEED
     zoom = DEFAULT_MAP_ZOOM
@@ -38,10 +42,10 @@ fun MainDashboardScreen(viewModel: MainDashboardVM) {
     },
     content = {
       when (val screenData = state) {
-        is MainDashboardVM.ScreenData.Initial -> EmptyScreen()
         is MainDashboardVM.ScreenData.MapScreen -> MapScreenContent(
           cameraState = mapCameraState,
-          data = screenData
+          data = screenData,
+          mapHasAlreadyLoaded = mapHasAlreadyLoaded
         )
         is MainDashboardVM.ScreenData.TravelScreen -> TravelScreenContent(data = screenData)
         is MainDashboardVM.ScreenData.SettingsScreen -> SettingsScreenContent(data = screenData)
