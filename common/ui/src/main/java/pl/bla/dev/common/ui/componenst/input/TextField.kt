@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -53,6 +54,7 @@ sealed interface TextFieldType {
 
 data class TextFieldData(
   val onValueChanged: (String) -> Unit = {},
+  val onFocusChanged: (Boolean) -> Unit = {},
   val hint: String = "",
   val label: String? = null,
   val initialText: String = "",
@@ -67,6 +69,7 @@ fun TextField(
   textFieldData: TextFieldData
 ) {
   var textValue by remember { mutableStateOf(TextFieldValue(text = textFieldData.initialText)) }
+  var hasFocus by remember { mutableStateOf(false) }
 
   BaseCard {
     Column(
@@ -89,6 +92,16 @@ fun TextField(
         }
 
         TextField(
+          modifier = Modifier
+            .onFocusChanged { focusState ->
+              if (focusState.isFocused) {
+                hasFocus = true
+              }
+
+              if (hasFocus) {
+                textFieldData.onFocusChanged(focusState.isFocused)
+              }
+            },
           placeholder = {
             CustomText(
               text = textFieldData.hint,

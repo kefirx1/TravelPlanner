@@ -4,8 +4,17 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUC
-import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUCImpl
+import pl.bla.dev.common.validators.TextValidator
+import pl.bla.dev.feature.login.domain.usecase.ValidateEmailUC
+import pl.bla.dev.feature.login.domain.usecase.ValidateEmailUCImpl
+import pl.bla.dev.feature.login.domain.usecase.ValidatePasswordUC
+import pl.bla.dev.feature.login.domain.usecase.ValidatePasswordUCImpl
+import pl.bla.dev.feature.login.domain.usecase.ValidateRepeatPasswordUC
+import pl.bla.dev.feature.login.domain.usecase.ValidateRepeatPasswordUCImpl
+import pl.bla.dev.feature.login.domain.usecase.ValidateUserContainerPasswordUC
+import pl.bla.dev.feature.login.domain.usecase.ValidateUserContainerPasswordUCImpl
+import pl.bla.dev.feature.login.domain.usecase.ValidateUserNameUC
+import pl.bla.dev.feature.login.domain.usecase.ValidateUserNameUCImpl
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenDialogMapper
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenDialogMapperImpl
 import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapper
@@ -33,12 +42,33 @@ object AuthModule {
     RegistrationScreenMapperImpl()
 
   @Provides
-  fun provideValidateUserPasswordUC(
+  fun provideValidateUserContainerPasswordUC(
     decryptUserDEKAndInjectCacheUC: DecryptUserDEKAndInjectCacheUC,
-  ): ValidateUserPasswordUC = ValidateUserPasswordUCImpl(
+  ): ValidateUserContainerPasswordUC = ValidateUserContainerPasswordUCImpl(
     decryptUserDEKAndInjectCacheUC = decryptUserDEKAndInjectCacheUC,
   )
 
   @Provides
   fun provideLoginScreenDialogMapper(): LoginScreenDialogMapper = LoginScreenDialogMapperImpl()
+
+  @Provides
+  fun provideValidateEmailUC(
+    textValidator: TextValidator,
+  ): ValidateEmailUC = ValidateEmailUCImpl(textValidator = textValidator)
+
+  @Provides
+  fun provideValidatePasswordUC(
+    textValidator: TextValidator,
+  ): ValidatePasswordUC = ValidatePasswordUCImpl(textValidator = textValidator)
+
+  @Provides
+  fun provideValidateRepeatPasswordUC(
+    textValidator: TextValidator,
+  ): ValidateRepeatPasswordUC = ValidateRepeatPasswordUCImpl(textValidator = textValidator)
+
+
+  @Provides
+  fun provideValidateUserNameUC(
+    textValidator: TextValidator,
+  ): ValidateUserNameUC = ValidateUserNameUCImpl(textValidator = textValidator)
 }

@@ -99,7 +99,10 @@ fun NavGraphBuilder.authNavGraph(
       },
       navActionHandler = { action, _ ->
         when (action) {
-          AuthDialogVM.Action.Navigation.OnDialogAction -> navController.popBackStack()
+          is AuthDialogVM.Action.Navigation.OnDialogAction -> {
+            navController.popBackStack()
+            action.dialogAction()
+          }
         }
       }
     )

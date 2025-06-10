@@ -62,7 +62,10 @@ fun NavGraphBuilder.dashboardNavGraph(
       },
       navActionHandler = { action, _ ->
         when (action) {
-          DashboardDialogVM.Action.Navigation.OnDialogAction -> navController.popBackStack()
+          is DashboardDialogVM.Action.Navigation.OnDialogAction -> {
+            navController.popBackStack()
+            action.dailogAction()
+          }
         }
       }
     )

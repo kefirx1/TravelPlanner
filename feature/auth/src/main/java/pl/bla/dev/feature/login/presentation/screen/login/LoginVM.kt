@@ -12,7 +12,7 @@ import pl.bla.dev.common.ui.componenst.button.LargeButtonData
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
 import pl.bla.dev.common.ui.componenst.input.TextFieldData
 import pl.bla.dev.common.ui.componenst.input.ValidationState
-import pl.bla.dev.feature.login.domain.usecase.ValidateUserPasswordUC
+import pl.bla.dev.feature.login.domain.usecase.ValidateUserContainerPasswordUC
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.Action
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.ScreenData
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.State
@@ -77,7 +77,7 @@ interface LoginVM {
 class LoginVMImpl @Inject constructor(
   private val loginScreenMapper: LoginScreenMapper,
   private val getSavedUserNameUC: GetSavedUserNameUC,
-  private val validateUserPasswordUC: ValidateUserPasswordUC,
+  private val validateUserPasswordUC: ValidateUserContainerPasswordUC,
   private val runWithLoaderUC: RunWithLoaderUC,
   private val loginScreenDialogMapper: LoginScreenDialogMapper,
 ) : CustomViewModel<State, ScreenData, Action.Navigation>(
@@ -113,17 +113,17 @@ class LoginVMImpl @Inject constructor(
             is Action.LoginToApp -> {
               runWithLoaderUC {
                 validateUserPasswordUC(
-                  param = ValidateUserPasswordUC.Params(
+                  param = ValidateUserContainerPasswordUC.Params(
                     typedPassword = currentState.typedPassword
                   ),
                 ).fold(
                   onRight = { result ->
                     when (result) {
-                      ValidateUserPasswordUC.Result.Success -> {
+                      ValidateUserContainerPasswordUC.Result.Success -> {
                         dispatchAction(Action.UpdatePassword(password = ""))
                         Action.Navigation.ToDashboard.emit()
                       }
-                      ValidateUserPasswordUC.Result.WrongPassword -> {
+                      ValidateUserContainerPasswordUC.Result.WrongPassword -> {
                         currentState.copy(
                           passwordState = ValidationState.Invalid("Złe hasło!"),
                         ).mutate()

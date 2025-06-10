@@ -15,7 +15,9 @@ interface DashboardDialogVM {
 
   sealed interface Action {
     sealed interface Navigation : Action {
-      data object OnDialogAction : Navigation
+      data class OnDialogAction(
+        val dailogAction: () -> Unit,
+      ) : Navigation
     }
   }
 
@@ -45,21 +47,24 @@ class DashboardDialogVMImpl @AssistedInject constructor(
     DashboardDialogVM.ScreenData(
       dialogData = setupData.copy(
         onDismiss = {
-          DashboardDialogVM.Action.Navigation.OnDialogAction.emit()
-          setupData.onDismiss()
+          DashboardDialogVM.Action.Navigation.OnDialogAction(
+            dailogAction = setupData.onDismiss
+          ).emit()
         },
         onPrimaryButtonData = setupData.onPrimaryButtonData.copy(
           text = setupData.onPrimaryButtonData.text,
           onClick = {
-            DashboardDialogVM.Action.Navigation.OnDialogAction.emit()
-            setupData.onPrimaryButtonData.onClick()
+            DashboardDialogVM.Action.Navigation.OnDialogAction(
+              dailogAction = setupData.onPrimaryButtonData.onClick
+            ).emit()
           }
         ),
         onSecondaryButtonData = setupData.onSecondaryButtonData?.copy(
           text = setupData.onSecondaryButtonData!!.text,
           onClick = {
-            DashboardDialogVM.Action.Navigation.OnDialogAction.emit()
-            setupData.onSecondaryButtonData!!.onClick()
+            DashboardDialogVM.Action.Navigation.OnDialogAction(
+              dailogAction = setupData.onSecondaryButtonData!!.onClick,
+            ).emit()
           }
         ),
       )

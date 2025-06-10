@@ -37,3 +37,4 @@ include(":common:security")
 
 include(":be:backendservice")
 include(":be:backendservice:contract")
+include(":common:validators")

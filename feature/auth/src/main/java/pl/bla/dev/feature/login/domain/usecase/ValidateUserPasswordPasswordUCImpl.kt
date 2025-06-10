@@ -7,7 +7,7 @@ import pl.bla.dev.common.core.usecase.UseCase
 import pl.bla.dev.common.core.usecase.fold
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
 
-interface ValidateUserPasswordUC : EitherUseCase<ValidateUserPasswordUC.Params, ValidateUserPasswordUC.Result> {
+interface ValidateUserContainerPasswordUC : EitherUseCase<ValidateUserContainerPasswordUC.Params, ValidateUserContainerPasswordUC.Result> {
   data class Params(
     val typedPassword: String,
   ): UseCase.Params
@@ -19,20 +19,20 @@ interface ValidateUserPasswordUC : EitherUseCase<ValidateUserPasswordUC.Params, 
 }
 
 
-class ValidateUserPasswordUCImpl(
+class ValidateUserContainerPasswordUCImpl(
   private val decryptUserDEKAndInjectCacheUC: DecryptUserDEKAndInjectCacheUC,
-) : ValidateUserPasswordUC {
-  override suspend fun invoke(param: ValidateUserPasswordUC.Params): Either<AppError, ValidateUserPasswordUC.Result> {
+) : ValidateUserContainerPasswordUC {
+  override suspend fun invoke(param: ValidateUserContainerPasswordUC.Params): Either<AppError, ValidateUserContainerPasswordUC.Result> {
     return decryptUserDEKAndInjectCacheUC(
       param = DecryptUserDEKAndInjectCacheUC.Params(
         password = param.typedPassword
       )
     ).fold(
       onRight = {
-        Either.Right(value = ValidateUserPasswordUC.Result.Success)
+        Either.Right(value = ValidateUserContainerPasswordUC.Result.Success)
       },
       onLeft = { error ->
-        Either.Right(value = ValidateUserPasswordUC.Result.WrongPassword)
+        Either.Right(value = ValidateUserContainerPasswordUC.Result.WrongPassword)
       },
     )
   }

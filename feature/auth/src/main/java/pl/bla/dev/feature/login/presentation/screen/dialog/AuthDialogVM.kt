@@ -15,7 +15,9 @@ interface AuthDialogVM {
 
   sealed interface Action {
     sealed interface Navigation : Action {
-      data object OnDialogAction : Navigation
+      data class OnDialogAction(
+        val dialogAction: () -> Unit,
+      ) : Navigation
     }
   }
 
@@ -45,21 +47,24 @@ class AuthDialogVMImpl @AssistedInject constructor(
     AuthDialogVM.ScreenData(
       dialogData = setupData.copy(
         onDismiss = {
-          AuthDialogVM.Action.Navigation.OnDialogAction.emit()
-          setupData.onDismiss()
+          AuthDialogVM.Action.Navigation.OnDialogAction(
+            dialogAction = setupData.onDismiss
+          ).emit()
         },
         onPrimaryButtonData = setupData.onPrimaryButtonData.copy(
           text = setupData.onPrimaryButtonData.text,
           onClick = {
-            AuthDialogVM.Action.Navigation.OnDialogAction.emit()
-            setupData.onPrimaryButtonData.onClick()
+            AuthDialogVM.Action.Navigation.OnDialogAction(
+              dialogAction = setupData.onPrimaryButtonData.onClick,
+            ).emit()
           }
         ),
         onSecondaryButtonData = setupData.onSecondaryButtonData?.copy(
           text = setupData.onSecondaryButtonData!!.text,
           onClick = {
-            AuthDialogVM.Action.Navigation.OnDialogAction.emit()
-            setupData.onSecondaryButtonData!!.onClick()
+            AuthDialogVM.Action.Navigation.OnDialogAction(
+              dialogAction = setupData.onSecondaryButtonData!!.onClick,
+            ).emit()
           }
         ),
       )
