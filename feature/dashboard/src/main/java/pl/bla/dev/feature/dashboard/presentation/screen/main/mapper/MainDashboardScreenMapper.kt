@@ -14,6 +14,8 @@ import pl.bla.dev.common.ui.componenst.permissions.PermissionRequesterData
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVM
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardScreenMapper.Params
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.BottomNavItem
+import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
+import pl.bla.dev.feature.settings.contract.domain.model.TravelStatus
 
 interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData> {
   data class Params(
@@ -22,6 +24,7 @@ interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData>
     val onBottomNavItemClick: (Int) -> Unit,
     val onOpenAppSettings: () -> Unit,
     val onRequestPermission: () -> Unit,
+    val onTravelClick: (String) -> Unit,
   )
 }
 
@@ -44,6 +47,38 @@ class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
       is MainDashboardVM.State.TravelScreen -> MainDashboardVM.ScreenData.TravelScreen(
         bottomNavItems = getBottomItemsNav(onClick = params.onBottomNavItemClick),
         onBackClick = params.onBackClick,
+        futureTravels = params.state.travelsShortData
+          .filter { travel -> travel.travelStatus == TravelStatus.FUTURE }
+          .map { travel ->
+            TravelShortDisplayData(
+              travelShortData = travel,
+              onClick = params.onTravelClick,
+            )
+          },
+        pastTravels = params.state.travelsShortData
+          .filter { travel -> travel.travelStatus == TravelStatus.PAST }
+          .map { travel ->
+            TravelShortDisplayData(
+              travelShortData = travel,
+              onClick = params.onTravelClick,
+            )
+          },
+        cancelledTravels = params.state.travelsShortData
+          .filter { travel -> travel.travelStatus == TravelStatus.CANCELLED }
+          .map { travel ->
+            TravelShortDisplayData(
+              travelShortData = travel,
+              onClick = params.onTravelClick,
+            )
+          },
+        currentTravels = params.state.travelsShortData
+          .filter { travel -> travel.travelStatus == TravelStatus.CURRENT }
+          .map { travel ->
+            TravelShortDisplayData(
+              travelShortData = travel,
+              onClick = params.onTravelClick,
+            )
+          },
       )
       is MainDashboardVM.State.SettingsScreen -> MainDashboardVM.ScreenData.SettingsScreen(
         bottomNavItems = getBottomItemsNav(onClick = params.onBottomNavItemClick),
@@ -73,7 +108,7 @@ class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
       unselectedIcon = Icons.Outlined.Search,
     ),
     BottomNavItem(
-      label = "Pordóże",
+      label = "Podróże",
       onClick = onClick,
       selectedIcon = Icons.Filled.DateRange,
       unselectedIcon = Icons.Outlined.DateRange,

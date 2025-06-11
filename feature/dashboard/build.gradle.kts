@@ -43,6 +43,8 @@ dependencies {
   implementation(project(":common:permissions"))
   implementation(project(":common:intents"))
 
+  implementation(project(":feature:user:contract"))
+
   implementation(libs.lifecycle.viewmodel.compose)
   implementation(libs.lifecycle.viewmodel)
   implementation(libs.androidx.core.ktx)
@@ -63,6 +65,7 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.osmdroid.android)
   implementation(libs.osmdroid.compose)
+  implementation(libs.lifecycle.runtime.compose)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

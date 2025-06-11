@@ -1,12 +1,133 @@
 package pl.bla.dev.feature.dashboard.presentation.screen.main.screentravel
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import pl.bla.dev.common.ui.componenst.card.ActionCard
+import pl.bla.dev.common.ui.componenst.card.ActionCardData
+import pl.bla.dev.common.ui.componenst.divider.Divider
 import pl.bla.dev.common.ui.componenst.text.CustomText
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVM
+import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
+import pl.bla.dev.feature.settings.contract.domain.model.LocomotionType
+import pl.bla.dev.feature.settings.contract.domain.model.TravelShortData
 
 @Composable
 fun TravelScreenContent(data: MainDashboardVM.ScreenData.TravelScreen) {
-  CustomText(
-    text = "TravelScreen",
+
+  Column(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(
+        top = 60.dp,
+      )
+  ) {
+    LazyColumn {
+      item {
+        if (data.currentTravels.isNotEmpty()) {
+          CustomText(
+            text = "Aktualnie trwające podróże",
+            style = MaterialTheme.typography.titleLarge,
+          )
+          Spacer(modifier = Modifier.height(10.dp))
+        }
+      }
+      items(data.currentTravels.size) { index ->
+        TravelItem(travelShortDisplayData = data.currentTravels[index])
+      }
+
+      item {
+        if (data.currentTravels.isNotEmpty()) {
+          Divider(spacer = 10.dp)
+        }
+        if (data.futureTravels.isNotEmpty()) {
+          Spacer(modifier = Modifier.height(10.dp))
+          CustomText(
+            text = "Przyszłe podróże",
+            style = MaterialTheme.typography.titleLarge,
+          )
+          Spacer(modifier = Modifier.height(10.dp))
+        }
+      }
+      items(data.futureTravels.size) { index ->
+        TravelItem(travelShortDisplayData = data.futureTravels[index])
+      }
+
+      item {
+        if (data.futureTravels.isNotEmpty()) {
+          Divider(spacer = 10.dp)
+        }
+        if (data.pastTravels.isNotEmpty()) {
+          Spacer(modifier = Modifier.height(10.dp))
+          CustomText(
+            text = "Zakończone podróże",
+            style = MaterialTheme.typography.titleLarge,
+          )
+          Spacer(modifier = Modifier.height(10.dp))
+        }
+      }
+      items(data.pastTravels.size) { index ->
+        TravelItem(travelShortDisplayData = data.pastTravels[index])
+      }
+
+      item {
+        if (data.cancelledTravels.isNotEmpty()) {
+          if (data.pastTravels.isNotEmpty()) {
+            Divider(spacer = 10.dp)
+          }
+          Spacer(modifier = Modifier.height(10.dp))
+          CustomText(
+            text = "Nieodbyte podróże",
+            style = MaterialTheme.typography.titleLarge,
+          )
+          Spacer(modifier = Modifier.height(10.dp))
+        }
+      }
+      items(data.cancelledTravels.size) { index ->
+        TravelItem(travelShortDisplayData = data.cancelledTravels[index])
+      }
+    }
+  }
+}
+
+@Composable
+private fun TravelItem(travelShortDisplayData: TravelShortDisplayData) {
+  val travelShortData = travelShortDisplayData.travelShortData
+
+  ActionCard(
+    data = ActionCardData(
+      content = {
+        CustomText(
+          text = "${travelShortData.date.dayOfMonth}-${travelShortData.date.monthValue}-${travelShortData.date.year}",
+          style = MaterialTheme.typography.titleMedium,
+        )
+        Spacer(modifier = Modifier.height(5.dp))
+
+        CustomText(
+          text = "${getLocomotionLabel(locomotionType = travelShortData.locomotionType)}: ${travelShortData.origin} (${travelShortData.originCountry})",
+        )
+        Spacer(modifier = Modifier.height(5.dp))
+
+        CustomText(
+          text = "Miejsce docelowe: ${travelShortData.destination} (${travelShortData.destinationCountry})",
+        )
+      },
+      onClick = { travelShortDisplayData.onClick(travelShortData.id) },
+    )
   )
+  Spacer(modifier = Modifier.height(20.dp))
+}
+
+private fun getLocomotionLabel(locomotionType: LocomotionType) = when (locomotionType) {
+  LocomotionType.PLANE -> "Lot z"
+  LocomotionType.TRAIN -> "Odjazd z"
+  LocomotionType.BUS -> "Odjazd z"
+  LocomotionType.CAR -> "Odjazd z"
 }

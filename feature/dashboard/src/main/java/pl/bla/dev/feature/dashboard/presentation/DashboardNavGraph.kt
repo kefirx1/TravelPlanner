@@ -37,6 +37,13 @@ fun NavGraphBuilder.dashboardNavGraph(
             )
             navController.navigate(DashboardDestinations.DashboardDialog)
           }
+          is MainDashboardVM.Action.Navigation.ToTravelDetails -> {
+            contractViewModel.setContractData(
+              destination = DashboardDestinations.TravelDetails,
+              data = action.travelId,
+            )
+            navController.navigate(DashboardDestinations.TravelDetails)
+          }
         }
       }
     )

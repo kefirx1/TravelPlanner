@@ -20,6 +20,9 @@ import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboar
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardDialogMapper.DialogType
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardScreenMapper
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.BottomNavItem
+import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
+import pl.bla.dev.feature.settings.contract.domain.model.TravelShortData
+import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
 import javax.inject.Inject
 
 interface MainDashboardVM {
@@ -28,7 +31,9 @@ interface MainDashboardVM {
       val permissionResult: PermissionResult = PermissionResult.DENIED,
       val currentLocation: Location? = null,
     ) : State(selectedItem = 0)
-    data object TravelScreen : State(selectedItem = 1)
+    data class TravelScreen(
+      val travelsShortData: List<TravelShortData> = emptyList(),
+    ) : State(selectedItem = 1)
     data object SettingsScreen : State(selectedItem = 2)
   }
 
@@ -38,9 +43,10 @@ interface MainDashboardVM {
       data class ShowDialog(
         val dialogData: DialogData,
       ) : Navigation
+      data class ToTravelDetails(val travelId: String) : Navigation
     }
 
-
+    data class ToTravelDetails(val travelId: String) : Action
     data object RequestLocationPermission : Action
     data object OpenAppSettings : Action
     data class OnBottomNavItemClick(
@@ -70,6 +76,10 @@ interface MainDashboardVM {
     data class TravelScreen(
       override val bottomNavItems: List<BottomNavItem>,
       override val onBackClick: () -> Unit,
+      val futureTravels: List<TravelShortDisplayData>,
+      val pastTravels: List<TravelShortDisplayData>,
+      val cancelledTravels: List<TravelShortDisplayData>,
+      val currentTravels: List<TravelShortDisplayData>,
     ) : ScreenData(
       bottomNavItems = bottomNavItems,
       onBackClick = onBackClick,
@@ -96,6 +106,7 @@ class MainDashboardVMImpl @Inject constructor(
   private val getCurrentLocationUC: GetCurrentLocationUC,
   private val permissionsManager: PermissionsManager,
   private val openAppSettingsUC: OpenAppSettingsIntentUC,
+  private val getUserTravelsShortDataUC: GetUserTravelsShortDataUC,
 ) : CustomViewModel<MainDashboardVM.State, MainDashboardVM.ScreenData, MainDashboardVM.Action.Navigation>(
   initialStateValue = MainDashboardVM.State.MapScreen(),
 ), MainDashboardVM {
@@ -135,6 +146,18 @@ class MainDashboardVMImpl @Inject constructor(
           }
         }
       }
+      is MainDashboardVM.State.TravelScreen -> {
+        getUserTravelsShortDataUC(UseCase.Params.Empty).fold(
+          onRight = { travels ->
+            newState.copy(
+              travelsShortData =  travels,
+            ).mutate()
+          },
+          onLeft = {
+            //todo error handling
+          }
+        )
+      }
       else -> {}
     }
   }
@@ -153,6 +176,9 @@ class MainDashboardVMImpl @Inject constructor(
       },
       onRequestPermission = {
         dispatchAction(MainDashboardVM.Action.RequestLocationPermission)
+      },
+      onTravelClick = { id ->
+        dispatchAction(MainDashboardVM.Action.ToTravelDetails(travelId = id))
       }
     )
   )
@@ -201,6 +227,7 @@ class MainDashboardVMImpl @Inject constructor(
               permissionResult = PermissionResult.DENIED,
             ).mutate()
           }
+          is MainDashboardVM.Action.ToTravelDetails -> {}
         }
         is MainDashboardVM.State.TravelScreen -> when (action) {
           is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
@@ -209,6 +236,8 @@ class MainDashboardVMImpl @Inject constructor(
             id = action.id,
           )
           is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
+          is MainDashboardVM.Action.ToTravelDetails ->
+            MainDashboardVM.Action.Navigation.ToTravelDetails(travelId = action.travelId).emit()
           is MainDashboardVM.Action.RequestLocationPermission -> {}
           is MainDashboardVM.Action.OpenAppSettings -> {}
         }
@@ -221,6 +250,7 @@ class MainDashboardVMImpl @Inject constructor(
           is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
           is MainDashboardVM.Action.RequestLocationPermission -> {}
           is MainDashboardVM.Action.OpenAppSettings -> {}
+          is MainDashboardVM.Action.ToTravelDetails -> {}
         }
       }
     }
@@ -231,7 +261,7 @@ class MainDashboardVMImpl @Inject constructor(
 
     when (id) {
       0 -> MainDashboardVM.State.MapScreen().override()
-      1 -> MainDashboardVM.State.TravelScreen.override()
+      1 -> MainDashboardVM.State.TravelScreen().override()
       2 -> MainDashboardVM.State.SettingsScreen.override()
     }
   }

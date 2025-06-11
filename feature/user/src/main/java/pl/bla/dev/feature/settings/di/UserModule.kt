@@ -14,6 +14,7 @@ import pl.bla.dev.common.storage.datastore.DataStoreProvider
 import pl.bla.dev.common.storage.room.DatabaseProvider
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
 import pl.bla.dev.feature.settings.data.model.OnboardingPreferencesConverter
 import pl.bla.dev.feature.settings.data.repository.UserRepository
@@ -22,6 +23,7 @@ import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
 import pl.bla.dev.feature.settings.data.source.UserSettingsPreferencesDataStore
 import pl.bla.dev.feature.settings.domain.usecase.DecryptUserDEKAndInjectCacheUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedUserNameUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.GetUserTravelsShortDataUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RegisterNewUserUCImpl
 import javax.inject.Singleton
 
@@ -94,6 +96,13 @@ object UserModule {
   fun provideIsAppRegisteredUC(
     userRepository: UserRepository,
   ): GetSavedUserNameUC = GetSavedUserNameUCImpl(
+    userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideGetUserTravelsShortDataUC(
+    userRepository: UserRepository,
+  ): GetUserTravelsShortDataUC = GetUserTravelsShortDataUCImpl(
     userRepository = userRepository,
   )
 }

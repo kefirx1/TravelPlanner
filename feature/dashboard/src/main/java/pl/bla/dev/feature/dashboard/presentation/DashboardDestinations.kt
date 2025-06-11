@@ -11,6 +11,9 @@ sealed interface DashboardDestinations : Destination {
   data object MainDashboard : DashboardDestinations
 
   @Serializable
+  data object TravelDetails : DashboardDestinations
+
+  @Serializable
   data object DashboardDialog : DashboardDestinations
 }
 
