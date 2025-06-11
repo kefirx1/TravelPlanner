@@ -10,14 +10,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
 import pl.bla.dev.common.ui.componenst.card.ActionCard
 import pl.bla.dev.common.ui.componenst.card.ActionCardData
 import pl.bla.dev.common.ui.componenst.divider.Divider
 import pl.bla.dev.common.ui.componenst.text.CustomText
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVM
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
-import pl.bla.dev.feature.settings.contract.domain.model.LocomotionType
-import pl.bla.dev.feature.settings.contract.domain.model.TravelShortData
 
 @Composable
 fun TravelScreenContent(data: MainDashboardVM.ScreenData.TravelScreen) {
@@ -105,29 +104,29 @@ private fun TravelItem(travelShortDisplayData: TravelShortDisplayData) {
     data = ActionCardData(
       content = {
         CustomText(
-          text = "${travelShortData.date.dayOfMonth}-${travelShortData.date.monthValue}-${travelShortData.date.year}",
+          text = "${travelShortData.startDate.dayOfMonth}-${travelShortData.startDate.monthValue}-${travelShortData.startDate.year}",
           style = MaterialTheme.typography.titleMedium,
         )
         Spacer(modifier = Modifier.height(5.dp))
 
         CustomText(
-          text = "${getLocomotionLabel(locomotionType = travelShortData.locomotionType)}: ${travelShortData.origin} (${travelShortData.originCountry})",
+          text = "${getLocomotionLabel(vehicleType = travelShortData.originVehicleType)}: ${travelShortData.originCity} (${travelShortData.originCountry})",
         )
         Spacer(modifier = Modifier.height(5.dp))
 
         CustomText(
-          text = "Miejsce docelowe: ${travelShortData.destination} (${travelShortData.destinationCountry})",
+          text = "Miejsce docelowe: ${travelShortData.destinationCity} (${travelShortData.destinationCountry})",
         )
       },
-      onClick = { travelShortDisplayData.onClick(travelShortData.id) },
+      onClick = { travelShortDisplayData.onClick(travelShortData.travelId) },
     )
   )
   Spacer(modifier = Modifier.height(20.dp))
 }
 
-private fun getLocomotionLabel(locomotionType: LocomotionType) = when (locomotionType) {
-  LocomotionType.PLANE -> "Lot z"
-  LocomotionType.TRAIN -> "Odjazd z"
-  LocomotionType.BUS -> "Odjazd z"
-  LocomotionType.CAR -> "Odjazd z"
+private fun getLocomotionLabel(vehicleType: VehicleType) = when (vehicleType) {
+  VehicleType.PLANE -> "Lot z"
+  VehicleType.TRAIN -> "Odjazd z"
+  VehicleType.BUS -> "Odjazd z"
+  VehicleType.CAR -> "Odjazd z"
 }

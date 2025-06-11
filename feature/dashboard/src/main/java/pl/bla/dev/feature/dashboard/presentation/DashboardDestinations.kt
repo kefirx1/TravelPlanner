@@ -16,6 +16,6 @@ sealed interface DashboardDestinations : Destination {
 
 sealed interface DashboardResults {
   data object Logout : DashboardResults
-  data class ToTravelDetails(val travelId: String) : DashboardResults
+  data class ToTravelDetails(val travelId: Int) : DashboardResults
   data object ToNewTravel : DashboardResults
 }

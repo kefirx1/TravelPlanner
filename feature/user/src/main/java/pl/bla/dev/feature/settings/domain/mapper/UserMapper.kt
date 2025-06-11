@@ -7,13 +7,22 @@ import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContentItem
 import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContentSection
 import pl.bla.dev.be.backendservice.contract.domain.model.VehicleConfig
 import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
+import pl.bla.dev.feature.settings.contract.domain.model.TravelStatus
+import pl.bla.dev.feature.settings.contract.domain.model.UserInfo
+import pl.bla.dev.feature.settings.contract.domain.model.UserOnboardingPreferences
+import pl.bla.dev.feature.settings.contract.domain.model.UserOnboardingPreferencesItem
+import pl.bla.dev.feature.settings.contract.domain.model.UserOnboardingPreferencesSection
 import pl.bla.dev.feature.settings.contract.domain.model.UserSettings
+import pl.bla.dev.feature.settings.contract.domain.model.UserTravels
 import pl.bla.dev.feature.settings.data.model.CityConfigDto
 import pl.bla.dev.feature.settings.data.model.CountryConfigDto
 import pl.bla.dev.feature.settings.data.model.NewTravelConfigDto
-import pl.bla.dev.feature.settings.data.model.UserOnboardingPreferencesItem
-import pl.bla.dev.feature.settings.data.model.UserOnboardingPreferencesSection
+import pl.bla.dev.feature.settings.data.model.UserInfoDto
+import pl.bla.dev.feature.settings.data.model.UserOnboardingPreferencesDto
+import pl.bla.dev.feature.settings.data.model.UserOnboardingPreferencesItemDto
+import pl.bla.dev.feature.settings.data.model.UserOnboardingPreferencesSectionDto
 import pl.bla.dev.feature.settings.data.model.UserSettingsDto
+import pl.bla.dev.feature.settings.data.model.UserTravelsDto
 import pl.bla.dev.feature.settings.data.model.VehicleConfigDto
 import pl.bla.dev.feature.settings.data.model.VehicleTypeDto
 
@@ -33,13 +42,13 @@ object UserMapper {
       ivDek = ivDek,
     )
 
-  fun OnboardingContentSection.toDto() = UserOnboardingPreferencesSection(
+  fun OnboardingContentSection.toDto() = UserOnboardingPreferencesSectionDto(
     content = content.map { it.toDto() },
     sectionId = sectionId,
     title = title,
   )
 
-  fun OnboardingContentItem.toDto() = UserOnboardingPreferencesItem(
+  fun OnboardingContentItem.toDto() = UserOnboardingPreferencesItemDto(
     label = label,
     valueId = valueId,
   )
@@ -113,5 +122,59 @@ object UserMapper {
     VehicleTypeDto.PLANE -> VehicleType.PLANE
     VehicleTypeDto.BUS -> VehicleType.BUS
   }
+
+  fun UserInfoDto.toDomain() = UserInfo(
+    uid = uid,
+    firstName = firstName,
+    sureName = sureName,
+    email = email,
+    onboardingPreferences = onboardingPreferences.toDomain(),
+  )
+
+  fun UserOnboardingPreferencesSectionDto.toDomain() = UserOnboardingPreferencesSection(
+    sectionId = sectionId,
+    title = title,
+    content = content.map { it.toDomain() },
+  )
+
+  fun UserOnboardingPreferencesItemDto.toDomain() = UserOnboardingPreferencesItem(
+    label = label,
+    valueId = valueId,
+  )
+
+  fun UserOnboardingPreferencesSection.toDto() = UserOnboardingPreferencesSectionDto(
+    sectionId = sectionId,
+    title = title,
+    content = content.map { it.toDto() },
+  )
+
+  fun UserOnboardingPreferencesItem.toDto() = UserOnboardingPreferencesItemDto(
+    label = label,
+    valueId = valueId,
+  )
+
+
+  fun UserOnboardingPreferencesDto.toDomain() = UserOnboardingPreferences(
+    content = content.map { it.toDomain() },
+  )
+
+  fun UserOnboardingPreferences.toDto() = UserOnboardingPreferencesDto(
+    content = content.map { it.toDto() },
+  )
+
+  fun UserTravelsDto.toDomain() = UserTravels(
+    uid = uid,
+    userId = userId,
+    originCountryId = originCountryId,
+    destinationCountryId = destinationCountryId,
+    originCityId = originCityId,
+    destinationCityId = destinationCityId,
+    cancelled = cancelled,
+    startDate = startDate,
+    endDate = endDate,
+    originVehicleId = originVehicleId,
+    destinationVehicleId = destinationVehicleId,
+  )
+
 
 }

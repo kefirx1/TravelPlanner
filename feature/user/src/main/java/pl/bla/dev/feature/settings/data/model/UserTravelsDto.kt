@@ -1,0 +1,46 @@
+package pl.bla.dev.feature.settings.data.model
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.ProvidedTypeConverter
+import androidx.room.TypeConverter
+import pl.bla.dev.common.core.converters.JsonSerializer
+import java.time.LocalDateTime
+
+@Entity
+data class UserTravelsDto(
+  @PrimaryKey(autoGenerate = true) val uid: Int = 0,
+  @ColumnInfo(name = "user_id") val userId: Int,
+  @ColumnInfo(name = "origin_country_id") val originCountryId: Int,
+  @ColumnInfo(name = "destination_country_id") val destinationCountryId: Int,
+  @ColumnInfo(name = "origin_city_id") val originCityId: Int,
+  @ColumnInfo(name = "destination_city_id") val destinationCityId: Int,
+  @ColumnInfo(name = "origin_vehicle_id") val originVehicleId: Int,
+  @ColumnInfo(name = "destination_vehicle_id") val destinationVehicleId: Int,
+  @ColumnInfo(name = "cancelled") val cancelled: Boolean,
+  @ColumnInfo(name = "start_date") val startDate: LocalDateTime,
+  @ColumnInfo(name = "end_date") val endDate: LocalDateTime,
+)
+
+@ProvidedTypeConverter
+class LocalDateTimeConverter(
+  private val jsonSerializer: JsonSerializer,
+) {
+
+  @TypeConverter
+  fun fromLocalDateTime(date: LocalDateTime?): String? {
+    if (date == null) {
+      return null
+    }
+    return jsonSerializer.serialize(data = date)
+  }
+
+  @TypeConverter
+  fun toLocalDateTime(json: String?): LocalDateTime? {
+    if (json == null) {
+      return null
+    }
+    return jsonSerializer.deserialize(serializedData = json, type = LocalDateTime::class.java)
+  }
+}

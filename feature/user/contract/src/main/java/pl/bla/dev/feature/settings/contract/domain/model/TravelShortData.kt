@@ -1,14 +1,17 @@
 package pl.bla.dev.feature.settings.contract.domain.model
 
+import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
 import java.time.LocalDateTime
 
 data class TravelShortData(
-  val id: String,
-  val origin: String,
+  val travelId: Int,
+  val originCity: String,
   val originCountry: String,
-  val destination: String,
+  val destinationCity: String,
   val destinationCountry: String,
-  val date: LocalDateTime,
+  val startDate: LocalDateTime,
+  val endDate: LocalDateTime,
   val travelStatus: TravelStatus,
-  val locomotionType: LocomotionType,
+  val originVehicleType: VehicleType,
+  val destinationVehicleType: VehicleType,
 )

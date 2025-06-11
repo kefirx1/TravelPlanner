@@ -9,11 +9,13 @@ import pl.bla.dev.common.security.Cryptography
 import pl.bla.dev.common.security.MasterKeyProvider
 import pl.bla.dev.common.security.SecretKeyProvider
 import pl.bla.dev.common.security.domain.GenerateSaltUC
+import pl.bla.dev.feature.settings.contract.domain.model.UserInfo
+import pl.bla.dev.feature.settings.contract.domain.model.UserOnboardingPreferences
 import pl.bla.dev.feature.settings.contract.domain.model.UserSettings
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
-import pl.bla.dev.feature.settings.data.model.UserInfo
-import pl.bla.dev.feature.settings.data.model.UserOnboardingPreferences
+import pl.bla.dev.feature.settings.data.model.UserOnboardingPreferencesDto
 import pl.bla.dev.feature.settings.data.repository.UserRepository
+import pl.bla.dev.feature.settings.domain.mapper.UserMapper.toDomain
 import pl.bla.dev.feature.settings.domain.mapper.UserMapper.toDto
 
 internal class RegisterNewUserUCImpl(
@@ -46,12 +48,10 @@ internal class RegisterNewUserUCImpl(
       ),
     )
     userRepository.registerNewUser(
-      userInfo = UserInfo(
-        firstName = param.userName,
-        email = param.userEmail,
-        onboardingPreferences = UserOnboardingPreferences(
-          content = param.selectedChips.map { it.toDto() },
-        ),
+      firstName = param.userName,
+      email = param.userEmail,
+      onboardingPreferences = UserOnboardingPreferences(
+        content = param.selectedChips.map { it.toDto().toDomain() },
       ),
     )
 

@@ -15,10 +15,13 @@ import pl.bla.dev.common.storage.datastore.DataStoreProvider
 import pl.bla.dev.common.storage.room.DatabaseProvider
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.FetchNewTravelConfigUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.GetFullTravelDataUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedNewTravelConfigUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.SaveNewTravelUC
+import pl.bla.dev.feature.settings.data.model.LocalDateTimeConverter
 import pl.bla.dev.feature.settings.data.model.OnboardingPreferencesConverter
 import pl.bla.dev.feature.settings.data.repository.UserRepository
 import pl.bla.dev.feature.settings.data.repository.UserRepositoryImpl
@@ -28,10 +31,14 @@ import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
 import pl.bla.dev.feature.settings.data.source.UserSettingsPreferencesDataStore
 import pl.bla.dev.feature.settings.domain.usecase.DecryptUserDEKAndInjectCacheUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.FetchNewTravelConfigUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.GetCountryTravelConfigByIdUC
+import pl.bla.dev.feature.settings.domain.usecase.GetCountryTravelConfigByIdUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.GetFullTravelDataUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedNewTravelConfigUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedUserNameUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetUserTravelsShortDataUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RegisterNewUserUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.SaveNewTravelUCImpl
 import javax.inject.Singleton
 
 @Module
@@ -43,6 +50,14 @@ object UserModule {
   fun provideOnboardingPreferencesConverter(
     jsonSerializer: JsonSerializer,
   ) = OnboardingPreferencesConverter(
+    jsonSerializer = jsonSerializer,
+  )
+
+  @Provides
+  @Singleton
+  fun provideLocalDateTimeConverter(
+    jsonSerializer: JsonSerializer,
+  ) = LocalDateTimeConverter(
     jsonSerializer = jsonSerializer,
   )
 
@@ -62,6 +77,7 @@ object UserModule {
     dataStoreProvider = dataStoreProvider,
   )
 
+  @Singleton
   @Provides
   fun provideUserRepository(
     userSettingsDataStore: UserSettingsDataStore,
@@ -69,12 +85,14 @@ object UserModule {
     databaseProvider: DatabaseProvider,
     onboardingPreferencesConverter: OnboardingPreferencesConverter,
     newTravelConfigDataStore: NewTravelConfigDataStore,
+    localDateTimeConverter: LocalDateTimeConverter,
   ): UserRepository = UserRepositoryImpl(
     userSettingsDataStore = userSettingsDataStore,
     masterKeyProvider = masterKeyProvider,
     databaseProvider = databaseProvider,
     onboardingPreferencesConverter = onboardingPreferencesConverter,
     newTravelConfigDataStore = newTravelConfigDataStore,
+    localDateTimeConverter = localDateTimeConverter,
   )
 
   @Provides
@@ -119,8 +137,10 @@ object UserModule {
   @Provides
   fun provideGetUserTravelsShortDataUC(
     userRepository: UserRepository,
+    getCountryTravelConfigByIdUC: GetCountryTravelConfigByIdUC,
   ): GetUserTravelsShortDataUC = GetUserTravelsShortDataUCImpl(
     userRepository = userRepository,
+    getCountryTravelConfigByIdUC = getCountryTravelConfigByIdUC,
   )
 
   @Provides
@@ -137,5 +157,28 @@ object UserModule {
     userRepository: UserRepository,
   ): GetSavedNewTravelConfigUC = GetSavedNewTravelConfigUCImpl(
     userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideSaveNewTravelUC(
+    userRepository: UserRepository,
+  ): SaveNewTravelUC = SaveNewTravelUCImpl(
+    userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideGetFullTravelDataUC(
+    userRepository: UserRepository,
+    getCountryTravelConfigByIdUC: GetCountryTravelConfigByIdUC,
+  ): GetFullTravelDataUC = GetFullTravelDataUCImpl(
+    userRepository = userRepository,
+    getCountryTravelConfigByIdUC = getCountryTravelConfigByIdUC,
+  )
+
+  @Provides
+  fun provideGetCountryTravelConfigByIdUC(
+    getSavedNewTravelConfigUC: GetSavedNewTravelConfigUC,
+  ): GetCountryTravelConfigByIdUC = GetCountryTravelConfigByIdUCImpl(
+    getSavedNewTravelConfigUC = getSavedNewTravelConfigUC,
   )
 }

@@ -43,12 +43,12 @@ interface MainDashboardVM {
       data class ShowDialog(
         val dialogData: DialogData,
       ) : Navigation
-      data class ToTravelDetails(val travelId: String) : Navigation
+      data class ToTravelDetails(val travelId: Int) : Navigation
       data object ToNewTravel : Navigation
     }
 
     data object OnFABClick : Action
-    data class ToTravelDetails(val travelId: String) : Action
+    data class ToTravelDetails(val travelId: Int) : Action
     data object RequestLocationPermission : Action
     data object OpenAppSettings : Action
     data class OnBottomNavItemClick(

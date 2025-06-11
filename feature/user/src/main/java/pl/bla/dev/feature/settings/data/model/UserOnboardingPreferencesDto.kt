@@ -8,17 +8,17 @@ import pl.bla.dev.common.core.converters.JsonSerializer
 
 
 @Serializable
-data class UserOnboardingPreferences(
-  @SerialName(value = "content") val content: List<UserOnboardingPreferencesSection>,
+data class UserOnboardingPreferencesDto(
+  @SerialName(value = "content") val content: List<UserOnboardingPreferencesSectionDto>,
 )
 @Serializable
-data class UserOnboardingPreferencesSection(
+data class UserOnboardingPreferencesSectionDto(
   @SerialName(value = "sectionId") val sectionId: Int,
   @SerialName(value = "title") val title: String,
-  @SerialName(value = "content") val content: List<UserOnboardingPreferencesItem>
+  @SerialName(value = "content") val content: List<UserOnboardingPreferencesItemDto>
 )
 @Serializable
-data class UserOnboardingPreferencesItem(
+data class UserOnboardingPreferencesItemDto(
   @SerialName(value = "label") val label: String,
   @SerialName(value = "valueId") val valueId: Int,
 )
@@ -28,7 +28,7 @@ class OnboardingPreferencesConverter(
   private val jsonSerializer: JsonSerializer,
 ) {
   @TypeConverter
-  fun fromUserOnboardingPreferences(preferences: UserOnboardingPreferences?): String? {
+  fun fromUserOnboardingPreferences(preferences: UserOnboardingPreferencesDto?): String? {
     if (preferences == null) {
       return null
     }
@@ -36,10 +36,10 @@ class OnboardingPreferencesConverter(
   }
 
   @TypeConverter
-  fun toUserOnboardingPreferences(json: String?): UserOnboardingPreferences? {
+  fun toUserOnboardingPreferences(json: String?): UserOnboardingPreferencesDto? {
     if (json == null) {
       return null
     }
-    return jsonSerializer.deserialize(serializedData = json, type = UserOnboardingPreferences::class.java)
+    return jsonSerializer.deserialize(serializedData = json, type = UserOnboardingPreferencesDto::class.java)
   }
 }

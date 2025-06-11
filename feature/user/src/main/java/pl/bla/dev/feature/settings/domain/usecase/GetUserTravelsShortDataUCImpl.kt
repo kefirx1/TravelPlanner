@@ -1,9 +1,11 @@
 package pl.bla.dev.feature.settings.domain.usecase
 
+import pl.bla.dev.be.backendservice.contract.domain.model.CityConfig
+import pl.bla.dev.be.backendservice.contract.domain.model.VehicleConfig
 import pl.bla.dev.common.core.error.AppError
 import pl.bla.dev.common.core.usecase.Either
 import pl.bla.dev.common.core.usecase.UseCase
-import pl.bla.dev.feature.settings.contract.domain.model.LocomotionType
+import pl.bla.dev.common.core.usecase.fold
 import pl.bla.dev.feature.settings.contract.domain.model.TravelShortData
 import pl.bla.dev.feature.settings.contract.domain.model.TravelStatus
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
@@ -12,144 +14,73 @@ import java.time.LocalDateTime
 
 class GetUserTravelsShortDataUCImpl(
   private val userRepository: UserRepository,
+  private val getCountryTravelConfigByIdUC: GetCountryTravelConfigByIdUC,
 ) : GetUserTravelsShortDataUC {
   override suspend fun invoke(param: UseCase.Params.Empty): Either<AppError, List<TravelShortData>> {
-    //TODO get data
-
+    val userTravel = userRepository.getUserTravels()
 
     return Either.Right(
-      listOf(
-        TravelShortData(
-          id = "1",
-          origin = "Warszawa",
-          originCountry = "Polska",
-          destination = "Londyn",
-          destinationCountry = "Wielka Brytania",
-          date = LocalDateTime.now().plusMonths(2),
-          travelStatus = TravelStatus.FUTURE,
-          locomotionType = LocomotionType.PLANE,
-        ),
-        TravelShortData(
-          id = "2",
-          origin = "Warszawa",
-          originCountry = "Polska",
-          destination = "Londyn",
-          destinationCountry = "Wielka Brytania",
-          date = LocalDateTime.now().plusMonths(6),
-          travelStatus = TravelStatus.FUTURE,
-          locomotionType = LocomotionType.PLANE,
-        ),
-        TravelShortData(
-          id = "3",
-          origin = "Poznań",
-          originCountry = "Polska",
-          destination = "Rzym",
-          destinationCountry = "Włochy",
-          date = LocalDateTime.now().minusMonths(4),
-          travelStatus = TravelStatus.PAST,
-          locomotionType = LocomotionType.CAR,
-        ),
-        TravelShortData(
-          id = "4",
-          origin = "Poznań",
-          originCountry = "Polska",
-          destination = "Berlin",
-          destinationCountry = "Niemcy",
-          date = LocalDateTime.now().plusWeeks(3),
-          travelStatus = TravelStatus.FUTURE,
-          locomotionType = LocomotionType.TRAIN,
-        ),
-        TravelShortData(
-          id = "5",
-          origin = "Warszawa",
-          originCountry = "Polska",
-          destination = "Tokio",
-          destinationCountry = "Japonia",
-          date = LocalDateTime.now().minusMonths(6),
-          travelStatus = TravelStatus.PAST,
-          locomotionType = LocomotionType.PLANE,
-        ),
-        TravelShortData(
-          id = "6",
-          origin = "Kraków",
-          originCountry = "Polska",
-          destination = "Gdańsk",
-          destinationCountry = "Polska",
-          date = LocalDateTime.now().minusDays(2),
-          travelStatus = TravelStatus.CURRENT,
-          locomotionType = LocomotionType.CAR,
-        ),
-        TravelShortData(
-          id = "7",
-          origin = "Wrocław",
-          originCountry = "Polska",
-          destination = "Praga",
-          destinationCountry = "Czechy",
-          date = LocalDateTime.now().plusMonths(1),
-          travelStatus = TravelStatus.CANCELLED,
-          locomotionType = LocomotionType.BUS,
-        ),
-        TravelShortData(
-          id = "8",
-          origin = "Katowice",
-          originCountry = "Polska",
-          destination = "Barcelona",
-          destinationCountry = "Hiszpania",
-          date = LocalDateTime.now().plusMonths(2),
-          travelStatus = TravelStatus.FUTURE,
-          locomotionType = LocomotionType.PLANE,
-        ),
-        TravelShortData(
-          id = "9",
-          origin = "Poznań",
-          originCountry = "Polska",
-          destination = "Wiedeń",
-          destinationCountry = "Austria",
-          date = LocalDateTime.now().minusYears(1),
-          travelStatus = TravelStatus.PAST,
-          locomotionType = LocomotionType.TRAIN,
-        ),
-        TravelShortData(
-          id = "10",
-          origin = "Gdańsk",
-          originCountry = "Polska",
-          destination = "Zakopane",
-          destinationCountry = "Polska",
-          date = LocalDateTime.now().plusDays(10),
-          travelStatus = TravelStatus.FUTURE,
-          locomotionType = LocomotionType.CAR,
-        ),
-        TravelShortData(
-          id = "11",
-          origin = "Warszawa",
-          originCountry = "Polska",
-          destination = "Nowy Jork",
-          destinationCountry = "USA",
-          date = LocalDateTime.now().minusYears(3),
-          travelStatus = TravelStatus.PAST,
-          locomotionType = LocomotionType.PLANE,
-        ),
-        TravelShortData(
-          id = "12",
-          origin = "Poznań",
-          originCountry = "Polska",
-          destination = "Rzym",
-          destinationCountry = "Włochy",
-          date = LocalDateTime.now().minusMonths(4),
-          travelStatus = TravelStatus.CANCELLED,
-          locomotionType = LocomotionType.PLANE,
-        ),
-        TravelShortData(
-          id = "13",
-          origin = "Kraków",
-          originCountry = "Polska",
-          destination = "Budapeszt",
-          destinationCountry = "Węgry",
-          date = LocalDateTime.now().plusWeeks(5),
-          travelStatus = TravelStatus.FUTURE,
-          locomotionType = LocomotionType.BUS,
-        ),
-      )
+      value = userTravel.mapNotNull { travel ->
+        getCountryTravelConfigByIdUC(
+          param = GetCountryTravelConfigByIdUC.Params(countryId = travel.originCountryId),
+        ).fold(
+          onRight = { originConfig ->
+            getCountryTravelConfigByIdUC(
+              param = GetCountryTravelConfigByIdUC.Params(countryId = travel.destinationCountryId),
+            ).fold(
+              onRight = { destinationConfig ->
+                val originCityConfig = originConfig.citiesConfig.getCityConfigById(
+                  cityId = travel.originCityId,
+                ) ?: return@fold null
+                val destinationCityConfig = destinationConfig.citiesConfig.getCityConfigById(
+                  cityId = travel.destinationCityId,
+                ) ?: return@fold null
+
+                val originVehicleConfig = originCityConfig.vehiclesConfig.getVehicleConfigById(
+                  vehicleId = travel.originVehicleId,
+                ) ?: return@fold null
+                val destinationVehicleConfig = destinationCityConfig.vehiclesConfig.getVehicleConfigById(
+                  vehicleId = travel.destinationVehicleId,
+                ) ?: return@fold null
+
+                TravelShortData(
+                  travelId = travel.uid,
+                  originCity = originCityConfig.cityName,
+                  originCountry = originConfig.countryName,
+                  destinationCity = destinationCityConfig.cityName,
+                  destinationCountry = destinationConfig.countryName,
+                  startDate = travel.startDate,
+                  endDate = travel.endDate,
+                  travelStatus = getTravelStatus(
+                    startDate = travel.startDate,
+                    endDate = travel.endDate,
+                    isCancelled = travel.cancelled,
+                  ),
+                  originVehicleType = originVehicleConfig.vehicleType,
+                  destinationVehicleType = destinationVehicleConfig.vehicleType,
+                )
+              },
+              onLeft = { return@fold null }
+            )
+          },
+          onLeft = { return@fold null }
+        )
+      }
     )
   }
+
+  private fun List<CityConfig>.getCityConfigById(cityId: Int): CityConfig? =
+    this.find { config -> config.cityId == cityId }
+
+  private fun List<VehicleConfig>.getVehicleConfigById(vehicleId: Int): VehicleConfig? =
+    this.find { config -> config.vehicleId == vehicleId }
+
+  private fun getTravelStatus(startDate: LocalDateTime, endDate: LocalDateTime, isCancelled: Boolean): TravelStatus =
+    when {
+      isCancelled -> TravelStatus.CANCELLED
+      startDate.isBefore(LocalDateTime.now()) -> TravelStatus.FUTURE
+      startDate.isAfter(LocalDateTime.now()) && endDate.isBefore(LocalDateTime.now()) -> TravelStatus.CURRENT
+      endDate.isAfter(LocalDateTime.now()) -> TravelStatus.PAST
+      else -> TravelStatus.PAST
+    }
 }

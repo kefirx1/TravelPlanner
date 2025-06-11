@@ -24,7 +24,7 @@ interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData>
     val onBottomNavItemClick: (Int) -> Unit,
     val onOpenAppSettings: () -> Unit,
     val onRequestPermission: () -> Unit,
-    val onTravelClick: (String) -> Unit,
+    val onTravelClick: (Int) -> Unit,
     val onFABClick: () -> Unit,
   )
 }
