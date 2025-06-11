@@ -7,6 +7,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import pl.bla.dev.be.backendservice.contract.domain.model.NewTravelConfig
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.core.viewmodel.CustomViewModelFactory
 import pl.bla.dev.common.ui.componenst.button.LargeButtonData
@@ -52,7 +53,7 @@ interface NewTravelOriginVM {
   val screenData: StateFlow<ScreenData>
 
   data class NewTravelSetupData(
-    val id: String,
+    val newTravelConfig: NewTravelConfig,
   )
 }
 
@@ -113,7 +114,7 @@ class NewTravelOriginVMImpl @AssistedInject constructor(
             ),
           ).emit()
           NewTravelOriginVM.Action.OnNextClick -> NewTravelOriginVM.Action.Navigation.ToDestination(
-            setupData = NewTravelDestinationVM.NewTravelSetupData(id = ""),
+            setupData = NewTravelDestinationVM.NewTravelSetupData(newTravelConfig = setupData.newTravelConfig),
           ).emit()
           NewTravelOriginVM.Action.CloseProcess -> NewTravelOriginVM.Action.Navigation.CloseProcess.emit()
           NewTravelOriginVM.Action.Back -> NewTravelOriginVM.Action.Navigation.Back.emit()

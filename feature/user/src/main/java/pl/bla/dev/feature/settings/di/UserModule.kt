@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import pl.bla.dev.be.backendservice.contract.domain.usecase.GetServiceNewTravelConfigUC
 import pl.bla.dev.common.core.converters.Base64Coder
 import pl.bla.dev.common.core.converters.JsonSerializer
 import pl.bla.dev.common.security.CryptoManager
@@ -13,15 +14,21 @@ import pl.bla.dev.common.security.domain.GenerateSaltUC
 import pl.bla.dev.common.storage.datastore.DataStoreProvider
 import pl.bla.dev.common.storage.room.DatabaseProvider
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.FetchNewTravelConfigUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedNewTravelConfigUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
 import pl.bla.dev.feature.settings.data.model.OnboardingPreferencesConverter
 import pl.bla.dev.feature.settings.data.repository.UserRepository
 import pl.bla.dev.feature.settings.data.repository.UserRepositoryImpl
+import pl.bla.dev.feature.settings.data.source.NewTravelConfigDataStore
+import pl.bla.dev.feature.settings.data.source.NewTravelConfigPreferencesDataStore
 import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
 import pl.bla.dev.feature.settings.data.source.UserSettingsPreferencesDataStore
 import pl.bla.dev.feature.settings.domain.usecase.DecryptUserDEKAndInjectCacheUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.FetchNewTravelConfigUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.GetSavedNewTravelConfigUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedUserNameUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetUserTravelsShortDataUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RegisterNewUserUCImpl
@@ -48,16 +55,26 @@ object UserModule {
   )
 
   @Provides
+  @Singleton
+  fun provideNewTravelConfigDataStore(
+    dataStoreProvider: DataStoreProvider,
+  ): NewTravelConfigDataStore = NewTravelConfigPreferencesDataStore(
+    dataStoreProvider = dataStoreProvider,
+  )
+
+  @Provides
   fun provideUserRepository(
     userSettingsDataStore: UserSettingsDataStore,
     masterKeyProvider: MasterKeyProvider,
     databaseProvider: DatabaseProvider,
     onboardingPreferencesConverter: OnboardingPreferencesConverter,
+    newTravelConfigDataStore: NewTravelConfigDataStore,
   ): UserRepository = UserRepositoryImpl(
     userSettingsDataStore = userSettingsDataStore,
     masterKeyProvider = masterKeyProvider,
     databaseProvider = databaseProvider,
     onboardingPreferencesConverter = onboardingPreferencesConverter,
+    newTravelConfigDataStore = newTravelConfigDataStore,
   )
 
   @Provides
@@ -103,6 +120,22 @@ object UserModule {
   fun provideGetUserTravelsShortDataUC(
     userRepository: UserRepository,
   ): GetUserTravelsShortDataUC = GetUserTravelsShortDataUCImpl(
+    userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideFetchNewTravelConfigUC(
+    getServiceNewTravelConfigUC: GetServiceNewTravelConfigUC,
+    userRepository: UserRepository,
+  ): FetchNewTravelConfigUC = FetchNewTravelConfigUCImpl(
+    getServiceNewTravelConfigUC = getServiceNewTravelConfigUC,
+    userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideGetSavedNewTravelConfigUC(
+    userRepository: UserRepository,
+  ): GetSavedNewTravelConfigUC = GetSavedNewTravelConfigUCImpl(
     userRepository = userRepository,
   )
 }

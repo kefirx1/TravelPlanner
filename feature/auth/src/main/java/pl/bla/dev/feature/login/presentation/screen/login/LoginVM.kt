@@ -12,6 +12,7 @@ import pl.bla.dev.common.ui.componenst.button.LargeButtonData
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
 import pl.bla.dev.common.ui.componenst.input.TextFieldData
 import pl.bla.dev.common.ui.componenst.input.ValidationState
+import pl.bla.dev.feature.login.domain.usecase.AfterLoginActionUC
 import pl.bla.dev.feature.login.domain.usecase.ValidateUserContainerPasswordUC
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.Action
 import pl.bla.dev.feature.login.presentation.screen.login.LoginVM.ScreenData
@@ -82,6 +83,7 @@ class LoginVMImpl @Inject constructor(
   private val validateUserPasswordUC: ValidateUserContainerPasswordUC,
   private val runWithLoaderUC: RunWithLoaderUC,
   private val loginScreenDialogMapper: LoginScreenDialogMapper,
+  private val afterLoginActionUC: AfterLoginActionUC,
 ) : CustomViewModel<State, ScreenData, Action.Navigation>(
   initialStateValue = State.Initial,
 ), LoginVM {
@@ -122,6 +124,8 @@ class LoginVMImpl @Inject constructor(
                   onRight = { result ->
                     when (result) {
                       ValidateUserContainerPasswordUC.Result.Success -> {
+                        afterLoginActionUC(UseCase.Params.Empty)
+
                         dispatchAction(Action.UpdatePassword(password = ""))
                         Action.Navigation.ToDashboard.emit()
                       }

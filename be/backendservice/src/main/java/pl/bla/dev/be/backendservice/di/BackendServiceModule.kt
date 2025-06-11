@@ -4,9 +4,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import pl.bla.dev.be.backendservice.contract.domain.usecase.GetServiceNewTravelConfigUC
 import pl.bla.dev.be.backendservice.contract.domain.usecase.GetOnboardingContentUC
 import pl.bla.dev.be.backendservice.data.repository.BackendServiceRepository
 import pl.bla.dev.be.backendservice.data.repository.BackendServiceRepositoryImpl
+import pl.bla.dev.be.backendservice.domain.usecase.GetServiceNewTravelConfigUCImpl
 import pl.bla.dev.be.backendservice.domain.usecase.GetOnboardingContentUCImpl
 
 
@@ -18,6 +20,13 @@ object BackendServiceModule {
   fun provideGetOnboardingContentUC(
     backendServiceRepository: BackendServiceRepository,
   ): GetOnboardingContentUC = GetOnboardingContentUCImpl(
+    backendServiceRepository = backendServiceRepository,
+  )
+
+  @Provides
+  fun provideGetNewTravelConfigUC(
+    backendServiceRepository: BackendServiceRepository,
+  ): GetServiceNewTravelConfigUC = GetServiceNewTravelConfigUCImpl(
     backendServiceRepository = backendServiceRepository,
   )
 

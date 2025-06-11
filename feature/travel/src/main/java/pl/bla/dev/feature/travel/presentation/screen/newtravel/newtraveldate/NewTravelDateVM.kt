@@ -7,6 +7,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import pl.bla.dev.be.backendservice.contract.domain.model.NewTravelConfig
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.core.viewmodel.CustomViewModelFactory
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
@@ -45,7 +46,7 @@ interface NewTravelDateVM {
   val screenData: StateFlow<ScreenData>
 
   data class NewTravelSetupData(
-    val id: String,
+    val newTravelConfig: NewTravelConfig,
   )
 }
 

@@ -18,7 +18,14 @@ interface NewTravelVehicleScreenMapper : Mapper<Params, NewTravelVehicleVM.Scree
 internal class NewTravelVehicleScreenMapperImpl : NewTravelVehicleScreenMapper {
   override fun invoke(params: Params): NewTravelVehicleVM.ScreenData =
     when (params.state) {
-      NewTravelVehicleVM.State.Initial -> NewTravelVehicleVM.ScreenData(
+      NewTravelVehicleVM.State.Initial -> NewTravelVehicleVM.ScreenData.Initial(
+        topAppBarData = TopAppBarData.BackAndTitle(
+          title = "Stwórz nową podróż",
+          onNavigationIconClick = params.onBackClick,
+        ),
+        onBackClick = params.onBackClick,
+      )
+      is NewTravelVehicleVM.State.Initialized -> NewTravelVehicleVM.ScreenData.Initialized(
         topAppBarData = TopAppBarData.BackAndTitle(
           title = "Stwórz nową podróż",
           onNavigationIconClick = params.onBackClick,

@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContentSection
+import pl.bla.dev.common.core.usecase.UseCase
 import pl.bla.dev.common.core.usecase.fold
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.core.viewmodel.CustomViewModelFactory
@@ -17,6 +18,7 @@ import pl.bla.dev.common.ui.componenst.input.TextFieldData
 import pl.bla.dev.common.ui.componenst.input.ValidationState
 import pl.bla.dev.common.ui.componenst.tab.TopAppBarData
 import pl.bla.dev.common.validators.ValidationResult
+import pl.bla.dev.feature.login.domain.usecase.AfterLoginActionUC
 import pl.bla.dev.feature.login.domain.usecase.ValidatePasswordUC
 import pl.bla.dev.feature.login.domain.usecase.ValidateRepeatPasswordUC
 import pl.bla.dev.feature.login.presentation.screen.registration.RegistrationVM.RegistrationSetupData
@@ -71,6 +73,7 @@ class RegistrationVMImpl @AssistedInject constructor(
   private val runWithLoaderUC: RunWithLoaderUC,
   private val validatePasswordUC: ValidatePasswordUC,
   private val validateRepeatPasswordUC: ValidateRepeatPasswordUC,
+  private val afterLoginActionUC: AfterLoginActionUC,
   @Assisted val setupData: RegistrationSetupData,
 ) : CustomViewModel<RegistrationVM.State, RegistrationVM.ScreenData, RegistrationVM.Action.Navigation>(
   initialStateValue = RegistrationVM.State(),
@@ -143,6 +146,7 @@ class RegistrationVMImpl @AssistedInject constructor(
                   ),
                 ).fold(
                   onRight = {
+                    afterLoginActionUC(UseCase.Params.Empty)
                     RegistrationVM.Action.Navigation.RegistrationCompleted.emit()
                   },
                   onLeft = {

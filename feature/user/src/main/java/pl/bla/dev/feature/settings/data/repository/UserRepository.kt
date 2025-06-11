@@ -1,10 +1,12 @@
 package pl.bla.dev.feature.settings.data.repository
 
+import pl.bla.dev.be.backendservice.contract.domain.model.NewTravelConfig
 import pl.bla.dev.common.security.MasterKeyProvider
 import pl.bla.dev.common.storage.room.DatabaseProvider
 import pl.bla.dev.feature.settings.contract.domain.model.UserSettings
 import pl.bla.dev.feature.settings.data.model.OnboardingPreferencesConverter
 import pl.bla.dev.feature.settings.data.model.UserInfo
+import pl.bla.dev.feature.settings.data.source.NewTravelConfigDataStore
 import pl.bla.dev.feature.settings.data.source.UserDatabase
 import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
 
@@ -13,10 +15,14 @@ interface UserRepository {
 
   suspend fun saveNewUserSettings(userSettings: UserSettings)
   suspend fun getUserSettings(): UserSettings?
+
+  suspend fun getNewTravelConfig(): NewTravelConfig?
+  suspend fun saveNewTravelConfig(newTravelConfig: NewTravelConfig)
 }
 
 internal class UserRepositoryImpl(
   val userSettingsDataStore: UserSettingsDataStore,
+  val newTravelConfigDataStore: NewTravelConfigDataStore,
   val databaseProvider: DatabaseProvider,
   masterKeyProvider: MasterKeyProvider,
   onboardingPreferencesConverter: OnboardingPreferencesConverter
@@ -45,6 +51,10 @@ internal class UserRepositoryImpl(
     userDatabase.userInfoDao()
   }
 
+  override suspend fun getNewTravelConfig(): NewTravelConfig? =
+    newTravelConfigDataStore.load()
 
-
+  override suspend fun saveNewTravelConfig(newTravelConfig: NewTravelConfig) {
+    newTravelConfigDataStore.save(newConfig = newTravelConfig)
+  }
 }

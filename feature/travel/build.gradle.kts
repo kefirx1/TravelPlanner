@@ -42,6 +42,10 @@ dependencies {
   implementation(project(":common:loader"))
   implementation(project(":common:validators"))
 
+  implementation(project(":feature:user:contract"))
+
+  implementation(project(":be:backendservice:contract"))
+
   implementation(libs.lifecycle.viewmodel.compose)
   implementation(libs.lifecycle.viewmodel)
   implementation(libs.androidx.core.ktx)

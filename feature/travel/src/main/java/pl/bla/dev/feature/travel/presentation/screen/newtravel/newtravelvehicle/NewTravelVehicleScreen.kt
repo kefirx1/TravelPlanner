@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pl.bla.dev.common.ui.componenst.basescaffold.BaseScaffold
 import pl.bla.dev.common.ui.componenst.button.LargeButton
+import pl.bla.dev.common.ui.componenst.emptyscreen.EmptyScreen
 import pl.bla.dev.common.ui.componenst.tab.CustomTopAppBar
 import pl.bla.dev.common.ui.componenst.text.CustomText
 
@@ -18,20 +19,20 @@ import pl.bla.dev.common.ui.componenst.text.CustomText
 fun NewTravelVehicleScreen(viewModel: NewTravelVehicleVM) {
   val state by viewModel.screenData.collectAsStateWithLifecycle()
 
+  BackHandler {
+    state.onBackClick()
+  }
+
   when (val screenData = state) {
-    is NewTravelVehicleVM.ScreenData -> NewTravelVehicleScreenContent(data = screenData)
+    is NewTravelVehicleVM.ScreenData.Initial -> EmptyScreen()
+    is NewTravelVehicleVM.ScreenData.Initialized -> NewTravelVehicleScreenContent(data = screenData)
   }
 }
 
 @Composable
 fun NewTravelVehicleScreenContent(
-  data: NewTravelVehicleVM.ScreenData,
+  data: NewTravelVehicleVM.ScreenData.Initialized,
 ) {
-  BackHandler {
-    data.onBackClick()
-  }
-
-
   BaseScaffold(
     topBar = {
       CustomTopAppBar(topAppBarData = data.topAppBarData)
