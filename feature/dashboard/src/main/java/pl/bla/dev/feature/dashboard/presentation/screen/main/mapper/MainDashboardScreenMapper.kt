@@ -25,6 +25,7 @@ interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData>
     val onOpenAppSettings: () -> Unit,
     val onRequestPermission: () -> Unit,
     val onTravelClick: (String) -> Unit,
+    val onFABClick: () -> Unit,
   )
 }
 
@@ -42,7 +43,8 @@ class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
           },
           openAppSettings = params.onOpenAppSettings,
           requestPermission = params.onRequestPermission,
-        ).takeIf { params.state.permissionResult != PermissionResult.GRANTED }
+        ).takeIf { params.state.permissionResult != PermissionResult.GRANTED },
+        onFABClick = params.onFABClick,
       )
       is MainDashboardVM.State.TravelScreen -> MainDashboardVM.ScreenData.TravelScreen(
         bottomNavItems = getBottomItemsNav(onClick = params.onBottomNavItemClick),

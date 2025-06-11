@@ -1,6 +1,7 @@
 package pl.bla.dev.travelplanner
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import pl.bla.dev.common.core.navigation.AppNavController
@@ -10,6 +11,9 @@ import pl.bla.dev.feature.dashboard.presentation.dashboardNavGraph
 import pl.bla.dev.feature.login.presentation.AuthDestinations
 import pl.bla.dev.feature.login.presentation.AuthResults
 import pl.bla.dev.feature.login.presentation.authNavGraph
+import pl.bla.dev.feature.travel.presentation.TravelDestinations
+import pl.bla.dev.feature.travel.presentation.TravelResults
+import pl.bla.dev.feature.travel.presentation.travelNavGraph
 
 @Composable
 fun MainAppNavGraph(
@@ -18,12 +22,14 @@ fun MainAppNavGraph(
   val appNavController = AppNavController(
     navController = rememberNavController(),
   )
+  val appContractVM = hiltViewModel<AppContractVM>()
 
   NavHost(
     navController = appNavController.navController,
     startDestination = AuthDestinations.AuthGraph.route,
   ) {
     authNavGraph(
+      appContractVM = appContractVM,
       navController = appNavController,
       onResult = { result ->
         when (result) {
@@ -39,11 +45,42 @@ fun MainAppNavGraph(
     )
 
     dashboardNavGraph(
+      appContractVM = appContractVM,
       navController = appNavController,
       onResult = { result ->
         when (result) {
           DashboardResults.Logout -> appNavController.navigate(
             destination = AuthDestinations.AuthGraph,
+          )
+          is DashboardResults.ToTravelDetails -> {
+            appContractVM.setContractData(
+              destination = TravelDestinations.TravelGraph,
+              data = TravelDestinations.TravelDetails,
+            )
+            appContractVM.setContractData(
+              destination = TravelDestinations.TravelDetails,
+              data = result.travelId,
+            )
+            appNavController.navigate(destination = TravelDestinations.TravelGraph)
+          }
+          DashboardResults.ToNewTravel -> {
+            appContractVM.setContractData(
+              destination = TravelDestinations.TravelGraph,
+              data = TravelDestinations.NewTravelVehicle,
+            )
+            appNavController.navigate(destination = TravelDestinations.TravelGraph)
+          }
+        }
+      },
+    )
+
+    travelNavGraph(
+      appContractVM = appContractVM,
+      navController = appNavController,
+      onResult = { result ->
+        when (result) {
+          TravelResults.Close -> appNavController.navigate(
+            destination = DashboardDestinations.DashboardGraph,
           )
         }
       },

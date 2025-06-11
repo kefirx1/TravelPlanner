@@ -7,6 +7,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -47,20 +51,27 @@ sealed class LargeButtonData(
   )
 }
 
+private const val DEBOUNCE_DELAY = 500L
+
 @Composable
 fun LargeButton(
   modifier: Modifier = Modifier,
   buttonData: LargeButtonData,
 ) {
+  var lastClick by remember { mutableLongStateOf(0L) }
   val keyboardController = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
 
   Button(
     modifier = modifier.fillMaxWidth(),
     onClick = {
-      focusManager.clearFocus()
-      keyboardController?.hide()
-      buttonData.onClick()
+      val currentTime = System.currentTimeMillis()
+      if (currentTime - lastClick > DEBOUNCE_DELAY) {
+        lastClick = currentTime
+        focusManager.clearFocus()
+        keyboardController?.hide()
+        buttonData.onClick()
+      }
     },
     shape = when (buttonData) {
       is LargeButtonData.Primary -> ButtonDefaults.shape

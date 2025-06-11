@@ -1,7 +1,13 @@
 package pl.bla.dev.feature.dashboard.presentation.screen.main
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -9,11 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.utsman.osmandcompose.rememberCameraState
-import org.osmdroid.util.GeoPoint
 import pl.bla.dev.common.ui.componenst.basescaffold.BaseScaffold
-import pl.bla.dev.common.ui.componenst.emptyscreen.EmptyScreen
+import pl.bla.dev.common.ui.componenst.basescaffold.FabData
+import pl.bla.dev.common.ui.componenst.icon.ImageSize
 import pl.bla.dev.common.ui.componenst.text.CustomText
 import pl.bla.dev.common.ui.theming.AppColors
 import pl.bla.dev.feature.dashboard.presentation.screen.main.screenmap.MapScreenContent
@@ -75,6 +83,25 @@ fun MainDashboardScreen(viewModel: MainDashboardVM) {
           )
         }
       }
+    },
+    fabData = when (val currentState = state) {
+      is MainDashboardVM.ScreenData.MapScreen -> FabData(
+        fab = {
+          IconButton(
+            onClick = currentState.onFABClick,
+            modifier = Modifier.size(ImageSize.MEDIUM_X.size),
+          ) {
+            Icon(
+              modifier = Modifier.size(ImageSize.MEDIUM_X.size),
+              imageVector = Icons.Outlined.AddCircle,
+              contentDescription = "Dashboard FAB",
+              tint = AppColors.blue2,
+            )
+          }
+        },
+        fabPosition = FabPosition.End,
+      )
+      else -> null
     }
   )
 }

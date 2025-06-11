@@ -11,6 +11,7 @@ import coil3.compose.AsyncImage
 enum class ImageSize(val size: Dp) {
   SMALL(size = 15.dp),
   MEDIUM(size = 50.dp),
+  MEDIUM_X(size = 75.dp),
   LARGE(size = 100.dp),
   EXTRA_LARGE(size = 150.dp),
 }

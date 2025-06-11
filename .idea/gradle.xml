@@ -28,6 +28,7 @@
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/auth" />
             <option value="$PROJECT_DIR$/feature/dashboard" />
+            <option value="$PROJECT_DIR$/feature/travel" />
             <option value="$PROJECT_DIR$/feature/user" />
             <option value="$PROJECT_DIR$/feature/user/contract" />
           </set>

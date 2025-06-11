@@ -44,8 +44,10 @@ interface MainDashboardVM {
         val dialogData: DialogData,
       ) : Navigation
       data class ToTravelDetails(val travelId: String) : Navigation
+      data object ToNewTravel : Navigation
     }
 
+    data object OnFABClick : Action
     data class ToTravelDetails(val travelId: String) : Action
     data object RequestLocationPermission : Action
     data object OpenAppSettings : Action
@@ -68,6 +70,7 @@ interface MainDashboardVM {
       override val onBackClick: () -> Unit,
       val currentLocation: Location?,
       val permissionRequesterData: PermissionRequesterData?,
+      val onFABClick: () -> Unit,
     ) : ScreenData(
       bottomNavItems = bottomNavItems,
       onBackClick = onBackClick,
@@ -179,6 +182,9 @@ class MainDashboardVMImpl @Inject constructor(
       },
       onTravelClick = { id ->
         dispatchAction(MainDashboardVM.Action.ToTravelDetails(travelId = id))
+      },
+      onFABClick = {
+        dispatchAction(MainDashboardVM.Action.OnFABClick)
       }
     )
   )
@@ -227,6 +233,7 @@ class MainDashboardVMImpl @Inject constructor(
               permissionResult = PermissionResult.DENIED,
             ).mutate()
           }
+          is MainDashboardVM.Action.OnFABClick -> MainDashboardVM.Action.Navigation.ToNewTravel.emit()
           is MainDashboardVM.Action.ToTravelDetails -> {}
         }
         is MainDashboardVM.State.TravelScreen -> when (action) {
@@ -240,6 +247,7 @@ class MainDashboardVMImpl @Inject constructor(
             MainDashboardVM.Action.Navigation.ToTravelDetails(travelId = action.travelId).emit()
           is MainDashboardVM.Action.RequestLocationPermission -> {}
           is MainDashboardVM.Action.OpenAppSettings -> {}
+          is MainDashboardVM.Action.OnFABClick -> {}
         }
         is MainDashboardVM.State.SettingsScreen -> when (action) {
           is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
@@ -251,6 +259,7 @@ class MainDashboardVMImpl @Inject constructor(
           is MainDashboardVM.Action.RequestLocationPermission -> {}
           is MainDashboardVM.Action.OpenAppSettings -> {}
           is MainDashboardVM.Action.ToTravelDetails -> {}
+          is MainDashboardVM.Action.OnFABClick -> {}
         }
       }
     }

@@ -1,17 +1,19 @@
 package pl.bla.dev.common.ui.componenst.button
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.Serializable
 import pl.bla.dev.common.ui.componenst.text.CustomText
 import pl.bla.dev.common.ui.theming.AppColors
 
@@ -45,14 +47,24 @@ sealed class SmallButtonData(
   )
 }
 
+private const val DEBOUNCE_DELAY = 500L
+
 @Composable
 fun SmallButton(
   modifier: Modifier = Modifier,
   buttonData: SmallButtonData,
 ) {
+  var lastClick by remember { mutableLongStateOf(0L) }
+
   Button(
     modifier = modifier,
-    onClick = buttonData.onClick,
+    onClick = {
+      val currentTime = System.currentTimeMillis()
+      if (currentTime - lastClick > DEBOUNCE_DELAY) {
+        lastClick = currentTime
+        buttonData.onClick()
+      }
+    },
     shape = when (buttonData) {
       is SmallButtonData.Primary -> ButtonDefaults.shape
       is SmallButtonData.Secondary -> ButtonDefaults.outlinedShape

@@ -5,6 +5,7 @@ import androidx.navigation.navigation
 import pl.bla.dev.common.core.navigation.AppNavController
 import pl.bla.dev.common.core.navigation.DestinationType
 import pl.bla.dev.common.core.navigation.createDestination
+import pl.bla.dev.common.core.viewmodel.ContractViewModel
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
 import pl.bla.dev.feature.dashboard.presentation.screen.dialog.DashboardDialogScreen
 import pl.bla.dev.feature.dashboard.presentation.screen.dialog.DashboardDialogVM
@@ -14,6 +15,7 @@ import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVM
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVMImpl
 
 fun NavGraphBuilder.dashboardNavGraph(
+  appContractVM: ContractViewModel,
   navController: AppNavController,
   onResult: (DashboardResults) -> Unit,
 ) {
@@ -37,13 +39,9 @@ fun NavGraphBuilder.dashboardNavGraph(
             )
             navController.navigate(DashboardDestinations.DashboardDialog)
           }
-          is MainDashboardVM.Action.Navigation.ToTravelDetails -> {
-            contractViewModel.setContractData(
-              destination = DashboardDestinations.TravelDetails,
-              data = action.travelId,
-            )
-            navController.navigate(DashboardDestinations.TravelDetails)
-          }
+          is MainDashboardVM.Action.Navigation.ToTravelDetails ->
+            onResult(DashboardResults.ToTravelDetails(travelId = action.travelId))
+          is MainDashboardVM.Action.Navigation.ToNewTravel -> onResult(DashboardResults.ToNewTravel)
         }
       }
     )

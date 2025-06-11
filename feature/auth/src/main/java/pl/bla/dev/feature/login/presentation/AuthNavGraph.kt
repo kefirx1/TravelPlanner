@@ -5,6 +5,7 @@ import androidx.navigation.navigation
 import pl.bla.dev.common.core.navigation.AppNavController
 import pl.bla.dev.common.core.navigation.DestinationType
 import pl.bla.dev.common.core.navigation.createDestination
+import pl.bla.dev.common.core.viewmodel.ContractViewModel
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
 import pl.bla.dev.feature.login.presentation.screen.dialog.AuthDialogScreen
 import pl.bla.dev.feature.login.presentation.screen.dialog.AuthDialogVM
@@ -23,6 +24,7 @@ import pl.bla.dev.feature.login.presentation.screen.registration.RegistrationVM
 import pl.bla.dev.feature.login.presentation.screen.registration.RegistrationVMImpl
 
 fun NavGraphBuilder.authNavGraph(
+  appContractVM: ContractViewModel,
   navController: AppNavController,
   onResult: (AuthResults) -> Unit,
 ) {

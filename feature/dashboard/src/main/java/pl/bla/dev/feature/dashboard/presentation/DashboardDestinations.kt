@@ -11,12 +11,11 @@ sealed interface DashboardDestinations : Destination {
   data object MainDashboard : DashboardDestinations
 
   @Serializable
-  data object TravelDetails : DashboardDestinations
-
-  @Serializable
   data object DashboardDialog : DashboardDestinations
 }
 
 sealed interface DashboardResults {
   data object Logout : DashboardResults
+  data class ToTravelDetails(val travelId: String) : DashboardResults
+  data object ToNewTravel : DashboardResults
 }
