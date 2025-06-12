@@ -5,11 +5,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import pl.bla.dev.be.backendservice.contract.domain.model.NewTravelConfig
+import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
 import pl.bla.dev.common.core.usecase.UseCase
 import pl.bla.dev.common.core.usecase.fold
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.ui.componenst.button.LargeButtonData
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
+import pl.bla.dev.common.ui.componenst.select.SelectData
 import pl.bla.dev.common.ui.componenst.tab.TopAppBarData
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedNewTravelConfigUC
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtravelorigin.NewTravelOriginVM
@@ -23,6 +25,7 @@ interface NewTravelVehicleVM {
     data object Initial : State
     data class Initialized(
       val newTravelConfig: NewTravelConfig,
+      val selectedOriginVehicleType: VehicleType = VehicleType.PLANE,
     ) : State
   }
 
@@ -37,6 +40,9 @@ interface NewTravelVehicleVM {
       ) : Navigation
     }
 
+    data class UpdateSelectedOriginVehicleType(
+      val vehicleId: Int,
+    ) : Action
     data object OnNextClick : Action
     data class ShowDialog(
       val dialogType: DialogType,
@@ -59,6 +65,8 @@ interface NewTravelVehicleVM {
     data class Initialized(
       override val topAppBarData: TopAppBarData,
       override val onBackClick: () -> Unit,
+      val screenTitle: String,
+      val vehicleTypeSelectData: SelectData,
       val nextButtonData: LargeButtonData.Primary,
     ) : ScreenData(
       topAppBarData = topAppBarData,
@@ -110,6 +118,9 @@ class NewTravelVehicleVMImpl @Inject constructor(
       },
       onNextClick = {
         dispatchAction(NewTravelVehicleVM.Action.OnNextClick)
+      },
+      onSelectVehicle = { vehicleId ->
+        dispatchAction(NewTravelVehicleVM.Action.UpdateSelectedOriginVehicleType(vehicleId = vehicleId))
       }
     ),
   )
@@ -127,7 +138,8 @@ class NewTravelVehicleVMImpl @Inject constructor(
             ),
           ).emit()
           NewTravelVehicleVM.Action.Back -> NewTravelVehicleVM.Action.Navigation.Back.emit()
-          NewTravelVehicleVM.Action.OnNextClick -> {}
+          is NewTravelVehicleVM.Action.UpdateSelectedOriginVehicleType -> {}
+          is NewTravelVehicleVM.Action.OnNextClick -> {}
         }
         is NewTravelVehicleVM.State.Initialized -> when (action) {
           is NewTravelVehicleVM.Action.ShowDialog -> NewTravelVehicleVM.Action.Navigation.ShowDialog(
@@ -139,9 +151,19 @@ class NewTravelVehicleVMImpl @Inject constructor(
             ),
           ).emit()
           NewTravelVehicleVM.Action.Back -> NewTravelVehicleVM.Action.Navigation.Back.emit()
-          NewTravelVehicleVM.Action.OnNextClick -> NewTravelVehicleVM.Action.Navigation.ToOrigin(
-            setupData = NewTravelOriginVM.NewTravelSetupData(newTravelConfig = currentState.newTravelConfig),
-          ).emit()
+          is NewTravelVehicleVM.Action.OnNextClick -> {
+            NewTravelVehicleVM.Action.Navigation.ToOrigin(
+              setupData = NewTravelOriginVM.NewTravelSetupData(
+                newTravelConfig = currentState.newTravelConfig,
+                originVehicleType = currentState.selectedOriginVehicleType,
+              ),
+            ).emit()
+          }
+          is NewTravelVehicleVM.Action.UpdateSelectedOriginVehicleType -> {
+            currentState.copy(
+              selectedOriginVehicleType = VehicleType.entries.find { it.ordinal == action.vehicleId } ?: VehicleType.PLANE,
+            ).mutate()
+          }
         }
       }
     }

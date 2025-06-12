@@ -8,8 +8,8 @@ import pl.bla.dev.feature.settings.data.repository.UserRepository
 class SaveNewTravelUCImpl(
   private val userRepository: UserRepository,
 ) : SaveNewTravelUC {
-  override suspend fun invoke(param: SaveNewTravelUC.Params): Either<AppError, Unit> {
-    userRepository.saveUserTravel(
+  override suspend fun invoke(param: SaveNewTravelUC.Params): Either<AppError, Int> {
+    val travelId = userRepository.saveUserTravel(
       originCityId = param.originCityId,
       destinationCityId = param.destinationCityId,
       originVehicleId = param.originVehicleId,
@@ -20,6 +20,6 @@ class SaveNewTravelUCImpl(
       endDate = param.endDate,
     )
 
-    return Either.Right(Unit)
+    return Either.Right(value = travelId)
   }
 }

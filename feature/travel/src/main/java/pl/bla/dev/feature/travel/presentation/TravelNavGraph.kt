@@ -8,6 +8,10 @@ import pl.bla.dev.common.core.navigation.DestinationType
 import pl.bla.dev.common.core.navigation.createDestination
 import pl.bla.dev.common.core.viewmodel.ContractViewModel
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
+import pl.bla.dev.common.ui.componenst.picker.CustomDatePickerData
+import pl.bla.dev.feature.travel.presentation.screen.datepicker.TravelDatePickerScreen
+import pl.bla.dev.feature.travel.presentation.screen.datepicker.TravelDatePickerVM
+import pl.bla.dev.feature.travel.presentation.screen.datepicker.TravelDatePickerVMImpl
 import pl.bla.dev.feature.travel.presentation.screen.dialog.TravelDialogScreen
 import pl.bla.dev.feature.travel.presentation.screen.dialog.TravelDialogVM
 import pl.bla.dev.feature.travel.presentation.screen.dialog.TravelDialogVMImpl
@@ -134,6 +138,20 @@ fun NavGraphBuilder.travelNavGraph(
             )
             navController.navigate(TravelDestinations.TravelDialog)
           }
+          is NewTravelDateVM.Action.Navigation.ToDetails -> {
+            contractViewModel.setContractData(
+              destination = TravelDestinations.TravelDetails,
+              data = action.travelId,
+            )
+            navController.navigate(TravelDestinations.TravelDetails)
+          }
+          is NewTravelDateVM.Action.Navigation.ShowDatePicker -> {
+            contractViewModel.setContractData(
+              destination = TravelDestinations.TravelDatePicker,
+              data = action.customDatePickerData,
+            )
+            navController.navigate(TravelDestinations.TravelDatePicker)
+          }
           NewTravelDateVM.Action.Navigation.CloseProcess -> onResult(TravelResults.Close)
         }
       },
@@ -150,7 +168,24 @@ fun NavGraphBuilder.travelNavGraph(
         when (action) {
           is TravelDialogVM.Action.Navigation.OnDialogAction -> {
             navController.popBackStack()
-            action.dailogAction()
+            action.dialogAction()
+          }
+        }
+      }
+    )
+
+    createDestination<CustomDatePickerData, TravelContractVM, TravelDatePickerVMImpl, TravelDatePickerVM.Action.Navigation>(
+      destination = TravelDestinations.TravelDatePicker,
+      destinationType = DestinationType.Dialog,
+      navController= navController,
+      content = { viewModel ->
+        TravelDatePickerScreen(viewModel = viewModel)
+      },
+      navActionHandler = { action, _ ->
+        when (action) {
+          is TravelDatePickerVM.Action.Navigation.OnDialogAction -> {
+            navController.popBackStack()
+            action.dialogAction()
           }
         }
       }

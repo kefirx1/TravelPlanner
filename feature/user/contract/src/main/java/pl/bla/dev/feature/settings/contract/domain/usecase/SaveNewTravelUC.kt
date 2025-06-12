@@ -4,7 +4,7 @@ import pl.bla.dev.common.core.usecase.EitherUseCase
 import pl.bla.dev.common.core.usecase.UseCase
 import java.time.LocalDateTime
 
-interface SaveNewTravelUC : EitherUseCase<SaveNewTravelUC.Params, Unit> {
+interface SaveNewTravelUC : EitherUseCase<SaveNewTravelUC.Params, Int> {
   data class Params(
     val originCountryId: Int,
     val destinationCountryId: Int,

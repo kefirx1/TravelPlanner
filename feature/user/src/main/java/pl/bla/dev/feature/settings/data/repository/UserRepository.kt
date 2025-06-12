@@ -45,7 +45,7 @@ interface UserRepository {
     destinationVehicleId: Int,
     startDate: LocalDateTime,
     endDate: LocalDateTime,
-  )
+  ): Int
 }
 
 internal class UserRepositoryImpl(
@@ -126,8 +126,8 @@ internal class UserRepositoryImpl(
     destinationVehicleId: Int,
     startDate: LocalDateTime,
     endDate: LocalDateTime,
-  ) = withContext(Dispatchers.IO) {
-    val userId = userDatabase.userInfoDao().getUser()?.uid ?: return@withContext  //TODO error handling
+  ): Int = withContext(Dispatchers.IO) {
+    val userId = userDatabase.userInfoDao().getUser()?.uid ?: return@withContext -1  //TODO error handling
 
     userDatabase.userTravelsDao().addTravel(
       travel = UserTravelsDto(
@@ -142,6 +142,6 @@ internal class UserRepositoryImpl(
         originVehicleId = originVehicleId,
         destinationVehicleId = destinationVehicleId,
       )
-    )
+    ).toInt()
   }
 }

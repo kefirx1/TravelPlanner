@@ -8,10 +8,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import pl.bla.dev.be.backendservice.contract.domain.model.NewTravelConfig
+import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.core.viewmodel.CustomViewModelFactory
 import pl.bla.dev.common.ui.componenst.button.LargeButtonData
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
+import pl.bla.dev.common.ui.componenst.select.SelectData
 import pl.bla.dev.common.ui.componenst.tab.TopAppBarData
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.NewTravelDateVM
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldestination.NewTravelDestinationVM.NewTravelSetupData
@@ -21,7 +23,12 @@ import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldestinat
 
 interface NewTravelDestinationVM {
   sealed interface State {
-    data object Initial : State
+    data class Initialized(
+      val selectedDestinationCountryId: Int = 1,
+      val selectedDestinationCityId: Int = 101,
+      val selectedDestinationVehicleId: Int = 1001,
+      val selectedDestinationVehicleType: VehicleType,
+    ) : State
   }
 
   sealed interface Action {
@@ -36,6 +43,15 @@ interface NewTravelDestinationVM {
       ) : Navigation
     }
 
+    data class UpdateSelectedDestinationCountry(
+      val countryId: Int,
+    ) : Action
+    data class UpdateSelectedDestinationCity(
+      val cityId: Int,
+    ) : Action
+    data class UpdateSelectedDestinationVehicle(
+      val vehicleId: Int,
+    ) : Action
     data object OnNextClick : Action
     data class ShowDialog(
       val dialogType: DialogType,
@@ -47,6 +63,12 @@ interface NewTravelDestinationVM {
   data class ScreenData(
     val topAppBarData: TopAppBarData,
     val nextButtonData: LargeButtonData.Primary,
+    val countryLabel: String,
+    val destinationCountrySelectData: SelectData,
+    val cityLabel: String,
+    val destinationCitySelectData: SelectData,
+    val vehicleLabel: String,
+    val destinationVehicleSelectData: SelectData,
     val onBackClick: () -> Unit,
   )
 
@@ -54,6 +76,10 @@ interface NewTravelDestinationVM {
 
   data class NewTravelSetupData(
     val newTravelConfig: NewTravelConfig,
+    val originVehicleType: VehicleType,
+    val originCityId: Int,
+    val originCountryId: Int,
+    val originVehicleId: Int,
   )
 }
 
@@ -64,7 +90,7 @@ class NewTravelDestinationVMImpl @AssistedInject constructor(
   private val newTravelDestinationDialogMapper: NewTravelDestinationDialogMapper,
   @Assisted val setupData: NewTravelSetupData,
 ) : CustomViewModel<NewTravelDestinationVM.State, NewTravelDestinationVM.ScreenData, NewTravelDestinationVM.Action.Navigation>(
-  initialStateValue = NewTravelDestinationVM.State.Initial,
+  initialStateValue = NewTravelDestinationVM.State.Initialized(selectedDestinationVehicleType = setupData.originVehicleType),
 ), NewTravelDestinationVM {
 
   @AssistedFactory
@@ -80,15 +106,14 @@ class NewTravelDestinationVMImpl @AssistedInject constructor(
 
   override suspend fun onStateEnter(newState: NewTravelDestinationVM.State) {
     when (newState) {
-      NewTravelDestinationVM.State.Initial -> {
-
-      }
+      is NewTravelDestinationVM.State.Initialized -> {}
     }
   }
 
   override fun mapScreenData(): NewTravelDestinationVM.ScreenData = newTravelDestinationScreenMapper(
     params = NewTravelDestinationScreenMapper.Params(
       state = state.value,
+      newTravelConfig = setupData.newTravelConfig,
       onBackClick = {
         dispatchAction(NewTravelDestinationVM.Action.Back)
       },
@@ -97,6 +122,15 @@ class NewTravelDestinationVMImpl @AssistedInject constructor(
       },
       onNextClick = {
         dispatchAction(NewTravelDestinationVM.Action.OnNextClick)
+      },
+      onSelectCountry = { countryId ->
+        dispatchAction(NewTravelDestinationVM.Action.UpdateSelectedDestinationCountry(countryId = countryId))
+      },
+      onSelectCity = { cityId ->
+        dispatchAction(NewTravelDestinationVM.Action.UpdateSelectedDestinationCity(cityId = cityId))
+      },
+      onSelectVehicle = { vehicleId ->
+        dispatchAction(NewTravelDestinationVM.Action.UpdateSelectedDestinationVehicle(vehicleId = vehicleId))
       }
     ),
   )
@@ -104,7 +138,7 @@ class NewTravelDestinationVMImpl @AssistedInject constructor(
   private fun dispatchAction(action: NewTravelDestinationVM.Action) {
     viewModelScope.launch {
       when (val currentState = state.value) {
-        NewTravelDestinationVM.State.Initial -> when (action) {
+        is NewTravelDestinationVM.State.Initialized -> when (action) {
           is NewTravelDestinationVM.Action.ShowDialog -> NewTravelDestinationVM.Action.Navigation.ShowDialog(
             dialogData = newTravelDestinationDialogMapper(
               params = NewTravelDestinationDialogMapper.Params(
@@ -114,8 +148,27 @@ class NewTravelDestinationVMImpl @AssistedInject constructor(
             ),
           ).emit()
           NewTravelDestinationVM.Action.OnNextClick -> NewTravelDestinationVM.Action.Navigation.ToDate(
-            setupData = NewTravelDateVM.NewTravelSetupData(newTravelConfig = setupData.newTravelConfig),
+            setupData = NewTravelDateVM.NewTravelSetupData(
+              newTravelConfig = setupData.newTravelConfig,
+              originVehicleType = setupData.originVehicleType,
+              originCityId = setupData.originCityId,
+              originCountryId = setupData.originCountryId,
+              originVehicleId = setupData.originVehicleId,
+              destinationVehicleType = currentState.selectedDestinationVehicleType,
+              destinationCityId = currentState.selectedDestinationCityId,
+              destinationCountryId = currentState.selectedDestinationCountryId,
+              destinationVehicleId = currentState.selectedDestinationVehicleId,
+            ),
           ).emit()
+          is NewTravelDestinationVM.Action.UpdateSelectedDestinationCountry -> currentState.copy(
+            selectedDestinationCountryId = action.countryId,
+          ).mutate()
+          is NewTravelDestinationVM.Action.UpdateSelectedDestinationCity -> currentState.copy(
+            selectedDestinationCityId = action.cityId,
+          ).mutate()
+          is NewTravelDestinationVM.Action.UpdateSelectedDestinationVehicle -> currentState.copy(
+            selectedDestinationVehicleId = action.vehicleId,
+          ).mutate()
           NewTravelDestinationVM.Action.CloseProcess -> NewTravelDestinationVM.Action.Navigation.CloseProcess.emit()
           NewTravelDestinationVM.Action.Back -> NewTravelDestinationVM.Action.Navigation.Back.emit()
         }

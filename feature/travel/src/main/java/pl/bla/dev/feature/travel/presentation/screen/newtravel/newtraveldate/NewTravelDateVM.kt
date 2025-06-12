@@ -8,18 +8,28 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import pl.bla.dev.be.backendservice.contract.domain.model.NewTravelConfig
+import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
+import pl.bla.dev.common.core.usecase.fold
 import pl.bla.dev.common.core.viewmodel.CustomViewModel
 import pl.bla.dev.common.core.viewmodel.CustomViewModelFactory
+import pl.bla.dev.common.ui.componenst.button.LargeButtonData
 import pl.bla.dev.common.ui.componenst.dialog.DialogData
+import pl.bla.dev.common.ui.componenst.picker.CustomDatePickerData
+import pl.bla.dev.common.ui.componenst.picker.DatePickerInputData
 import pl.bla.dev.common.ui.componenst.tab.TopAppBarData
+import pl.bla.dev.feature.settings.contract.domain.usecase.SaveNewTravelUC
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.NewTravelDateVM.NewTravelSetupData
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.mapper.NewTravelDateDialogMapper
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.mapper.NewTravelDateDialogMapper.DialogType
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.mapper.NewTravelDateScreenMapper
+import java.time.LocalDateTime
 
 interface NewTravelDateVM {
   sealed interface State {
-    data object Initial : State
+    data class Initialized(
+      val startDate: LocalDateTime = LocalDateTime.now(),
+      val endDate: LocalDateTime = LocalDateTime.now(),
+    ) : State
   }
 
   sealed interface Action {
@@ -29,8 +39,24 @@ interface NewTravelDateVM {
       data class ShowDialog(
         val dialogData: DialogData,
       ) : Navigation
+      data class ToDetails(
+        val travelId: Int,
+      ) : Navigation
+      data class ShowDatePicker(
+        val customDatePickerData: CustomDatePickerData,
+      ) : Navigation
     }
 
+    data class UpdateStartDate(
+      val newDate: LocalDateTime,
+    ) : Action
+    data class UpdateEndDate(
+      val newDate: LocalDateTime,
+    ) : Action
+    data class ShowDatePicker(
+      val customDatePickerData: CustomDatePickerData,
+    ) : Action
+    data object AddNewTravel : Action
     data class ShowDialog(
       val dialogType: DialogType,
     ) : Action
@@ -40,6 +66,11 @@ interface NewTravelDateVM {
 
   data class ScreenData(
     val topAppBarData: TopAppBarData,
+    val startDateLabel: String,
+    val endDateLabel: String,
+    val startDatePickerInputData: DatePickerInputData,
+    val endDatePickerInputData: DatePickerInputData,
+    val addNewButtonData: LargeButtonData.Primary,
     val onBackClick: () -> Unit,
   )
 
@@ -47,6 +78,14 @@ interface NewTravelDateVM {
 
   data class NewTravelSetupData(
     val newTravelConfig: NewTravelConfig,
+    val originVehicleType: VehicleType,
+    val originCityId: Int,
+    val originCountryId: Int,
+    val originVehicleId: Int,
+    val destinationVehicleType: VehicleType,
+    val destinationCityId: Int,
+    val destinationCountryId: Int,
+    val destinationVehicleId: Int,
   )
 }
 
@@ -55,9 +94,10 @@ interface NewTravelDateVM {
 class NewTravelDateVMImpl @AssistedInject constructor(
   private val newTravelDateScreenMapper: NewTravelDateScreenMapper,
   private val newTravelDateDialogMapper: NewTravelDateDialogMapper,
+  private val saveNewTravelUC: SaveNewTravelUC,
   @Assisted val setupData: NewTravelSetupData,
 ) : CustomViewModel<NewTravelDateVM.State, NewTravelDateVM.ScreenData, NewTravelDateVM.Action.Navigation>(
-  initialStateValue = NewTravelDateVM.State.Initial,
+  initialStateValue = NewTravelDateVM.State.Initialized(),
 ), NewTravelDateVM {
 
   @AssistedFactory
@@ -73,9 +113,7 @@ class NewTravelDateVMImpl @AssistedInject constructor(
 
   override suspend fun onStateEnter(newState: NewTravelDateVM.State) {
     when (newState) {
-      NewTravelDateVM.State.Initial -> {
-
-      }
+      is NewTravelDateVM.State.Initialized -> {}
     }
   }
 
@@ -87,6 +125,22 @@ class NewTravelDateVMImpl @AssistedInject constructor(
       },
       onCloseProcessClick = {
         dispatchAction(NewTravelDateVM.Action.ShowDialog(dialogType = DialogType.Close))
+      },
+      onAddNewClick = {
+        dispatchAction(NewTravelDateVM.Action.AddNewTravel)
+      },
+      onShowDatePickerClick = { pickerData ->
+        dispatchAction(
+          NewTravelDateVM.Action.ShowDatePicker(
+            customDatePickerData = pickerData,
+          )
+        )
+      },
+      onStartDateSelect = { newDate ->
+        dispatchAction(NewTravelDateVM.Action.UpdateStartDate(newDate = newDate))
+      },
+      onEndDateSelect = { newDate ->
+        dispatchAction(NewTravelDateVM.Action.UpdateEndDate(newDate = newDate))
       }
     ),
   )
@@ -94,7 +148,7 @@ class NewTravelDateVMImpl @AssistedInject constructor(
   private fun dispatchAction(action: NewTravelDateVM.Action) {
     viewModelScope.launch {
       when (val currentState = state.value) {
-        NewTravelDateVM.State.Initial -> when (action) {
+        is NewTravelDateVM.State.Initialized -> when (action) {
           is NewTravelDateVM.Action.ShowDialog -> NewTravelDateVM.Action.Navigation.ShowDialog(
             dialogData = newTravelDateDialogMapper(
               params = NewTravelDateDialogMapper.Params(
@@ -103,6 +157,38 @@ class NewTravelDateVMImpl @AssistedInject constructor(
               ),
             ),
           ).emit()
+
+          is NewTravelDateVM.Action.AddNewTravel -> {
+            saveNewTravelUC(
+              param = SaveNewTravelUC.Params(
+                originCountryId = setupData.originCountryId,
+                destinationCountryId = setupData.destinationCountryId,
+                originCityId = setupData.originCityId,
+                destinationCityId = setupData.destinationCityId,
+                originVehicleId = setupData.originVehicleId,
+                destinationVehicleId = setupData.destinationVehicleId,
+                startDate = currentState.startDate,
+                endDate = currentState.endDate,
+              )
+            ).fold(
+              onRight = { newTravelId ->
+                NewTravelDateVM.Action.Navigation.ToDetails(
+                  travelId = newTravelId,
+                ).emit()
+              },
+              onLeft = { error ->
+                //TODO error handling
+              }
+            )
+          }
+          is NewTravelDateVM.Action.UpdateStartDate -> currentState.copy(
+            startDate = action.newDate,
+          ).mutate()
+          is NewTravelDateVM.Action.UpdateEndDate -> currentState.copy(
+            endDate = action.newDate,
+          ).mutate()
+          is NewTravelDateVM.Action.ShowDatePicker ->
+            NewTravelDateVM.Action.Navigation.ShowDatePicker(customDatePickerData = action.customDatePickerData).emit()
           NewTravelDateVM.Action.CloseProcess -> NewTravelDateVM.Action.Navigation.CloseProcess.emit()
           NewTravelDateVM.Action.Back -> NewTravelDateVM.Action.Navigation.Back.emit()
         }

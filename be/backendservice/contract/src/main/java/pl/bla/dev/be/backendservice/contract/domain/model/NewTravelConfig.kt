@@ -30,8 +30,8 @@ data class VehicleConfig(
 )
 
 enum class VehicleType {
+  PLANE,
   CAR,
   TRAIN,
-  PLANE,
   BUS,
 }

@@ -16,7 +16,7 @@ interface TravelDialogVM {
   sealed interface Action {
     sealed interface Navigation : Action {
       data class OnDialogAction(
-        val dailogAction: () -> Unit,
+        val dialogAction: () -> Unit,
       ) : Navigation
     }
   }
@@ -48,14 +48,14 @@ class TravelDialogVMImpl @AssistedInject constructor(
       dialogData = setupData.copy(
         onDismiss = {
           TravelDialogVM.Action.Navigation.OnDialogAction(
-            dailogAction = setupData.onDismiss
+            dialogAction = setupData.onDismiss
           ).emit()
         },
         onPrimaryButtonData = setupData.onPrimaryButtonData.copy(
           text = setupData.onPrimaryButtonData.text,
           onClick = {
             TravelDialogVM.Action.Navigation.OnDialogAction(
-              dailogAction = setupData.onPrimaryButtonData.onClick
+              dialogAction = setupData.onPrimaryButtonData.onClick
             ).emit()
           }
         ),
@@ -63,7 +63,7 @@ class TravelDialogVMImpl @AssistedInject constructor(
           text = setupData.onSecondaryButtonData!!.text,
           onClick = {
             TravelDialogVM.Action.Navigation.OnDialogAction(
-              dailogAction = setupData.onSecondaryButtonData!!.onClick,
+              dialogAction = setupData.onSecondaryButtonData!!.onClick,
             ).emit()
           }
         ),

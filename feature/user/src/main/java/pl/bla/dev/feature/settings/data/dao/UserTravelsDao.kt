@@ -16,5 +16,5 @@ interface UserTravelsDao {
   suspend fun getUserTravelById(userId: Int, travelId: Int): UserTravelsDto?
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun addTravel(travel: UserTravelsDto)
+  suspend fun addTravel(travel: UserTravelsDto): Long
 }

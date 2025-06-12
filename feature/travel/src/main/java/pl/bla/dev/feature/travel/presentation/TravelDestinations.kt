@@ -24,6 +24,9 @@ sealed interface TravelDestinations : Destination {
 
   @Serializable
   data object TravelDialog : TravelDestinations
+
+  @Serializable
+  data object TravelDatePicker : TravelDestinations
 }
 
 sealed interface TravelResults {

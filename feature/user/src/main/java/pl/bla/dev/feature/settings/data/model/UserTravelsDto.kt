@@ -7,6 +7,7 @@ import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import pl.bla.dev.common.core.converters.JsonSerializer
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Entity
 data class UserTravelsDto(
@@ -27,13 +28,13 @@ data class UserTravelsDto(
 class LocalDateTimeConverter(
   private val jsonSerializer: JsonSerializer,
 ) {
-
+  private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
   @TypeConverter
   fun fromLocalDateTime(date: LocalDateTime?): String? {
     if (date == null) {
       return null
     }
-    return jsonSerializer.serialize(data = date)
+    return date.format(formatter)
   }
 
   @TypeConverter
@@ -41,6 +42,6 @@ class LocalDateTimeConverter(
     if (json == null) {
       return null
     }
-    return jsonSerializer.deserialize(serializedData = json, type = LocalDateTime::class.java)
+    return formatter.parse(json, LocalDateTime::from)
   }
 }
