@@ -37,7 +37,8 @@ internal class NewTravelVehicleScreenMapperImpl : NewTravelVehicleScreenMapper {
           text = "Dalej",
           onClick = params.onNextClick,
         ),
-        screenTitle = "Wybierz rodzaj pojazdu, którym wyruszysz w podróż",
+        screenTitle = "Przejdziesz teraz przez proces dodawania nowej wycieczki, wykonuj wypiasne kroki",
+        screenDescription = "Wybierz rodzaj pojazdu, którym wyruszysz w podróż",
         vehicleTypeSelectData = SelectData(
           content = listOf(
             SelectItemData(

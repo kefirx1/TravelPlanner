@@ -38,6 +38,11 @@ interface UserRepository {
   suspend fun saveUserTravel(
     userTravels: UserTravels,
   ): Int
+  suspend fun removeUserTravel(travelId: Int)
+  suspend fun updateUserTravelCancellationStatus(
+    travelId: Int,
+    isCancelled: Boolean,
+  )
 }
 
 internal class UserRepositoryImpl(
@@ -146,5 +151,27 @@ internal class UserRepositoryImpl(
         destinationVehicleType = userTravels.destinationVehicleType.name,
       )
     ).toInt()
+  }
+
+  override suspend fun removeUserTravel(travelId: Int) = withContext(Dispatchers.IO) {
+    val userId = userDatabase.userInfoDao().getUser()?.uid ?: return@withContext //TODO error handling
+
+    userDatabase.userTravelsDao().removeTravel(
+      userId = userId,
+      travelId = travelId,
+    )
+  }
+
+  override suspend fun updateUserTravelCancellationStatus(
+    travelId: Int,
+    isCancelled: Boolean,
+  ) = withContext(Dispatchers.IO) {
+    val userId = userDatabase.userInfoDao().getUser()?.uid ?: return@withContext //TODO error handling
+
+    userDatabase.userTravelsDao().updateTravelCancellationStatus(
+      userId = userId,
+      travelId = travelId,
+      isCancelled = isCancelled,
+    )
   }
 }

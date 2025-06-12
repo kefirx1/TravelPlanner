@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
 import pl.bla.dev.common.ui.componenst.basescaffold.BaseScaffold
@@ -50,13 +51,20 @@ fun NewTravelVehicleScreenContent(
         modifier = Modifier
           .padding(horizontal = 10.dp)
       ) {
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(30.dp))
 
         CustomText(
           text = data.screenTitle,
+          style = MaterialTheme.typography.displaySmall,
+          customSize = 30.sp,
+        )
+        Spacer(modifier = Modifier.height(50.dp))
+
+        CustomText(
+          text = data.screenDescription,
           style = MaterialTheme.typography.titleLarge,
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Select(data = data.vehicleTypeSelectData)
       }

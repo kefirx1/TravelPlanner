@@ -7,14 +7,12 @@ import kotlinx.coroutines.launch
 import pl.bla.dev.common.core.navigation.Destination
 
 abstract class ContractViewModel : ViewModel() {
-  private val contractState = MutableStateFlow<Map<Any, Any>>(emptyMap())
+  private val contractState: MutableMap<Any, Any> = mutableMapOf()
 
   fun setContractData(destination: Destination, data: Any) {
-    viewModelScope.launch {
-      contractState.emit(contractState.value + (destination to data))
-    }
+    contractState[destination] = data
   }
   fun <T> retrieveData(destination: Destination): T? {
-    return contractState.value[destination] as? T
+    return contractState.remove(destination) as? T
   }
 }

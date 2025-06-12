@@ -66,6 +66,7 @@ interface NewTravelVehicleVM {
       override val topAppBarData: TopAppBarData,
       override val onBackClick: () -> Unit,
       val screenTitle: String,
+      val screenDescription: String,
       val vehicleTypeSelectData: SelectData,
       val nextButtonData: LargeButtonData.Primary,
     ) : ScreenData(

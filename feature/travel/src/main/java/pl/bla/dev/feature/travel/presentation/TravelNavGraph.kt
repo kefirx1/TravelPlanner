@@ -3,7 +3,6 @@ package pl.bla.dev.feature.travel.presentation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import pl.bla.dev.common.core.navigation.AppNavController
-import pl.bla.dev.common.core.navigation.Destination
 import pl.bla.dev.common.core.navigation.DestinationType
 import pl.bla.dev.common.core.navigation.createDestination
 import pl.bla.dev.common.core.viewmodel.ContractViewModel
@@ -165,9 +164,16 @@ fun NavGraphBuilder.travelNavGraph(
       content = { viewModel ->
         TravelDetailsScreen(viewModel = viewModel)
       },
-      navActionHandler = { action, _ ->
+      navActionHandler = { action, contractViewModel ->
         when (action) {
           is TravelDetailsVM.Action.Navigation.Back -> onResult(TravelResults.Close)
+          is TravelDetailsVM.Action.Navigation.ShowDialog -> {
+            contractViewModel.setContractData(
+              destination = TravelDestinations.TravelDialog,
+              data = action.dialogData,
+            )
+            navController.navigate(TravelDestinations.TravelDialog)
+          }
         }
       }
     )

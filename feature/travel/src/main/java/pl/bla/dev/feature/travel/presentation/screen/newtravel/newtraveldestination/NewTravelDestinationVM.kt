@@ -25,8 +25,8 @@ interface NewTravelDestinationVM {
   sealed interface State {
     data class Initialized(
       val selectedDestinationCountryId: Int = 1,
-      val selectedDestinationCityId: Int = 101,
-      val selectedDestinationVehicleId: Int = 1001,
+      val selectedDestinationCityId: Int? = null,
+      val selectedDestinationVehicleId: Int? = null,
       val selectedDestinationVehicleType: VehicleType,
     ) : State
   }
@@ -113,6 +113,8 @@ class NewTravelDestinationVMImpl @AssistedInject constructor(
   override fun mapScreenData(): NewTravelDestinationVM.ScreenData = newTravelDestinationScreenMapper(
     params = NewTravelDestinationScreenMapper.Params(
       state = state.value,
+      selectedOriginVehicleType = setupData.originVehicleType,
+      selectedOriginVehicleId = setupData.originVehicleId,
       newTravelConfig = setupData.newTravelConfig,
       onBackClick = {
         dispatchAction(NewTravelDestinationVM.Action.Back)
@@ -155,16 +157,19 @@ class NewTravelDestinationVMImpl @AssistedInject constructor(
               originCountryId = setupData.originCountryId,
               originVehicleId = setupData.originVehicleId,
               destinationVehicleType = currentState.selectedDestinationVehicleType,
-              destinationCityId = currentState.selectedDestinationCityId,
+              destinationCityId = currentState.selectedDestinationCityId ?: return@launch,
               destinationCountryId = currentState.selectedDestinationCountryId,
-              destinationVehicleId = currentState.selectedDestinationVehicleId,
+              destinationVehicleId = currentState.selectedDestinationVehicleId ?: return@launch,
             ),
           ).emit()
           is NewTravelDestinationVM.Action.UpdateSelectedDestinationCountry -> currentState.copy(
             selectedDestinationCountryId = action.countryId,
+            selectedDestinationCityId = null,
+            selectedDestinationVehicleId = null,
           ).mutate()
           is NewTravelDestinationVM.Action.UpdateSelectedDestinationCity -> currentState.copy(
             selectedDestinationCityId = action.cityId,
+            selectedDestinationVehicleId = null,
           ).mutate()
           is NewTravelDestinationVM.Action.UpdateSelectedDestinationVehicle -> currentState.copy(
             selectedDestinationVehicleId = action.vehicleId,

@@ -25,8 +25,8 @@ interface NewTravelOriginVM {
   sealed interface State {
     data class Initialized(
       val selectedOriginCountryId: Int = 1,
-      val selectedOriginCityId: Int = 101,
-      val selectedOriginVehicleId: Int = 1001,
+      val selectedOriginCityId: Int? = null,
+      val selectedOriginVehicleId: Int? = null,
     ) : State
   }
 
@@ -109,6 +109,7 @@ class NewTravelOriginVMImpl @AssistedInject constructor(
   override fun mapScreenData(): NewTravelOriginVM.ScreenData = newTravelOriginScreenMapper(
     params = NewTravelOriginScreenMapper.Params(
       state = state.value,
+      originVehicleType = setupData.originVehicleType,
       newTravelConfig = setupData.newTravelConfig,
       onBackClick = {
         dispatchAction(NewTravelOriginVM.Action.Back)
@@ -147,16 +148,19 @@ class NewTravelOriginVMImpl @AssistedInject constructor(
             setupData = NewTravelDestinationVM.NewTravelSetupData(
               newTravelConfig = setupData.newTravelConfig,
               originVehicleType = setupData.originVehicleType,
-              originCityId = currentState.selectedOriginCityId,
+              originCityId = currentState.selectedOriginCityId ?: return@launch,
               originCountryId = currentState.selectedOriginCountryId,
-              originVehicleId = currentState.selectedOriginVehicleId,
+              originVehicleId = currentState.selectedOriginVehicleId ?: return@launch,
             ),
           ).emit()
           is NewTravelOriginVM.Action.UpdateSelectedOriginCountry -> currentState.copy(
             selectedOriginCountryId = action.countryId,
+            selectedOriginCityId = null,
+            selectedOriginVehicleId = null,
           ).mutate()
           is NewTravelOriginVM.Action.UpdateSelectedOriginCity -> currentState.copy(
             selectedOriginCityId = action.cityId,
+            selectedOriginVehicleId = null,
           ).mutate()
           is NewTravelOriginVM.Action.UpdateSelectedOriginVehicle -> currentState.copy(
             selectedOriginVehicleId = action.vehicleId,

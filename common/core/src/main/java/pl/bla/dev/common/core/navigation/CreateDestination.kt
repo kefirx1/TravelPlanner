@@ -42,8 +42,8 @@ inline fun <CONTRACT: Any?, reified CVM: ContractViewModel, reified VM: CustomVi
       val sharedViewModel = rememberContractViewModel<CVM>(
         navController = navController,
       )
-      graphInitContract?.run {
-        retrieveData<CONTRACT>(destination = destination)?.let { initData ->
+      graphInitContract?.let { contract ->
+        contract.retrieveData<CONTRACT>(destination = destination)?.let { initData ->
           sharedViewModel.setContractData(
             destination = destination,
             data = initData,
@@ -67,8 +67,8 @@ inline fun <CONTRACT: Any?, reified CVM: ContractViewModel, reified VM: CustomVi
       val sharedViewModel = rememberContractViewModel<CVM>(
         navController = navController,
       )
-      graphInitContract?.run {
-        retrieveData<CONTRACT>(destination = destination)?.let { initData ->
+      graphInitContract?.let { contract ->
+        contract.retrieveData<CONTRACT>(destination = destination)?.let { initData ->
           sharedViewModel.setContractData(
             destination = destination,
             data = initData,

@@ -18,7 +18,7 @@ internal class BackendServiceRepositoryImpl: BackendServiceRepository {
 
   //TODO server value
   override suspend fun getOnboardingContent(): Either<AppError, OnboardingContent> {
-    delay(1000)
+    delay(500)
     Log.i(tag = "BackendServiceRepository", message = "getOnboardingContent")
     return Either.Right(
       value = BEMock.onboardingContent.toDomain()
@@ -26,7 +26,7 @@ internal class BackendServiceRepositoryImpl: BackendServiceRepository {
   }
 
   override suspend fun getNewTravelConfig(): Either<AppError, NewTravelConfig> {
-    delay(2000)
+    delay(500)
     Log.i(tag = "BackendServiceRepository", message = "getNewTravelConfig")
     return Either.Right(
       value = BEMock.newTravelConfig.toDomain()

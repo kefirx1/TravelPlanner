@@ -2,6 +2,7 @@ package pl.bla.dev.feature.travel.presentation.screen.newtravel.newtravelorigin.
 
 import pl.bla.dev.be.backendservice.contract.domain.model.CountryConfig
 import pl.bla.dev.be.backendservice.contract.domain.model.NewTravelConfig
+import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
 import pl.bla.dev.common.core.usecase.Mapper
 import pl.bla.dev.common.core.usecase.UseCase
 import pl.bla.dev.common.ui.componenst.button.LargeButtonData
@@ -13,6 +14,7 @@ import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtravelorigin.N
 interface NewTravelOriginScreenMapper : Mapper<NewTravelOriginScreenMapper.Params, NewTravelOriginVM.ScreenData> {
   data class Params(
     val state: NewTravelOriginVM.State,
+    val originVehicleType: VehicleType,
     val newTravelConfig: NewTravelConfig,
     val onBackClick: () -> Unit,
     val onCloseProcessClick: () -> Unit,
@@ -45,18 +47,19 @@ internal class NewTravelOriginScreenMapperImpl : NewTravelOriginScreenMapper {
           content = params.newTravelConfig.countriesConfig.getCountriesSelectItemData(),
         ),
         originCitySelectData = SelectData(
-          selectedOption = params.state.selectedOriginCityId,
+          selectedOption = params.state.selectedOriginCityId ?: -1,
           onSelect = params.onSelectCity,
           content = params.newTravelConfig.countriesConfig.getCitiesSelectItemData(
             selectedCountryId = params.state.selectedOriginCountryId,
           ),
         ),
         originVehicleSelectData = SelectData(
-          selectedOption = params.state.selectedOriginVehicleId,
+          selectedOption = params.state.selectedOriginVehicleId ?: -1,
           onSelect = params.onSelectVehicle,
           content = params.newTravelConfig.countriesConfig.getVehiclesSelectItemData(
             selectedCountryId = params.state.selectedOriginCountryId,
-            selectedCityId = params.state.selectedOriginCityId,
+            selectedCityId = params.state.selectedOriginCityId ?: -1,
+            selectedOriginVehicleType = params.originVehicleType,
           )
         ),
       )
@@ -78,13 +81,17 @@ internal class NewTravelOriginScreenMapperImpl : NewTravelOriginScreenMapper {
       )
     } ?: emptyList()
 
-  private fun List<CountryConfig>.getVehiclesSelectItemData(selectedCountryId: Int, selectedCityId: Int) =
-    this.find { it.countryId == selectedCountryId }?.citiesConfig?.find { it.cityId == selectedCityId }?.vehiclesConfig?.map { vehicle ->
+  private fun List<CountryConfig>.getVehiclesSelectItemData(
+    selectedOriginVehicleType: VehicleType,
+    selectedCountryId: Int,
+    selectedCityId: Int,
+  ) = this.find { it.countryId == selectedCountryId }?.citiesConfig
+    ?.find { it.cityId == selectedCityId }?.vehiclesConfig
+    ?.filter { it.vehicleType == selectedOriginVehicleType }
+    ?.map { vehicle ->
       SelectItemData(
         id = vehicle.vehicleId,
         label = vehicle.vehicleName,
       )
     } ?: emptyList()
-
-
 }

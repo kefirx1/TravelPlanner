@@ -58,7 +58,6 @@ abstract class CustomViewModel<STATE, SCREEN_DATA, NAV_ACTION>(
   }
 
   fun NAV_ACTION.emit() = viewModelScope.launch {
-    println("emit $this@emit")
     navAction.emit(this@emit)
   }
 }

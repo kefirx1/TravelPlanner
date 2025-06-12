@@ -60,13 +60,9 @@ fun MainAppNavGraph(
             )
             appNavController.navigate(destination = TravelDestinations.TravelDetails)
           }
-          DashboardResults.ToNewTravel -> {
-            appContractVM.setContractData(
-              destination = TravelDestinations.TravelGraph,
-              data = TravelDestinations.NewTravelVehicle,
-            )
-            appNavController.navigate(destination = TravelDestinations.TravelGraph)
-          }
+          DashboardResults.ToNewTravel ->
+            appNavController.navigate(destination = TravelDestinations.NewTravelVehicle)
+
         }
       },
     )

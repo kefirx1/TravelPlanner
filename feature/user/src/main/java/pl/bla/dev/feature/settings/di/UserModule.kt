@@ -13,6 +13,7 @@ import pl.bla.dev.common.security.SecretKeyProvider
 import pl.bla.dev.common.security.domain.GenerateSaltUC
 import pl.bla.dev.common.storage.datastore.DataStoreProvider
 import pl.bla.dev.common.storage.room.DatabaseProvider
+import pl.bla.dev.feature.settings.contract.domain.usecase.CancelTravelUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.FetchNewTravelConfigUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetFullTravelDataUC
@@ -20,6 +21,8 @@ import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedNewTravelConf
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.RemoveTravelUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.RestoreTravelUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.SaveNewTravelUC
 import pl.bla.dev.feature.settings.data.model.LocalDateTimeConverter
 import pl.bla.dev.feature.settings.data.model.OnboardingPreferencesConverter
@@ -29,6 +32,7 @@ import pl.bla.dev.feature.settings.data.source.NewTravelConfigDataStore
 import pl.bla.dev.feature.settings.data.source.NewTravelConfigPreferencesDataStore
 import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
 import pl.bla.dev.feature.settings.data.source.UserSettingsPreferencesDataStore
+import pl.bla.dev.feature.settings.domain.usecase.CancelTravelUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.DecryptUserDEKAndInjectCacheUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.FetchNewTravelConfigUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetCountryTravelConfigByIdUC
@@ -38,6 +42,8 @@ import pl.bla.dev.feature.settings.domain.usecase.GetSavedNewTravelConfigUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedUserNameUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetUserTravelsShortDataUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RegisterNewUserUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.RemoveTravelUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.RestoreTravelUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.SaveNewTravelUCImpl
 import javax.inject.Singleton
 
@@ -178,5 +184,26 @@ object UserModule {
     getSavedNewTravelConfigUC: GetSavedNewTravelConfigUC,
   ): GetCountryTravelConfigByIdUC = GetCountryTravelConfigByIdUCImpl(
     getSavedNewTravelConfigUC = getSavedNewTravelConfigUC,
+  )
+
+  @Provides
+  fun provideRemoveTravelUC(
+    userRepository: UserRepository,
+  ): RemoveTravelUC = RemoveTravelUCImpl(
+    userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideCancelTravelUC(
+    userRepository: UserRepository,
+  ): CancelTravelUC = CancelTravelUCImpl(
+    userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideRestoreTravelUC(
+    userRepository: UserRepository,
+  ): RestoreTravelUC = RestoreTravelUCImpl(
+    userRepository = userRepository,
   )
 }

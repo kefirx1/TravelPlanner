@@ -47,6 +47,7 @@ interface MainDashboardVM {
       data object ToNewTravel : Navigation
     }
 
+    data object Back : Action
     data object OnFABClick : Action
     data class ToTravelDetails(val travelId: Int) : Action
     data object RequestLocationPermission : Action
@@ -169,7 +170,7 @@ class MainDashboardVMImpl @Inject constructor(
     params = MainDashboardScreenMapper.Params(
       state = state.value,
       onBackClick = {
-        dispatchAction(MainDashboardVM.Action.ShowDialog(dialogType = DialogType.Logout))
+        dispatchAction(MainDashboardVM.Action.Back)
       },
       onBottomNavItemClick = { id ->
         dispatchAction(MainDashboardVM.Action.OnBottomNavItemClick(id = id))
@@ -193,6 +194,7 @@ class MainDashboardVMImpl @Inject constructor(
     viewModelScope.launch {
       when (val currentState = state.value) {
         is MainDashboardVM.State.MapScreen -> when (action) {
+          is MainDashboardVM.Action.Back -> dispatchAction(MainDashboardVM.Action.ShowDialog(dialogType = DialogType.Logout))
           is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
           is MainDashboardVM.Action.OnBottomNavItemClick -> onBottomNavItemClick(
             state = currentState,
@@ -237,6 +239,7 @@ class MainDashboardVMImpl @Inject constructor(
           is MainDashboardVM.Action.ToTravelDetails -> {}
         }
         is MainDashboardVM.State.TravelScreen -> when (action) {
+          is MainDashboardVM.Action.Back -> MainDashboardVM.State.MapScreen().override()
           is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
           is MainDashboardVM.Action.OnBottomNavItemClick -> onBottomNavItemClick(
             state = currentState,
@@ -250,6 +253,7 @@ class MainDashboardVMImpl @Inject constructor(
           is MainDashboardVM.Action.OnFABClick -> {}
         }
         is MainDashboardVM.State.SettingsScreen -> when (action) {
+          is MainDashboardVM.Action.Back -> MainDashboardVM.State.MapScreen().override()
           is MainDashboardVM.Action.ShowDialog -> showDialog(dialogType = action.dialogType)
           is MainDashboardVM.Action.OnBottomNavItemClick -> onBottomNavItemClick(
             state = currentState,

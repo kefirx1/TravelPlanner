@@ -17,4 +17,10 @@ interface UserTravelsDao {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun addTravel(travel: UserTravelsDto): Long
+
+  @Query("DELETE FROM usertravelsdto WHERE user_id = :userId AND uid = :travelId")
+  suspend fun removeTravel(userId: Int, travelId: Int)
+
+  @Query("UPDATE usertravelsdto SET cancelled = :isCancelled WHERE user_id = :userId AND uid = :travelId")
+  suspend fun updateTravelCancellationStatus(userId: Int, travelId: Int, isCancelled: Boolean)
 }
