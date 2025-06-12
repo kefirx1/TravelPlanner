@@ -7,7 +7,6 @@ import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContentItem
 import pl.bla.dev.be.backendservice.contract.domain.model.OnboardingContentSection
 import pl.bla.dev.be.backendservice.contract.domain.model.VehicleConfig
 import pl.bla.dev.be.backendservice.contract.domain.model.VehicleType
-import pl.bla.dev.feature.settings.contract.domain.model.TravelStatus
 import pl.bla.dev.feature.settings.contract.domain.model.UserInfo
 import pl.bla.dev.feature.settings.contract.domain.model.UserOnboardingPreferences
 import pl.bla.dev.feature.settings.contract.domain.model.UserOnboardingPreferencesItem
@@ -165,15 +164,33 @@ object UserMapper {
   fun UserTravelsDto.toDomain() = UserTravels(
     uid = uid,
     userId = userId,
-    originCountryId = originCountryId,
-    destinationCountryId = destinationCountryId,
-    originCityId = originCityId,
-    destinationCityId = destinationCityId,
     cancelled = cancelled,
+    originContinentId = originContinentId,
+    destinationContinentId = destinationContinentId,
+    originCityId = originCityId,
+    originCity = originCity,
+    originCountryId = originCountryId,
+    originCountry = originCountry,
+    destinationCityId = destinationCityId,
+    destinationCity = destinationCity,
+    destinationCountryId = destinationCountryId,
+    destinationCountry = destinationCountry,
     startDate = startDate,
     endDate = endDate,
     originVehicleId = originVehicleId,
+    originVehicleName = originVehicleName,
+    originVehicleDescription = originVehicleDescription,
+    originVehicleAddress = originVehicleAddress,
+    originVehicleLatitude = originVehicleLatitude,
+    originVehicleLongitude = originVehicleLongitude,
+    originVehicleType = VehicleType.valueOf(originVehicleType),
     destinationVehicleId = destinationVehicleId,
+    destinationVehicleName = destinationVehicleName,
+    destinationVehicleDescription = destinationVehicleDescription,
+    destinationVehicleAddress = destinationVehicleAddress,
+    destinationVehicleLatitude = destinationVehicleLatitude,
+    destinationVehicleLongitude = destinationVehicleLongitude,
+    destinationVehicleType = VehicleType.valueOf(destinationVehicleType),
   )
 
 

@@ -18,7 +18,6 @@ import pl.bla.dev.feature.settings.data.source.UserDatabase
 import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
 import pl.bla.dev.feature.settings.domain.mapper.UserMapper.toDomain
 import pl.bla.dev.feature.settings.domain.mapper.UserMapper.toDto
-import java.time.LocalDateTime
 
 interface UserRepository {
   suspend fun registerNewUser(
@@ -37,14 +36,7 @@ interface UserRepository {
   suspend fun getUserTravels(): List<UserTravels>
   suspend fun getUserTravel(travelId: Int): UserTravels?
   suspend fun saveUserTravel(
-    originCountryId: Int,
-    destinationCountryId: Int,
-    originCityId: Int,
-    destinationCityId: Int,
-    originVehicleId: Int,
-    destinationVehicleId: Int,
-    startDate: LocalDateTime,
-    endDate: LocalDateTime,
+    userTravels: UserTravels,
   ): Int
 }
 
@@ -118,29 +110,40 @@ internal class UserRepositoryImpl(
   }
 
   override suspend fun saveUserTravel(
-    originCountryId: Int,
-    destinationCountryId: Int,
-    originCityId: Int,
-    destinationCityId: Int,
-    originVehicleId: Int,
-    destinationVehicleId: Int,
-    startDate: LocalDateTime,
-    endDate: LocalDateTime,
+    userTravels: UserTravels,
   ): Int = withContext(Dispatchers.IO) {
     val userId = userDatabase.userInfoDao().getUser()?.uid ?: return@withContext -1  //TODO error handling
 
     userDatabase.userTravelsDao().addTravel(
       travel = UserTravelsDto(
         userId = userId,
-        originCountryId = originCountryId,
-        destinationCountryId = destinationCountryId,
-        originCityId = originCityId,
-        destinationCityId = destinationCityId,
         cancelled = false,
-        startDate = startDate,
-        endDate = endDate,
-        originVehicleId = originVehicleId,
-        destinationVehicleId = destinationVehicleId,
+        originContinentId = userTravels.originContinentId,
+        destinationContinentId = userTravels.destinationContinentId,
+        originCityId = userTravels.originCityId,
+        originCity = userTravels.originCity,
+        originCountryId = userTravels.originCountryId,
+        originCountry = userTravels.originCountry,
+        destinationCityId = userTravels.destinationCityId,
+        destinationCity = userTravels.destinationCity,
+        destinationCountryId = userTravels.destinationCountryId,
+        destinationCountry = userTravels.destinationCountry,
+        startDate = userTravels.startDate,
+        endDate = userTravels.endDate,
+        originVehicleId = userTravels.originVehicleId,
+        originVehicleName = userTravels.originVehicleName,
+        originVehicleDescription = userTravels.originVehicleDescription,
+        originVehicleAddress = userTravels.originVehicleAddress,
+        originVehicleLatitude = userTravels.originVehicleLatitude,
+        originVehicleLongitude = userTravels.originVehicleLongitude,
+        originVehicleType = userTravels.originVehicleType.name,
+        destinationVehicleId = userTravels.destinationVehicleId,
+        destinationVehicleName = userTravels.destinationVehicleName,
+        destinationVehicleDescription = userTravels.destinationVehicleDescription,
+        destinationVehicleAddress = userTravels.destinationVehicleAddress,
+        destinationVehicleLatitude = userTravels.destinationVehicleLatitude,
+        destinationVehicleLongitude = userTravels.destinationVehicleLongitude,
+        destinationVehicleType = userTravels.destinationVehicleType.name,
       )
     ).toInt()
   }

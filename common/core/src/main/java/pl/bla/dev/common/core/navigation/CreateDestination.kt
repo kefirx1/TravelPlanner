@@ -32,14 +32,24 @@ inline fun <CONTRACT: Any?, reified CVM: ContractViewModel, reified VM: CustomVi
   destination: Destination,
   destinationType: DestinationType = DestinationType.Screen,
   navController: AppNavController,
+  graphInitContract: ContractViewModel? = null,
   noinline navActionHandler: (NAV, ContractViewModel) -> Unit = { _, _ -> },
   crossinline content: @Composable (VM) -> Unit
 ) {
+
   when (destinationType) {
     DestinationType.Screen -> composable(route = destination.route) {
       val sharedViewModel = rememberContractViewModel<CVM>(
         navController = navController,
       )
+      graphInitContract?.run {
+        retrieveData<CONTRACT>(destination = destination)?.let { initData ->
+          sharedViewModel.setContractData(
+            destination = destination,
+            data = initData,
+          )
+        }
+      }
       val setupData = sharedViewModel.retrieveData<CONTRACT>(destination = destination)
 
       val viewModel = if (setupData != null) {
@@ -57,6 +67,14 @@ inline fun <CONTRACT: Any?, reified CVM: ContractViewModel, reified VM: CustomVi
       val sharedViewModel = rememberContractViewModel<CVM>(
         navController = navController,
       )
+      graphInitContract?.run {
+        retrieveData<CONTRACT>(destination = destination)?.let { initData ->
+          sharedViewModel.setContractData(
+            destination = destination,
+            data = initData,
+          )
+        }
+      }
       val setupData = sharedViewModel.retrieveData<CONTRACT>(destination = destination)
 
       val viewModel = if (setupData != null) {

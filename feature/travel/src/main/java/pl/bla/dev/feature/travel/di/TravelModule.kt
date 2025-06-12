@@ -4,6 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import pl.bla.dev.feature.travel.presentation.screen.details.mapper.TravelDetailsScreenMapper
+import pl.bla.dev.feature.travel.presentation.screen.details.mapper.TravelDetailsScreenMapperImpl
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.mapper.NewTravelDateDialogMapper
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.mapper.NewTravelDateDialogMapperImpl
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.mapper.NewTravelDateScreenMapper
@@ -48,4 +50,7 @@ object TravelModule {
 
   @Provides
   fun provideNewTravelOriginScreenMapper(): NewTravelOriginScreenMapper = NewTravelOriginScreenMapperImpl()
+
+  @Provides
+  fun provideTravelDetailsScreenMapper(): TravelDetailsScreenMapper = TravelDetailsScreenMapperImpl()
 }

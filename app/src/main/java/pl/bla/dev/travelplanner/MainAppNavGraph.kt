@@ -13,6 +13,7 @@ import pl.bla.dev.feature.login.presentation.AuthResults
 import pl.bla.dev.feature.login.presentation.authNavGraph
 import pl.bla.dev.feature.travel.presentation.TravelDestinations
 import pl.bla.dev.feature.travel.presentation.TravelResults
+import pl.bla.dev.feature.travel.presentation.screen.details.TravelDetailsVM
 import pl.bla.dev.feature.travel.presentation.travelNavGraph
 
 @Composable
@@ -54,14 +55,10 @@ fun MainAppNavGraph(
           )
           is DashboardResults.ToTravelDetails -> {
             appContractVM.setContractData(
-              destination = TravelDestinations.TravelGraph,
-              data = TravelDestinations.TravelDetails,
-            )
-            appContractVM.setContractData(
               destination = TravelDestinations.TravelDetails,
-              data = result.travelId,
+              data = TravelDetailsVM.TravelDetailsSetupData(travelId = result.travelId),
             )
-            appNavController.navigate(destination = TravelDestinations.TravelGraph)
+            appNavController.navigate(destination = TravelDestinations.TravelDetails)
           }
           DashboardResults.ToNewTravel -> {
             appContractVM.setContractData(
@@ -80,7 +77,7 @@ fun MainAppNavGraph(
       onResult = { result ->
         when (result) {
           TravelResults.Close -> appNavController.navigate(
-            destination = DashboardDestinations.DashboardGraph,
+            destination = DashboardDestinations.MainDashboard,
           )
         }
       },

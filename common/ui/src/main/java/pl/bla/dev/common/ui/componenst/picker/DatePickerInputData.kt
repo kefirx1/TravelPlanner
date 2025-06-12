@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import pl.bla.dev.common.ui.theming.AppColors
 
 data class DatePickerInputData(
@@ -24,13 +26,18 @@ data class DatePickerInputData(
   val onClick: () -> Unit,
 )
 
+private const val ACTION_DEBOUNCE = 100L
+
+@OptIn(FlowPreview::class)
 @Composable
 fun DatePickerInput(data: DatePickerInputData) {
   val interactionSource = remember { MutableInteractionSource() }
 
   LaunchedEffect(interactionSource) {
-    interactionSource.interactions.collect { interaction ->
-      data.onClick()
+    interactionSource.interactions.debounce(ACTION_DEBOUNCE).collect { interaction ->
+      when (interaction) {
+        is PressInteraction -> data.onClick()
+      }
     }
   }
 

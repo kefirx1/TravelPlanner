@@ -12,6 +12,9 @@ import pl.bla.dev.common.ui.componenst.picker.CustomDatePickerData
 import pl.bla.dev.feature.travel.presentation.screen.datepicker.TravelDatePickerScreen
 import pl.bla.dev.feature.travel.presentation.screen.datepicker.TravelDatePickerVM
 import pl.bla.dev.feature.travel.presentation.screen.datepicker.TravelDatePickerVMImpl
+import pl.bla.dev.feature.travel.presentation.screen.details.TravelDetailsScreen
+import pl.bla.dev.feature.travel.presentation.screen.details.TravelDetailsVM
+import pl.bla.dev.feature.travel.presentation.screen.details.TravelDetailsVMImpl
 import pl.bla.dev.feature.travel.presentation.screen.dialog.TravelDialogScreen
 import pl.bla.dev.feature.travel.presentation.screen.dialog.TravelDialogVM
 import pl.bla.dev.feature.travel.presentation.screen.dialog.TravelDialogVMImpl
@@ -35,9 +38,7 @@ fun NavGraphBuilder.travelNavGraph(
 ) {
   navigation(
     route = TravelDestinations.TravelGraph.route,
-    startDestination = appContractVM.retrieveData<Destination>(
-      destination = TravelDestinations.TravelGraph,
-    )?.route ?: TravelDestinations.NewTravelVehicle.route,
+    startDestination = TravelDestinations.NewTravelVehicle.route,
   ) {
     createDestination<Nothing, TravelContractVM, NewTravelVehicleVMImpl, NewTravelVehicleVM.Action.Navigation>(
       destination = TravelDestinations.NewTravelVehicle,
@@ -141,7 +142,7 @@ fun NavGraphBuilder.travelNavGraph(
           is NewTravelDateVM.Action.Navigation.ToDetails -> {
             contractViewModel.setContractData(
               destination = TravelDestinations.TravelDetails,
-              data = action.travelId,
+              data = action.setupData,
             )
             navController.navigate(TravelDestinations.TravelDetails)
           }
@@ -155,6 +156,20 @@ fun NavGraphBuilder.travelNavGraph(
           NewTravelDateVM.Action.Navigation.CloseProcess -> onResult(TravelResults.Close)
         }
       },
+    )
+
+    createDestination<TravelDetailsVM.TravelDetailsSetupData, TravelContractVM, TravelDetailsVMImpl, TravelDetailsVM.Action.Navigation>(
+      destination = TravelDestinations.TravelDetails,
+      navController = navController,
+      graphInitContract = appContractVM,
+      content = { viewModel ->
+        TravelDetailsScreen(viewModel = viewModel)
+      },
+      navActionHandler = { action, _ ->
+        when (action) {
+          is TravelDetailsVM.Action.Navigation.Back -> onResult(TravelResults.Close)
+        }
+      }
     )
 
     createDestination<DialogData, TravelContractVM, TravelDialogVMImpl, TravelDialogVM.Action.Navigation>(

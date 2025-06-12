@@ -16,6 +16,8 @@ import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboar
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.BottomNavItem
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
 import pl.bla.dev.feature.settings.contract.domain.model.TravelStatus
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData> {
   data class Params(

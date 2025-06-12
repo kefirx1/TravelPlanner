@@ -11,6 +11,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -41,6 +42,14 @@ fun CustomDatePicker(data: CustomDatePickerData) {
   val state = rememberDatePickerState(
     initialSelectedDateMillis = data.pickedDate.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
     initialDisplayMode = DisplayMode.Picker,
+    selectableDates = object : SelectableDates {
+      override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+        val instant = Instant.ofEpochMilli(utcTimeMillis)
+        val selectedLocalDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+
+        return selectedLocalDate.isAfter(LocalDateTime.now(ZoneId.systemDefault()))
+      }
+    }
   )
   val dateFormatter = remember { DatePickerDefaults.dateFormatter() }
   val datePickerColors = DatePickerDefaults.colors(

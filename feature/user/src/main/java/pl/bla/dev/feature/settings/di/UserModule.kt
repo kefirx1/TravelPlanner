@@ -137,10 +137,8 @@ object UserModule {
   @Provides
   fun provideGetUserTravelsShortDataUC(
     userRepository: UserRepository,
-    getCountryTravelConfigByIdUC: GetCountryTravelConfigByIdUC,
   ): GetUserTravelsShortDataUC = GetUserTravelsShortDataUCImpl(
     userRepository = userRepository,
-    getCountryTravelConfigByIdUC = getCountryTravelConfigByIdUC,
   )
 
   @Provides
@@ -162,17 +160,17 @@ object UserModule {
   @Provides
   fun provideSaveNewTravelUC(
     userRepository: UserRepository,
+    getCountryTravelConfigByIdUC: GetCountryTravelConfigByIdUC,
   ): SaveNewTravelUC = SaveNewTravelUCImpl(
     userRepository = userRepository,
+    getCountryTravelConfigByIdUC = getCountryTravelConfigByIdUC,
   )
 
   @Provides
   fun provideGetFullTravelDataUC(
     userRepository: UserRepository,
-    getCountryTravelConfigByIdUC: GetCountryTravelConfigByIdUC,
   ): GetFullTravelDataUC = GetFullTravelDataUCImpl(
     userRepository = userRepository,
-    getCountryTravelConfigByIdUC = getCountryTravelConfigByIdUC,
   )
 
   @Provides

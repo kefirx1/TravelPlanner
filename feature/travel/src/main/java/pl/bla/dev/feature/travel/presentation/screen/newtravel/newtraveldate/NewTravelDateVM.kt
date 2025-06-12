@@ -18,6 +18,7 @@ import pl.bla.dev.common.ui.componenst.picker.CustomDatePickerData
 import pl.bla.dev.common.ui.componenst.picker.DatePickerInputData
 import pl.bla.dev.common.ui.componenst.tab.TopAppBarData
 import pl.bla.dev.feature.settings.contract.domain.usecase.SaveNewTravelUC
+import pl.bla.dev.feature.travel.presentation.screen.details.TravelDetailsVM
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.NewTravelDateVM.NewTravelSetupData
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.mapper.NewTravelDateDialogMapper
 import pl.bla.dev.feature.travel.presentation.screen.newtravel.newtraveldate.mapper.NewTravelDateDialogMapper.DialogType
@@ -40,7 +41,7 @@ interface NewTravelDateVM {
         val dialogData: DialogData,
       ) : Navigation
       data class ToDetails(
-        val travelId: Int,
+        val setupData: TravelDetailsVM.TravelDetailsSetupData,
       ) : Navigation
       data class ShowDatePicker(
         val customDatePickerData: CustomDatePickerData,
@@ -173,7 +174,9 @@ class NewTravelDateVMImpl @AssistedInject constructor(
             ).fold(
               onRight = { newTravelId ->
                 NewTravelDateVM.Action.Navigation.ToDetails(
-                  travelId = newTravelId,
+                  setupData = TravelDetailsVM.TravelDetailsSetupData(
+                    travelId = newTravelId,
+                  )
                 ).emit()
               },
               onLeft = { error ->
@@ -181,12 +184,16 @@ class NewTravelDateVMImpl @AssistedInject constructor(
               }
             )
           }
-          is NewTravelDateVM.Action.UpdateStartDate -> currentState.copy(
-            startDate = action.newDate,
-          ).mutate()
-          is NewTravelDateVM.Action.UpdateEndDate -> currentState.copy(
-            endDate = action.newDate,
-          ).mutate()
+          is NewTravelDateVM.Action.UpdateStartDate -> {
+            currentState.copy(
+              startDate = action.newDate,
+            ).mutate()
+          }
+          is NewTravelDateVM.Action.UpdateEndDate -> {
+            currentState.copy(
+              endDate = action.newDate,
+            ).mutate()
+          }
           is NewTravelDateVM.Action.ShowDatePicker ->
             NewTravelDateVM.Action.Navigation.ShowDatePicker(customDatePickerData = action.customDatePickerData).emit()
           NewTravelDateVM.Action.CloseProcess -> NewTravelDateVM.Action.Navigation.CloseProcess.emit()

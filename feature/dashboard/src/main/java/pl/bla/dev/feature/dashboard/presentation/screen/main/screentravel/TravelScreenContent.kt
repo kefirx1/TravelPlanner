@@ -17,6 +17,7 @@ import pl.bla.dev.common.ui.componenst.divider.Divider
 import pl.bla.dev.common.ui.componenst.text.CustomText
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVM
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun TravelScreenContent(data: MainDashboardVM.ScreenData.TravelScreen) {
@@ -104,7 +105,7 @@ private fun TravelItem(travelShortDisplayData: TravelShortDisplayData) {
     data = ActionCardData(
       content = {
         CustomText(
-          text = "${travelShortData.startDate.dayOfMonth}-${travelShortData.startDate.monthValue}-${travelShortData.startDate.year}",
+          text = "${travelShortData.startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))}",
           style = MaterialTheme.typography.titleMedium,
         )
         Spacer(modifier = Modifier.height(5.dp))
