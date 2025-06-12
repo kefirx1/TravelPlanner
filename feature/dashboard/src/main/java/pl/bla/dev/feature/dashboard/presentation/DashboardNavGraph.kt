@@ -13,6 +13,9 @@ import pl.bla.dev.feature.dashboard.presentation.screen.dialog.DashboardDialogVM
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardScreen
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVM
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVMImpl
+import pl.bla.dev.feature.dashboard.presentation.screen.settings.changepassword.ChangePasswordScreen
+import pl.bla.dev.feature.dashboard.presentation.screen.settings.changepassword.ChangePasswordVM
+import pl.bla.dev.feature.dashboard.presentation.screen.settings.changepassword.ChangePasswordVMImpl
 
 fun NavGraphBuilder.dashboardNavGraph(
   appContractVM: ContractViewModel,
@@ -42,8 +45,23 @@ fun NavGraphBuilder.dashboardNavGraph(
           is MainDashboardVM.Action.Navigation.ToTravelDetails ->
             onResult(DashboardResults.ToTravelDetails(travelId = action.travelId))
           is MainDashboardVM.Action.Navigation.ToNewTravel -> onResult(DashboardResults.ToNewTravel)
+          is MainDashboardVM.Action.Navigation.ToChangePassword -> navController.navigate(DashboardDestinations.ChangePassword)
         }
       }
+    )
+
+    createDestination<Nothing, DashboardContractVM, ChangePasswordVMImpl, ChangePasswordVM.Action.Navigation>(
+      destination = DashboardDestinations.ChangePassword,
+      navController = navController,
+      content = { viewModel ->
+        ChangePasswordScreen(viewModel = viewModel)
+      },
+      navActionHandler = { action, _ ->
+        when (action) {
+          is ChangePasswordVM.Action.Navigation.Back -> navController.popBackStack()
+          is ChangePasswordVM.Action.Navigation.Logout -> onResult(DashboardResults.Logout)
+        }
+      },
     )
 
     createDestination<DialogData, DashboardContractVM, DashboardDialogVMImpl, DashboardDialogVM.Action.Navigation>(

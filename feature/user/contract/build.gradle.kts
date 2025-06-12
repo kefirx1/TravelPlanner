@@ -32,6 +32,7 @@ android {
 
 dependencies {
   implementation(project(":common:core"))
+  implementation(project(":common:validators"))
 
   implementation(project(":be:backendservice:contract"))
 }

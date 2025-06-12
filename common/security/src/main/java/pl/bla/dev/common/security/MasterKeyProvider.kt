@@ -10,6 +10,8 @@ interface MasterKeyProvider {
   fun getMasterKey(): SecretKey?
 
   fun saveDecryptedMasterKey(masterKey: SecretKey)
+
+  fun clearCachedKey()
 }
 
 internal class MasterKeyProviderImpl(
@@ -31,5 +33,9 @@ internal class MasterKeyProviderImpl(
 
   override fun getMasterKey(): SecretKey? {
     return masterKeyDataStore.getKey()
+  }
+
+  override fun clearCachedKey() {
+    masterKeyDataStore.clearKey()
   }
 }

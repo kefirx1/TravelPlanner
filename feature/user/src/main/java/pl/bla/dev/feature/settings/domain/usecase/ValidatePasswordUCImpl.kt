@@ -1,15 +1,10 @@
-package pl.bla.dev.feature.login.domain.usecase
+package pl.bla.dev.feature.settings.domain.usecase
 
-import pl.bla.dev.common.core.usecase.UseCase
 import pl.bla.dev.common.validators.TextValidator
 import pl.bla.dev.common.validators.TextValidatorRule
 import pl.bla.dev.common.validators.ValidationResult
+import pl.bla.dev.feature.settings.contract.domain.usecase.ValidatePasswordUC
 
-interface ValidatePasswordUC: UseCase<ValidatePasswordUC.Params, ValidationResult> {
-  data class Params(
-    val password: String,
-  ): UseCase.Params
-}
 
 internal class ValidatePasswordUCImpl(
   private val textValidator: TextValidator,

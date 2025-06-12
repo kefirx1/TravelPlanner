@@ -9,10 +9,6 @@ import pl.bla.dev.feature.login.domain.usecase.AfterLoginActionUC
 import pl.bla.dev.feature.login.domain.usecase.AfterLoginActionUCImpl
 import pl.bla.dev.feature.login.domain.usecase.ValidateEmailUC
 import pl.bla.dev.feature.login.domain.usecase.ValidateEmailUCImpl
-import pl.bla.dev.feature.login.domain.usecase.ValidatePasswordUC
-import pl.bla.dev.feature.login.domain.usecase.ValidatePasswordUCImpl
-import pl.bla.dev.feature.login.domain.usecase.ValidateRepeatPasswordUC
-import pl.bla.dev.feature.login.domain.usecase.ValidateRepeatPasswordUCImpl
 import pl.bla.dev.feature.login.domain.usecase.ValidateUserContainerPasswordUC
 import pl.bla.dev.feature.login.domain.usecase.ValidateUserContainerPasswordUCImpl
 import pl.bla.dev.feature.login.domain.usecase.ValidateUserNameUC
@@ -60,16 +56,6 @@ object AuthModule {
   fun provideValidateEmailUC(
     textValidator: TextValidator,
   ): ValidateEmailUC = ValidateEmailUCImpl(textValidator = textValidator)
-
-  @Provides
-  fun provideValidatePasswordUC(
-    textValidator: TextValidator,
-  ): ValidatePasswordUC = ValidatePasswordUCImpl(textValidator = textValidator)
-
-  @Provides
-  fun provideValidateRepeatPasswordUC(
-    textValidator: TextValidator,
-  ): ValidateRepeatPasswordUC = ValidateRepeatPasswordUCImpl(textValidator = textValidator)
 
   @Provides
   fun provideValidateUserNameUC(

@@ -13,7 +13,10 @@ import pl.bla.dev.common.security.SecretKeyProvider
 import pl.bla.dev.common.security.domain.GenerateSaltUC
 import pl.bla.dev.common.storage.datastore.DataStoreProvider
 import pl.bla.dev.common.storage.room.DatabaseProvider
+import pl.bla.dev.common.validators.TextValidator
 import pl.bla.dev.feature.settings.contract.domain.usecase.CancelTravelUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.ChangeUserPasswordUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.ClearUserSessionUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.FetchNewTravelConfigUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetFullTravelDataUC
@@ -24,6 +27,8 @@ import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RemoveTravelUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RestoreTravelUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.SaveNewTravelUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.ValidatePasswordUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.ValidateRepeatPasswordUC
 import pl.bla.dev.feature.settings.data.model.LocalDateTimeConverter
 import pl.bla.dev.feature.settings.data.model.OnboardingPreferencesConverter
 import pl.bla.dev.feature.settings.data.repository.UserRepository
@@ -33,6 +38,8 @@ import pl.bla.dev.feature.settings.data.source.NewTravelConfigPreferencesDataSto
 import pl.bla.dev.feature.settings.data.source.UserSettingsDataStore
 import pl.bla.dev.feature.settings.data.source.UserSettingsPreferencesDataStore
 import pl.bla.dev.feature.settings.domain.usecase.CancelTravelUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.ChangeUserPasswordUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.ClearUserSessionUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.DecryptUserDEKAndInjectCacheUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.FetchNewTravelConfigUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetCountryTravelConfigByIdUC
@@ -45,6 +52,8 @@ import pl.bla.dev.feature.settings.domain.usecase.RegisterNewUserUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RemoveTravelUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RestoreTravelUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.SaveNewTravelUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.ValidatePasswordUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.ValidateRepeatPasswordUCImpl
 import javax.inject.Singleton
 
 @Module
@@ -206,4 +215,39 @@ object UserModule {
   ): RestoreTravelUC = RestoreTravelUCImpl(
     userRepository = userRepository,
   )
+
+  @Provides
+  fun provideValidatePasswordUC(
+    textValidator: TextValidator,
+  ): ValidatePasswordUC = ValidatePasswordUCImpl(textValidator = textValidator)
+
+  @Provides
+  fun provideValidateRepeatPasswordUC(
+    textValidator: TextValidator,
+  ): ValidateRepeatPasswordUC = ValidateRepeatPasswordUCImpl(textValidator = textValidator)
+
+  @Provides
+  fun provideChangeUserPasswordUC(
+    userRepository: UserRepository,
+    secretKeyProvider: SecretKeyProvider,
+    generateSaltUC: GenerateSaltUC,
+    cryptoManager: CryptoManager,
+    masterKeyProvider: MasterKeyProvider,
+    base64Coder: Base64Coder,
+  ): ChangeUserPasswordUC = ChangeUserPasswordUCImpl(
+    userRepository = userRepository,
+    secretKeyProvider = secretKeyProvider,
+    generateSaltUC = generateSaltUC,
+    cryptoManager = cryptoManager,
+    masterKeyProvider = masterKeyProvider,
+    base64Coder = base64Coder,
+  )
+
+  @Provides
+  fun provideClearUserSessionUC(
+    masterKeyProvider: MasterKeyProvider,
+  ): ClearUserSessionUC = ClearUserSessionUCImpl(
+    masterKeyProvider = masterKeyProvider,
+  )
+
 }

@@ -8,6 +8,8 @@ import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboar
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardDialogMapperImpl
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardScreenMapper
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardScreenMapperImpl
+import pl.bla.dev.feature.dashboard.presentation.screen.settings.changepassword.mapper.ChangePasswordScreenMapper
+import pl.bla.dev.feature.dashboard.presentation.screen.settings.changepassword.mapper.ChangePasswordScreenMapperImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -18,4 +20,7 @@ object DashboardModule {
 
   @Provides
   fun provideMainDashboardDialogMapper(): MainDashboardDialogMapper = MainDashboardDialogMapperImpl()
+
+  @Provides
+  fun provideChangePasswordScreenMapper(): ChangePasswordScreenMapper = ChangePasswordScreenMapperImpl()
 }

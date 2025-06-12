@@ -28,6 +28,7 @@ interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData>
     val onRequestPermission: () -> Unit,
     val onTravelClick: (Int) -> Unit,
     val onFABClick: () -> Unit,
+    val onChangePasswordClick: () -> Unit,
   )
 }
 
@@ -87,6 +88,8 @@ class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
       is MainDashboardVM.State.SettingsScreen -> MainDashboardVM.ScreenData.SettingsScreen(
         bottomNavItems = getBottomItemsNav(onClick = params.onBottomNavItemClick),
         onBackClick = params.onBackClick,
+        changePasswordClick = params.onChangePasswordClick,
+        changePasswordLabel = "Zmiana hasła",
       )
     }
 

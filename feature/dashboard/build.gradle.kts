@@ -42,6 +42,8 @@ dependencies {
   implementation(project(":common:sensor"))
   implementation(project(":common:permissions"))
   implementation(project(":common:intents"))
+  implementation(project(":common:loader"))
+  implementation(project(":common:validators"))
 
   implementation(project(":feature:user:contract"))
 

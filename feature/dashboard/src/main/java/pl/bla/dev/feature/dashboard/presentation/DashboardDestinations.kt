@@ -12,6 +12,9 @@ sealed interface DashboardDestinations : Destination {
 
   @Serializable
   data object DashboardDialog : DashboardDestinations
+
+  @Serializable
+  data object ChangePassword : DashboardDestinations
 }
 
 sealed interface DashboardResults {

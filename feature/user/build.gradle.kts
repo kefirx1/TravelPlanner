@@ -42,6 +42,7 @@ dependencies {
   implementation(project(":common:loader"))
   implementation(project(":common:storage"))
   implementation(project(":common:security"))
+  implementation(project(":common:validators"))
 
   implementation(project(":feature:user:contract"))
 

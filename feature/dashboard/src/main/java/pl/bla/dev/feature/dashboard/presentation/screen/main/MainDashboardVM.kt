@@ -22,6 +22,7 @@ import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboar
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.BottomNavItem
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
 import pl.bla.dev.feature.settings.contract.domain.model.TravelShortData
+import pl.bla.dev.feature.settings.contract.domain.usecase.ClearUserSessionUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
 import javax.inject.Inject
 
@@ -45,8 +46,10 @@ interface MainDashboardVM {
       ) : Navigation
       data class ToTravelDetails(val travelId: Int) : Navigation
       data object ToNewTravel : Navigation
+      data object ToChangePassword : Navigation
     }
 
+    data object ChangePassword : Action
     data object Back : Action
     data object OnFABClick : Action
     data class ToTravelDetails(val travelId: Int) : Action
@@ -92,6 +95,8 @@ interface MainDashboardVM {
     data class SettingsScreen(
       override val bottomNavItems: List<BottomNavItem>,
       override val onBackClick: () -> Unit,
+      val changePasswordClick: () -> Unit,
+      val changePasswordLabel: String,
     ) : ScreenData(
       bottomNavItems = bottomNavItems,
       onBackClick = onBackClick,
@@ -111,6 +116,7 @@ class MainDashboardVMImpl @Inject constructor(
   private val permissionsManager: PermissionsManager,
   private val openAppSettingsUC: OpenAppSettingsIntentUC,
   private val getUserTravelsShortDataUC: GetUserTravelsShortDataUC,
+  private val clearUserSessionUC: ClearUserSessionUC,
 ) : CustomViewModel<MainDashboardVM.State, MainDashboardVM.ScreenData, MainDashboardVM.Action.Navigation>(
   initialStateValue = MainDashboardVM.State.MapScreen(),
 ), MainDashboardVM {
@@ -186,6 +192,9 @@ class MainDashboardVMImpl @Inject constructor(
       },
       onFABClick = {
         dispatchAction(MainDashboardVM.Action.OnFABClick)
+      },
+      onChangePasswordClick = {
+        dispatchAction(MainDashboardVM.Action.ChangePassword)
       }
     )
   )
@@ -200,7 +209,10 @@ class MainDashboardVMImpl @Inject constructor(
             state = currentState,
             id = action.id,
           )
-          is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
+          is MainDashboardVM.Action.Logout -> {
+            clearUserSessionUC(UseCase.Params.Empty)
+            MainDashboardVM.Action.Navigation.Logout.emit()
+          }
           is MainDashboardVM.Action.RequestLocationPermission -> {
             val result = permissionsManager.requestPermission(
               permission = AppPermission.LOCATION,
@@ -237,6 +249,7 @@ class MainDashboardVMImpl @Inject constructor(
           }
           is MainDashboardVM.Action.OnFABClick -> MainDashboardVM.Action.Navigation.ToNewTravel.emit()
           is MainDashboardVM.Action.ToTravelDetails -> {}
+          is MainDashboardVM.Action.ChangePassword -> {}
         }
         is MainDashboardVM.State.TravelScreen -> when (action) {
           is MainDashboardVM.Action.Back -> MainDashboardVM.State.MapScreen().override()
@@ -245,12 +258,16 @@ class MainDashboardVMImpl @Inject constructor(
             state = currentState,
             id = action.id,
           )
-          is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
+          is MainDashboardVM.Action.Logout -> {
+            clearUserSessionUC(UseCase.Params.Empty)
+            MainDashboardVM.Action.Navigation.Logout.emit()
+          }
           is MainDashboardVM.Action.ToTravelDetails ->
             MainDashboardVM.Action.Navigation.ToTravelDetails(travelId = action.travelId).emit()
           is MainDashboardVM.Action.RequestLocationPermission -> {}
           is MainDashboardVM.Action.OpenAppSettings -> {}
           is MainDashboardVM.Action.OnFABClick -> {}
+          is MainDashboardVM.Action.ChangePassword -> {}
         }
         is MainDashboardVM.State.SettingsScreen -> when (action) {
           is MainDashboardVM.Action.Back -> MainDashboardVM.State.MapScreen().override()
@@ -259,7 +276,11 @@ class MainDashboardVMImpl @Inject constructor(
             state = currentState,
             id = action.id,
           )
-          is MainDashboardVM.Action.Logout -> MainDashboardVM.Action.Navigation.Logout.emit()
+          is MainDashboardVM.Action.Logout -> {
+            clearUserSessionUC(UseCase.Params.Empty)
+            MainDashboardVM.Action.Navigation.Logout.emit()
+          }
+          is MainDashboardVM.Action.ChangePassword -> MainDashboardVM.Action.Navigation.ToChangePassword.emit()
           is MainDashboardVM.Action.RequestLocationPermission -> {}
           is MainDashboardVM.Action.OpenAppSettings -> {}
           is MainDashboardVM.Action.ToTravelDetails -> {}

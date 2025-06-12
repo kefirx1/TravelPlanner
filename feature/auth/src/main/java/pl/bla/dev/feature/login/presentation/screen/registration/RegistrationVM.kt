@@ -19,11 +19,11 @@ import pl.bla.dev.common.ui.componenst.input.ValidationState
 import pl.bla.dev.common.ui.componenst.tab.TopAppBarData
 import pl.bla.dev.common.validators.ValidationResult
 import pl.bla.dev.feature.login.domain.usecase.AfterLoginActionUC
-import pl.bla.dev.feature.login.domain.usecase.ValidatePasswordUC
-import pl.bla.dev.feature.login.domain.usecase.ValidateRepeatPasswordUC
 import pl.bla.dev.feature.login.presentation.screen.registration.RegistrationVM.RegistrationSetupData
 import pl.bla.dev.feature.login.presentation.screen.registration.mapper.RegistrationScreenMapper
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.ValidatePasswordUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.ValidateRepeatPasswordUC
 
 interface RegistrationVM {
   data class State(
