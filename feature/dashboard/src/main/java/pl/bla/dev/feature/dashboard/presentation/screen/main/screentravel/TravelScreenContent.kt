@@ -31,6 +31,16 @@ fun TravelScreenContent(data: MainDashboardVM.ScreenData.TravelScreen) {
   ) {
     LazyColumn {
       item {
+        if (data.pastTravels.isEmpty() && data.currentTravels.isEmpty() && data.futureTravels.isEmpty() && data.cancelledTravels.isEmpty()) {
+          Spacer(modifier = Modifier.height(40.dp))
+
+          CustomText(
+            text = data.emptyScreen,
+            style = MaterialTheme.typography.displaySmall,
+          )
+        }
+      }
+      item {
         if (data.currentTravels.isNotEmpty()) {
           CustomText(
             text = "Aktualnie trwające podróże",

@@ -14,10 +14,9 @@ import pl.bla.dev.common.ui.componenst.permissions.PermissionRequesterData
 import pl.bla.dev.feature.dashboard.presentation.screen.main.MainDashboardVM
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardScreenMapper.Params
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.BottomNavItem
+import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelMapMarker
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
 import pl.bla.dev.feature.settings.contract.domain.model.TravelStatus
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData> {
   data class Params(
@@ -48,6 +47,16 @@ class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
           requestPermission = params.onRequestPermission,
         ).takeIf { params.state.permissionResult != PermissionResult.GRANTED },
         onFABClick = params.onFABClick,
+        travelsMarkers = params.state.travelsShortData.map { travel ->
+          TravelMapMarker(
+            nameOrigin = "",
+            nameDestination = "",
+            latitudeOrigin = travel.latitudeOrigin,
+            longitudeOrigin = travel.longitudeOrigin,
+            latitudeDestination = travel.latitudeDestination,
+            longitudeDestination = travel.longitudeDestination,
+          )
+        }
       )
       is MainDashboardVM.State.TravelScreen -> MainDashboardVM.ScreenData.TravelScreen(
         bottomNavItems = getBottomItemsNav(onClick = params.onBottomNavItemClick),
@@ -84,6 +93,7 @@ class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
               onClick = params.onTravelClick,
             )
           },
+        emptyScreen = "Brak zapisanych wycieczek",
       )
       is MainDashboardVM.State.SettingsScreen -> MainDashboardVM.ScreenData.SettingsScreen(
         bottomNavItems = getBottomItemsNav(onClick = params.onBottomNavItemClick),

@@ -1,6 +1,8 @@
 package pl.bla.dev.feature.settings.data.repository
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.withContext
 import pl.bla.dev.be.backendservice.contract.domain.model.NewTravelConfig
 import pl.bla.dev.common.security.MasterKeyProvider
@@ -43,6 +45,8 @@ interface UserRepository {
     travelId: Int,
     isCancelled: Boolean,
   )
+
+  suspend fun getTravelsChangesMonitor(): SharedFlow<Unit>
 }
 
 internal class UserRepositoryImpl(
@@ -53,6 +57,7 @@ internal class UserRepositoryImpl(
   onboardingPreferencesConverter: OnboardingPreferencesConverter,
   localDateTimeConverter: LocalDateTimeConverter,
 ) : UserRepository {
+  private val travelsChanges: MutableSharedFlow<Unit> = MutableSharedFlow()
 
   private val userDatabase: UserDatabase by lazy {
     databaseProvider.buildDatabase(
@@ -119,7 +124,8 @@ internal class UserRepositoryImpl(
   ): Int = withContext(Dispatchers.IO) {
     val userId = userDatabase.userInfoDao().getUser()?.uid ?: return@withContext -1  //TODO error handling
 
-    userDatabase.userTravelsDao().addTravel(
+
+    val id = userDatabase.userTravelsDao().addTravel(
       travel = UserTravelsDto(
         userId = userId,
         cancelled = false,
@@ -151,6 +157,10 @@ internal class UserRepositoryImpl(
         destinationVehicleType = userTravels.destinationVehicleType.name,
       )
     ).toInt()
+
+    travelsChanges.emit(Unit)
+
+    id
   }
 
   override suspend fun removeUserTravel(travelId: Int) = withContext(Dispatchers.IO) {
@@ -160,6 +170,7 @@ internal class UserRepositoryImpl(
       userId = userId,
       travelId = travelId,
     )
+    travelsChanges.emit(Unit)
   }
 
   override suspend fun updateUserTravelCancellationStatus(
@@ -173,5 +184,8 @@ internal class UserRepositoryImpl(
       travelId = travelId,
       isCancelled = isCancelled,
     )
+    travelsChanges.emit(Unit)
   }
+
+  override suspend fun getTravelsChangesMonitor(): SharedFlow<Unit> = travelsChanges
 }

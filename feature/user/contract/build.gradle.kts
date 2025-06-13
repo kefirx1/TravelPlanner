@@ -35,4 +35,6 @@ dependencies {
   implementation(project(":common:validators"))
 
   implementation(project(":be:backendservice:contract"))
+
+  implementation(libs.kotlinx.coroutines)
 }

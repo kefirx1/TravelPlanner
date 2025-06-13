@@ -14,4 +14,8 @@ data class TravelShortData(
   val travelStatus: TravelStatus,
   val originVehicleType: VehicleType,
   val destinationVehicleType: VehicleType,
+  val longitudeOrigin: Double,
+  val latitudeOrigin: Double,
+  val longitudeDestination: Double,
+  val latitudeDestination: Double,
 )

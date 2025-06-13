@@ -73,7 +73,7 @@ fun MainAppNavGraph(
       onResult = { result ->
         when (result) {
           TravelResults.Close -> appNavController.navigate(
-            destination = DashboardDestinations.DashboardGraph,
+            destination = DashboardDestinations.MainDashboard,
           )
         }
       },

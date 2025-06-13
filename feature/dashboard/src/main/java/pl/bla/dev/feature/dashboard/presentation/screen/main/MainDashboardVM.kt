@@ -20,10 +20,12 @@ import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboar
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardDialogMapper.DialogType
 import pl.bla.dev.feature.dashboard.presentation.screen.main.mapper.MainDashboardScreenMapper
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.BottomNavItem
+import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelMapMarker
 import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDisplayData
 import pl.bla.dev.feature.settings.contract.domain.model.TravelShortData
 import pl.bla.dev.feature.settings.contract.domain.usecase.ClearUserSessionUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.MonitorTravelChangesUC
 import javax.inject.Inject
 
 interface MainDashboardVM {
@@ -31,6 +33,7 @@ interface MainDashboardVM {
     data class MapScreen(
       val permissionResult: PermissionResult = PermissionResult.DENIED,
       val currentLocation: Location? = null,
+      val travelsShortData: List<TravelShortData> = emptyList(),
     ) : State(selectedItem = 0)
     data class TravelScreen(
       val travelsShortData: List<TravelShortData> = emptyList(),
@@ -75,6 +78,7 @@ interface MainDashboardVM {
       val currentLocation: Location?,
       val permissionRequesterData: PermissionRequesterData?,
       val onFABClick: () -> Unit,
+      val travelsMarkers: List<TravelMapMarker>,
     ) : ScreenData(
       bottomNavItems = bottomNavItems,
       onBackClick = onBackClick,
@@ -87,6 +91,7 @@ interface MainDashboardVM {
       val pastTravels: List<TravelShortDisplayData>,
       val cancelledTravels: List<TravelShortDisplayData>,
       val currentTravels: List<TravelShortDisplayData>,
+      val emptyScreen: String,
     ) : ScreenData(
       bottomNavItems = bottomNavItems,
       onBackClick = onBackClick,
@@ -117,6 +122,7 @@ class MainDashboardVMImpl @Inject constructor(
   private val openAppSettingsUC: OpenAppSettingsIntentUC,
   private val getUserTravelsShortDataUC: GetUserTravelsShortDataUC,
   private val clearUserSessionUC: ClearUserSessionUC,
+  private val monitorTravelChangesUC: MonitorTravelChangesUC,
 ) : CustomViewModel<MainDashboardVM.State, MainDashboardVM.ScreenData, MainDashboardVM.Action.Navigation>(
   initialStateValue = MainDashboardVM.State.MapScreen(),
 ), MainDashboardVM {
@@ -127,6 +133,66 @@ class MainDashboardVMImpl @Inject constructor(
   }
 
   override suspend fun onStateEnter(newState: MainDashboardVM.State) {
+    viewModelScope.launch {
+      monitorTravelChangesUC(UseCase.Params.Empty).collect {
+        when (newState) {
+          is MainDashboardVM.State.MapScreen -> {
+            val result = permissionsManager.requestPermission(
+              permission = AppPermission.LOCATION,
+            )
+
+            when (result) {
+              PermissionResult.GRANTED -> {
+                getCurrentLocationUC(param = UseCase.Params.Empty).fold(
+                  onRight = { location ->
+                    getUserTravelsShortDataUC(UseCase.Params.Empty).fold(
+                      onRight = { travels ->
+                        newState.copy(
+                          travelsShortData =  travels,
+                          currentLocation = location,
+                          permissionResult = result,
+                        ).mutate()
+                      },
+                      onLeft = {
+                        //todo error handling
+                        newState.copy(
+                          currentLocation = location,
+                          permissionResult = result,
+                        ).mutate()
+                      }
+                    )
+                  },
+                  onLeft = {
+                    //todo error handling
+                    Log.e("MainDashboardVMImpl", "onStateEnter: ${it.exception}")
+                  }
+                )
+              }
+              PermissionResult.DENIED,
+              PermissionResult.DENIED_FOREVER -> {
+                newState.copy(
+                  permissionResult = result,
+                ).mutate()
+              }
+            }
+          }
+          is MainDashboardVM.State.TravelScreen -> {
+            getUserTravelsShortDataUC(UseCase.Params.Empty).fold(
+              onRight = { travels ->
+                newState.copy(
+                  travelsShortData = travels,
+                ).mutate()
+              },
+              onLeft = {
+                //todo error handling
+              }
+            )
+          }
+          is MainDashboardVM.State.SettingsScreen -> {}
+        }
+      }
+    }
+
     when (newState) {
       is MainDashboardVM.State.MapScreen -> {
         val result = permissionsManager.requestPermission(
@@ -137,10 +203,22 @@ class MainDashboardVMImpl @Inject constructor(
           PermissionResult.GRANTED -> {
             getCurrentLocationUC(param = UseCase.Params.Empty).fold(
               onRight = { location ->
-                newState.copy(
-                  currentLocation = location,
-                  permissionResult = result,
-                ).mutate()
+                getUserTravelsShortDataUC(UseCase.Params.Empty).fold(
+                  onRight = { travels ->
+                    newState.copy(
+                      travelsShortData =  travels,
+                      currentLocation = location,
+                      permissionResult = result,
+                    ).mutate()
+                  },
+                  onLeft = {
+                    //todo error handling
+                    newState.copy(
+                      currentLocation = location,
+                      permissionResult = result,
+                    ).mutate()
+                  }
+                )
               },
               onLeft = {
                 //todo error handling

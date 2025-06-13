@@ -15,6 +15,7 @@ import org.osmdroid.views.overlay.CopyrightOverlay
 fun MapComponent(
   cameraState: CameraState,
   onFirstLoadAction: () -> Unit,
+  content: @Composable () -> Unit
 ) {
   val overlayManagerState = rememberOverlayManagerState()
   val context = LocalContext.current
@@ -27,9 +28,7 @@ fun MapComponent(
       overlayManagerState.overlayManager.add(copyright)
       onFirstLoadAction()
     },
-    properties = DefaultMapProperties
-      .copy(
-        zoomButtonVisibility = ZoomButtonVisibility.NEVER,
-      )
-  )
+  ) {
+    content()
+  }
 }

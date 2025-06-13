@@ -33,6 +33,10 @@ class GetUserTravelsShortDataUCImpl(
           ),
           originVehicleType = travel.originVehicleType,
           destinationVehicleType = travel.destinationVehicleType,
+          longitudeOrigin = travel.originVehicleLongitude,
+          latitudeOrigin = travel.originVehicleLatitude,
+          longitudeDestination = travel.destinationVehicleLongitude,
+          latitudeDestination = travel.destinationVehicleLatitude,
         )
       }
     )

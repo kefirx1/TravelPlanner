@@ -23,6 +23,7 @@ import pl.bla.dev.feature.settings.contract.domain.usecase.GetFullTravelDataUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedNewTravelConfigUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.MonitorTravelChangesUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RemoveTravelUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RestoreTravelUC
@@ -48,6 +49,7 @@ import pl.bla.dev.feature.settings.domain.usecase.GetFullTravelDataUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedNewTravelConfigUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedUserNameUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetUserTravelsShortDataUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.MonitorTravelChangesUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RegisterNewUserUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RemoveTravelUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RestoreTravelUCImpl
@@ -248,6 +250,13 @@ object UserModule {
     masterKeyProvider: MasterKeyProvider,
   ): ClearUserSessionUC = ClearUserSessionUCImpl(
     masterKeyProvider = masterKeyProvider,
+  )
+
+  @Provides
+  fun provideMonitorTravelChangesUC(
+    userRepository: UserRepository,
+  ): MonitorTravelChangesUC = MonitorTravelChangesUCImpl(
+    userRepository = userRepository,
   )
 
 }

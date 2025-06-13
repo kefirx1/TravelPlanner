@@ -3,7 +3,6 @@ package pl.bla.dev.feature.dashboard.presentation.screen.main
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -16,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.utsman.osmandcompose.rememberCameraState
 import pl.bla.dev.common.ui.componenst.basescaffold.BaseScaffold
