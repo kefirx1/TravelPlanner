@@ -2,7 +2,7 @@ package pl.bla.dev.common.intents
 
 import android.content.Intent
 import android.provider.Settings
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import pl.bla.dev.common.activityconnector.ActivityConnector
 
@@ -13,7 +13,7 @@ interface IntentsManager {
 }
 
 class IntentsManagerImpl(): IntentsManager, IntentsActivityConnector {
-  lateinit var activity: ComponentActivity
+  lateinit var activity: AppCompatActivity
 
   override suspend fun startAppSettingsIntent() {
     activity.startActivity(
@@ -23,7 +23,7 @@ class IntentsManagerImpl(): IntentsManager, IntentsActivityConnector {
     )
   }
 
-  override fun connect(activity: ComponentActivity) {
+  override fun connect(activity: AppCompatActivity) {
     this.activity = activity
   }
 }

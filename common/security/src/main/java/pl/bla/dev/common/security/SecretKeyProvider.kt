@@ -13,7 +13,11 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 interface SecretKeyProvider {
-  fun getKeyStoreSecretKey(cryptography: Cryptography): SecretKey
+  fun getKeyStoreSecretKey(
+    cryptography: Cryptography,
+    authenticationRequired: Boolean = false,
+    keyAlias: String? = null,
+  ): SecretKey
   fun getSecretKeyFromBase(cryptography: Cryptography, base: CharArray, salt: ByteArray): SecretKey
 }
 
@@ -28,10 +32,18 @@ internal class SecretKeyProviderImpl(): SecretKeyProvider {
     load(null)
   }
 
-  override fun getKeyStoreSecretKey(cryptography: Cryptography): SecretKey {
-    val key = keyStore.getEntry(KEY_ALIAS, null) as? KeyStore.SecretKeyEntry
+  override fun getKeyStoreSecretKey(
+    cryptography: Cryptography,
+    authenticationRequired: Boolean,
+    keyAlias: String?,
+  ): SecretKey {
+    val key = keyStore.getEntry(keyAlias ?: KEY_ALIAS, null) as? KeyStore.SecretKeyEntry
 
-    return key?.secretKey ?: generateKeyStoreKey(cryptography = cryptography)
+    return key?.secretKey ?: generateKeyStoreKey(
+      cryptography = cryptography,
+      authenticationRequired = authenticationRequired,
+      keyAlias = keyAlias,
+    )
   }
 
   override fun getSecretKeyFromBase(cryptography: Cryptography, base: CharArray, salt: ByteArray): SecretKey {
@@ -41,14 +53,18 @@ internal class SecretKeyProviderImpl(): SecretKeyProvider {
     return SecretKeySpec(key.encoded, Cryptography.AES_GCM_NoPadding.algorithm)
   }
 
-  private fun generateKeyStoreKey(cryptography: Cryptography): SecretKey {
+  private fun generateKeyStoreKey(
+    cryptography: Cryptography,
+    authenticationRequired: Boolean,
+    keyAlias: String?,
+  ): SecretKey {
     return KeyGenerator.getInstance(cryptography.algorithm).apply {
       init(
-        KeyGenParameterSpec.Builder(KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+        KeyGenParameterSpec.Builder(keyAlias ?: KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
           .setBlockModes(cryptography.blockMode)
           .setEncryptionPaddings(cryptography.padding)
-          .setUserAuthenticationRequired(false)
-          .setInvalidatedByBiometricEnrollment(false)
+          .setUserAuthenticationRequired(authenticationRequired)
+          .setInvalidatedByBiometricEnrollment(true)
           .setRandomizedEncryptionRequired(true)
           .build()
       )

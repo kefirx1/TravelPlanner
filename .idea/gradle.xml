@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/be/backendservice/contract" />
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/common/activityconnector" />
+            <option value="$PROJECT_DIR$/common/biometric" />
             <option value="$PROJECT_DIR$/common/core" />
             <option value="$PROJECT_DIR$/common/intents" />
             <option value="$PROJECT_DIR$/common/loader" />
@@ -27,6 +28,7 @@
             <option value="$PROJECT_DIR$/common/validators" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/auth" />
+            <option value="$PROJECT_DIR$/feature/auth/contract" />
             <option value="$PROJECT_DIR$/feature/dashboard" />
             <option value="$PROJECT_DIR$/feature/travel" />
             <option value="$PROJECT_DIR$/feature/user" />

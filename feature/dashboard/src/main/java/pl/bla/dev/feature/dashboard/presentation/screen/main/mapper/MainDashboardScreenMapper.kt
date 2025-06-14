@@ -28,6 +28,8 @@ interface MainDashboardScreenMapper : Mapper<Params, MainDashboardVM.ScreenData>
     val onTravelClick: (Int) -> Unit,
     val onFABClick: () -> Unit,
     val onChangePasswordClick: () -> Unit,
+    val onSetBiometricClick: () -> Unit,
+    val onRemoveBiometricClick: () -> Unit,
   )
 }
 
@@ -100,6 +102,8 @@ class MainDashboardScreenMapperImpl : MainDashboardScreenMapper {
         onBackClick = params.onBackClick,
         changePasswordClick = params.onChangePasswordClick,
         changePasswordLabel = "Zmiana hasła",
+        biometricLabel = if (params.state.biometricsEnabled) "Usuń logowanie biometryczne" else "Ustaw logowanie biometryczne",
+        biometricClick = if (params.state.biometricsEnabled) params.onRemoveBiometricClick else params.onSetBiometricClick,
       )
     }
 

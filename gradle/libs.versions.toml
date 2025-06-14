@@ -38,6 +38,9 @@ datastore = "1.1.7"
 room = "2.7.1"
 sqlcipher = "4.5.4"
 googleGms = "21.3.0"
+biometric = "1.1.0"
+appcompatVersion = "1.7.1"
+material = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -81,9 +84,13 @@ androidx-datastore = { module = "androidx.datastore:datastore-preferences", vers
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher", version.ref = "sqlcipher" }
 
 google-gms = { module = "com.google.android.gms:play-services-location", version.ref = "googleGms" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

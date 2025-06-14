@@ -53,6 +53,7 @@ dependencies {
   implementation(libs.androidx.work)
   ksp(libs.dagger.hilt.compiler)
   implementation(libs.dagger.hilt)
+  implementation(libs.androidx.appcompat)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

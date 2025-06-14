@@ -1,8 +1,8 @@
 package pl.bla.dev.common.activityconnector
 
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
@@ -12,12 +12,12 @@ abstract class ActivityForResult<INTENT, RESULT>: ActivityConnector {
 
   abstract val resultContract: ActivityResultContract<INTENT, RESULT>
 
-  protected var activity: ComponentActivity? = null
+  protected var activity: AppCompatActivity? = null
 
   private var activityResultLauncher: ActivityResultLauncher<INTENT>? = null
   private var result: MutableSharedFlow<RESULT> = MutableSharedFlow()
 
-  override fun connect(activity: ComponentActivity) {
+  override fun connect(activity: AppCompatActivity) {
     clearResult()
 
     this.activity = activity

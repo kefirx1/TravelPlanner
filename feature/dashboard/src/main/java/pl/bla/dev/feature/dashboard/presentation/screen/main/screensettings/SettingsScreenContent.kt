@@ -38,5 +38,18 @@ fun SettingsScreenContent(data: MainDashboardVM.ScreenData.SettingsScreen) {
       ),
     )
     Spacer(modifier = Modifier.height(10.dp))
+
+    ActionCard(
+      data = ActionCardData(
+        content = {
+          CustomText(
+            text = data.biometricLabel,
+            style = MaterialTheme.typography.titleMedium,
+          )
+        },
+        onClick = data.biometricClick,
+      ),
+    )
+    Spacer(modifier = Modifier.height(10.dp))
   }
 }

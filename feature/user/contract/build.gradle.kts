@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-  namespace = "pl.bla.dev.common.permissions"
+  namespace = "pl.bla.dev.feature.user.contract"
   compileSdk = libs.versions.compileSdk.get().toInt()
 
   defaultConfig {

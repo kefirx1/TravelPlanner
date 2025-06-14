@@ -44,6 +44,7 @@ dependencies {
   implementation(project(":common:intents"))
   implementation(project(":common:loader"))
   implementation(project(":common:validators"))
+  implementation(project(":common:biometric"))
 
   implementation(project(":feature:user:contract"))
 

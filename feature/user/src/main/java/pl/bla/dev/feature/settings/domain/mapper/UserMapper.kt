@@ -32,6 +32,7 @@ object UserMapper {
       userName = userName,
       salt = salt,
       ivDek = ivDek,
+      ivDekBiometric = ivDekBiometric,
     )
 
   fun UserSettings.toDto(): UserSettingsDto =
@@ -39,6 +40,7 @@ object UserMapper {
       userName = userName,
       salt = salt,
       ivDek = ivDek,
+      ivDekBiometric = ivDekBiometric,
     )
 
   fun OnboardingContentSection.toDto() = UserOnboardingPreferencesSectionDto(

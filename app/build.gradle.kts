@@ -49,6 +49,7 @@ dependencies {
   implementation(project(":common:loader"))
   implementation(project(":common:storage"))
   implementation(project(":common:security"))
+  implementation(project(":common:biometric"))
 
   implementation(project(":feature:auth"))
   implementation(project(":feature:dashboard"))
@@ -86,6 +87,7 @@ dependencies {
   implementation(libs.androidx.room.ktx)
   ksp(libs.androidx.room.compiler)
   implementation(libs.database.sqlcipher)
+  implementation(libs.androidx.appcompat)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

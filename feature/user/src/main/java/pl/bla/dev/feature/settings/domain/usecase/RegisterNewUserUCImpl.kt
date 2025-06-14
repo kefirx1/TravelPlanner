@@ -45,6 +45,7 @@ internal class RegisterNewUserUCImpl(
         userName = param.userName,
         salt = base64Coder.encode(data = newSalt),
         ivDek = base64Coder.encode(data = ivWithEncryptedDEK),
+        ivDekBiometric = null,
       ),
     )
     userRepository.registerNewUser(

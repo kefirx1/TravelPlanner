@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import pl.bla.dev.common.activityconnector.ActivityConnector
+import pl.bla.dev.common.biometric.BiometricPromptConnector
 import pl.bla.dev.common.core.converters.Base64Coder
 import pl.bla.dev.common.core.converters.JsonSerializer
 import pl.bla.dev.common.intents.IntentsActivityConnector
@@ -51,9 +52,11 @@ object AppModule {
   fun provideActivityConnector(
     permissionsActivityConnector: PermissionsActivityConnector,
     intentsActivityConnector: IntentsActivityConnector,
+    biometricPromptConnector: BiometricPromptConnector,
   ): ActivityConnector = ActivityConnectorImpl(
     permissionsActivityConnector = permissionsActivityConnector,
     intentsActivityConnector = intentsActivityConnector,
+    biometricPromptConnector = biometricPromptConnector,
   )
 
   @Singleton

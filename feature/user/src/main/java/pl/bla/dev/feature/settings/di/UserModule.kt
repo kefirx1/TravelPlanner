@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import pl.bla.dev.be.backendservice.contract.domain.usecase.GetServiceNewTravelConfigUC
+import pl.bla.dev.common.biometric.BiometricPromptManager
 import pl.bla.dev.common.core.converters.Base64Coder
 import pl.bla.dev.common.core.converters.JsonSerializer
 import pl.bla.dev.common.security.CryptoManager
@@ -23,11 +24,14 @@ import pl.bla.dev.feature.settings.contract.domain.usecase.GetFullTravelDataUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedNewTravelConfigUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedUserNameUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.IsBiometricEnabledUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.MonitorTravelChangesUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RegisterNewUserUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.RemoveBiometricDataAuthenticationUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RemoveTravelUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.RestoreTravelUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.SaveNewTravelUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.SetBiometricDataAuthenticationUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.ValidatePasswordUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.ValidateRepeatPasswordUC
 import pl.bla.dev.feature.settings.data.model.LocalDateTimeConverter
@@ -49,11 +53,14 @@ import pl.bla.dev.feature.settings.domain.usecase.GetFullTravelDataUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedNewTravelConfigUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetSavedUserNameUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetUserTravelsShortDataUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.IsBiometricEnabledUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.MonitorTravelChangesUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RegisterNewUserUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.RemoveBiometricDataAuthenticationUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RemoveTravelUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.RestoreTravelUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.SaveNewTravelUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.SetBiometricDataAuthenticationUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.ValidatePasswordUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.ValidateRepeatPasswordUCImpl
 import javax.inject.Singleton
@@ -256,6 +263,37 @@ object UserModule {
   fun provideMonitorTravelChangesUC(
     userRepository: UserRepository,
   ): MonitorTravelChangesUC = MonitorTravelChangesUCImpl(
+    userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideSetBiometricDataAuthenticationUC(
+    masterKeyProvider: MasterKeyProvider,
+    secretKeyProvider: SecretKeyProvider,
+    cryptoManager: CryptoManager,
+    userRepository: UserRepository,
+    base64Coder: Base64Coder,
+    biometricManager: BiometricPromptManager,
+  ): SetBiometricDataAuthenticationUC = SetBiometricDataAuthenticationUCImpl(
+    masterKeyProvider = masterKeyProvider,
+    secretKeyProvider = secretKeyProvider,
+    cryptoManager = cryptoManager,
+    userRepository = userRepository,
+    base64Coder = base64Coder,
+    biometricManager = biometricManager,
+  )
+
+  @Provides
+  fun provideRemoveBiometricDataAuthenticationUC(
+    userRepository: UserRepository,
+  ): RemoveBiometricDataAuthenticationUC = RemoveBiometricDataAuthenticationUCImpl(
+    userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideIsBiometricEnabledUC(
+    userRepository: UserRepository,
+  ): IsBiometricEnabledUC = IsBiometricEnabledUCImpl(
     userRepository = userRepository,
   )
 

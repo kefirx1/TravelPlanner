@@ -44,6 +44,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime.ktx)
   ksp(libs.dagger.hilt.compiler)
   implementation(libs.dagger.hilt)
+  implementation(libs.androidx.appcompat)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

@@ -25,7 +25,10 @@ import pl.bla.dev.feature.dashboard.presentation.screen.main.model.TravelShortDi
 import pl.bla.dev.feature.settings.contract.domain.model.TravelShortData
 import pl.bla.dev.feature.settings.contract.domain.usecase.ClearUserSessionUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetUserTravelsShortDataUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.IsBiometricEnabledUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.MonitorTravelChangesUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.RemoveBiometricDataAuthenticationUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.SetBiometricDataAuthenticationUC
 import javax.inject.Inject
 
 interface MainDashboardVM {
@@ -38,7 +41,9 @@ interface MainDashboardVM {
     data class TravelScreen(
       val travelsShortData: List<TravelShortData> = emptyList(),
     ) : State(selectedItem = 1)
-    data object SettingsScreen : State(selectedItem = 2)
+    data class SettingsScreen(
+      val biometricsEnabled: Boolean = false,
+    ) : State(selectedItem = 2)
   }
 
   sealed interface Action {
@@ -52,6 +57,9 @@ interface MainDashboardVM {
       data object ToChangePassword : Navigation
     }
 
+    data object CheckBiometric : Action
+    data object SetBiometricLogin : Action
+    data object RemoveBiometricLogin : Action
     data object ChangePassword : Action
     data object Back : Action
     data object OnFABClick : Action
@@ -102,6 +110,8 @@ interface MainDashboardVM {
       override val onBackClick: () -> Unit,
       val changePasswordClick: () -> Unit,
       val changePasswordLabel: String,
+      val biometricLabel: String,
+      val biometricClick: () -> Unit,
     ) : ScreenData(
       bottomNavItems = bottomNavItems,
       onBackClick = onBackClick,
@@ -123,6 +133,9 @@ class MainDashboardVMImpl @Inject constructor(
   private val getUserTravelsShortDataUC: GetUserTravelsShortDataUC,
   private val clearUserSessionUC: ClearUserSessionUC,
   private val monitorTravelChangesUC: MonitorTravelChangesUC,
+  private val setBiometricDataAuthenticationUC: SetBiometricDataAuthenticationUC,
+  private val removeBiometricDataAuthenticationUC: RemoveBiometricDataAuthenticationUC,
+  private val isBiometricEnabledUC: IsBiometricEnabledUC,
 ) : CustomViewModel<MainDashboardVM.State, MainDashboardVM.ScreenData, MainDashboardVM.Action.Navigation>(
   initialStateValue = MainDashboardVM.State.MapScreen(),
 ), MainDashboardVM {
@@ -246,7 +259,9 @@ class MainDashboardVMImpl @Inject constructor(
           }
         )
       }
-      else -> {}
+      is MainDashboardVM.State.SettingsScreen -> {
+        dispatchAction(MainDashboardVM.Action.CheckBiometric)
+      }
     }
   }
 
@@ -273,6 +288,12 @@ class MainDashboardVMImpl @Inject constructor(
       },
       onChangePasswordClick = {
         dispatchAction(MainDashboardVM.Action.ChangePassword)
+      },
+      onSetBiometricClick = {
+        dispatchAction(MainDashboardVM.Action.SetBiometricLogin)
+      },
+      onRemoveBiometricClick = {
+        dispatchAction(MainDashboardVM.Action.RemoveBiometricLogin)
       }
     )
   )
@@ -328,6 +349,9 @@ class MainDashboardVMImpl @Inject constructor(
           is MainDashboardVM.Action.OnFABClick -> MainDashboardVM.Action.Navigation.ToNewTravel.emit()
           is MainDashboardVM.Action.ToTravelDetails -> {}
           is MainDashboardVM.Action.ChangePassword -> {}
+          is MainDashboardVM.Action.SetBiometricLogin -> {}
+          is MainDashboardVM.Action.RemoveBiometricLogin -> {}
+          is MainDashboardVM.Action.CheckBiometric -> {}
         }
         is MainDashboardVM.State.TravelScreen -> when (action) {
           is MainDashboardVM.Action.Back -> MainDashboardVM.State.MapScreen().override()
@@ -346,6 +370,9 @@ class MainDashboardVMImpl @Inject constructor(
           is MainDashboardVM.Action.OpenAppSettings -> {}
           is MainDashboardVM.Action.OnFABClick -> {}
           is MainDashboardVM.Action.ChangePassword -> {}
+          is MainDashboardVM.Action.SetBiometricLogin -> {}
+          is MainDashboardVM.Action.RemoveBiometricLogin -> {}
+          is MainDashboardVM.Action.CheckBiometric -> {}
         }
         is MainDashboardVM.State.SettingsScreen -> when (action) {
           is MainDashboardVM.Action.Back -> MainDashboardVM.State.MapScreen().override()
@@ -359,6 +386,38 @@ class MainDashboardVMImpl @Inject constructor(
             MainDashboardVM.Action.Navigation.Logout.emit()
           }
           is MainDashboardVM.Action.ChangePassword -> MainDashboardVM.Action.Navigation.ToChangePassword.emit()
+          is MainDashboardVM.Action.SetBiometricLogin -> {
+            setBiometricDataAuthenticationUC(UseCase.Params.Empty).fold(
+              onRight = {
+                dispatchAction(MainDashboardVM.Action.CheckBiometric)
+              },
+              onLeft = {
+                //TODO error handling
+              }
+            )
+          }
+          is MainDashboardVM.Action.RemoveBiometricLogin -> {
+            removeBiometricDataAuthenticationUC(UseCase.Params.Empty).fold(
+              onRight = {
+                dispatchAction(MainDashboardVM.Action.CheckBiometric)
+              },
+              onLeft = {
+                //TODO error handling
+              }
+            )
+          }
+          is MainDashboardVM.Action.CheckBiometric -> {
+            isBiometricEnabledUC(UseCase.Params.Empty).fold(
+              onRight = { enabled ->
+                currentState.copy(
+                  biometricsEnabled = enabled,
+                ).mutate()
+              },
+              onLeft = {
+                //TODO error handling
+              }
+            )
+          }
           is MainDashboardVM.Action.RequestLocationPermission -> {}
           is MainDashboardVM.Action.OpenAppSettings -> {}
           is MainDashboardVM.Action.ToTravelDetails -> {}
@@ -374,7 +433,7 @@ class MainDashboardVMImpl @Inject constructor(
     when (id) {
       0 -> MainDashboardVM.State.MapScreen().override()
       1 -> MainDashboardVM.State.TravelScreen().override()
-      2 -> MainDashboardVM.State.SettingsScreen.override()
+      2 -> MainDashboardVM.State.SettingsScreen().override()
     }
   }
 

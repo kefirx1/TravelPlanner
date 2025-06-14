@@ -6,6 +6,15 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.IvParameterSpec
 
 interface CryptoManager {
+  fun getBaseEncryptCipher(
+    cryptography: Cryptography,
+    key: SecretKey,
+  ): Cipher
+  fun getBaseDecryptCipher(
+    cryptography: Cryptography,
+    key: SecretKey,
+  ): Cipher
+
   fun encryptData(
     data: ByteArray,
     cryptography: Cryptography,
@@ -19,11 +28,15 @@ interface CryptoManager {
   fun encryptWithKey(
     data: ByteArray,
     key: SecretKey,
+    initialCipher: Cipher? = null,
+    cryptography: Cryptography = Cryptography.AES_GCM_NoPadding,
   ): ByteArray?
 
   fun decryptWithKey(
     data: ByteArray,
     key: SecretKey,
+    initialCipher: Cipher? = null,
+    cryptography: Cryptography = Cryptography.AES_GCM_NoPadding,
   ): ByteArray?
 
 }
@@ -31,6 +44,19 @@ interface CryptoManager {
 class CryptoManagerImpl(
   private val secretKeyProvider: SecretKeyProvider,
 ): CryptoManager {
+
+  override fun getBaseEncryptCipher(
+    cryptography: Cryptography,
+    key: SecretKey,
+  ): Cipher =
+    getCipher(cryptography = cryptography).apply {
+      init(Cipher.ENCRYPT_MODE, key)
+    }
+
+  override fun getBaseDecryptCipher(
+    cryptography: Cryptography,
+    key: SecretKey,
+  ): Cipher = getCipher(cryptography = cryptography)
 
   override fun encryptData(
     data: ByteArray,
@@ -70,9 +96,11 @@ class CryptoManagerImpl(
   override fun encryptWithKey(
     data: ByteArray,
     key: SecretKey,
+    initialCipher: Cipher?,
+    cryptography: Cryptography,
   ): ByteArray? {
     return try {
-      val cipher = getCipher(cryptography = Cryptography.AES_GCM_NoPadding).apply {
+      val cipher = initialCipher ?: getCipher(cryptography = cryptography).apply {
         init(Cipher.ENCRYPT_MODE, key)
       }
 
@@ -86,9 +114,11 @@ class CryptoManagerImpl(
   override fun decryptWithKey(
     concatenatedData: ByteArray,
     key: SecretKey,
+    initialCipher: Cipher?,
+    cryptography: Cryptography,
   ): ByteArray? {
     return try {
-      val cipher = getCipher(cryptography = Cryptography.AES_GCM_NoPadding)
+      val cipher = getCipher(cryptography = cryptography)
 
       val ivSize = concatenatedData[0].toInt()
       val iv = concatenatedData.copyOfRange(1, ivSize + 1)

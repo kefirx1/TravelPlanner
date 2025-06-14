@@ -1,8 +1,8 @@
 package pl.bla.dev.common.activityconnector
 
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 
 
 interface ActivityConnector {
-  fun connect(activity: ComponentActivity)
+  fun connect(activity: AppCompatActivity)
 }

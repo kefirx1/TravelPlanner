@@ -18,9 +18,16 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pl.bla.dev.common.ui.componenst.button.LargeButton
+import pl.bla.dev.common.ui.componenst.button.LargeButtonData
+import pl.bla.dev.common.ui.componenst.tab.CustomTopAppBar
+import pl.bla.dev.common.ui.componenst.tab.TopAppBarData
 import pl.bla.dev.common.ui.theming.AppColors
 
 data class FabData(
@@ -74,5 +81,35 @@ fun BaseScaffold(
     },
     floatingActionButton = fabData?.fab ?: {},
     floatingActionButtonPosition = fabData?.fabPosition ?: FabPosition.End,
+  )
+}
+
+@Preview(name = "BaseScaffold preview")
+@Composable
+fun BaseScaffoldPreview() {
+  BaseScaffold(
+    topBar = {
+      CustomTopAppBar(
+        topAppBarData = TopAppBarData.BackAndTitleAction(
+          title = "Tytuł",
+          onNavigationIconClick = {},
+          onActionIconClick = {},
+        )
+      )
+    },
+    content = {
+
+    },
+    bottomBar = {
+      Column(
+        modifier = Modifier.padding(
+          horizontal = 40.dp,
+          vertical = 10.dp,
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
+        LargeButton(buttonData = LargeButtonData.Primary(text = "Button", onClick = {}))
+      }
+    }
   )
 }

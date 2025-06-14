@@ -6,4 +6,5 @@ data class UserSettingsDto(
   @SerialName("userName") val userName: String,
   @SerialName("salt") val salt: String,
   @SerialName("ivDek") val ivDek: String,
+  @SerialName("ivDekBiometric") val ivDekBiometric: String?,
 )
