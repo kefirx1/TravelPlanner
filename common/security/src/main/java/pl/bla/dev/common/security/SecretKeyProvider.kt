@@ -58,7 +58,7 @@ internal class SecretKeyProviderImpl(): SecretKeyProvider {
     authenticationRequired: Boolean,
     keyAlias: String?,
   ): SecretKey {
-    return KeyGenerator.getInstance(cryptography.algorithm).apply {
+    return KeyGenerator.getInstance(cryptography.algorithm, ANDROID_KEYSTORE).apply {
       init(
         KeyGenParameterSpec.Builder(keyAlias ?: KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
           .setBlockModes(cryptography.blockMode)

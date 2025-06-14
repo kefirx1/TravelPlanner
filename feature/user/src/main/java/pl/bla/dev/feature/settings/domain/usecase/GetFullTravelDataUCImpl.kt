@@ -55,12 +55,14 @@ class GetFullTravelDataUCImpl(
     return Either.Right(value = travel)
   }
 
-  private fun getTravelStatus(startDate: LocalDateTime, endDate: LocalDateTime, isCancelled: Boolean): TravelStatus =
-    when {
+  private fun getTravelStatus(startDate: LocalDateTime, endDate: LocalDateTime, isCancelled: Boolean): TravelStatus {
+    val now = LocalDateTime.now(ZoneId.systemDefault())
+    return when {
       isCancelled -> TravelStatus.CANCELLED
-      startDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())) -> TravelStatus.FUTURE
-      startDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())) && endDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())) -> TravelStatus.CURRENT
-      endDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())) -> TravelStatus.PAST
+      now.isBefore(startDate) -> TravelStatus.FUTURE
+      now.isAfter(startDate) && now.isBefore(endDate) -> TravelStatus.CURRENT
+      now.isAfter(endDate) -> TravelStatus.PAST
       else -> TravelStatus.PAST
     }
+  }
 }
