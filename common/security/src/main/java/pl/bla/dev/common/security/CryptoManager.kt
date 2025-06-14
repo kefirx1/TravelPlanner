@@ -10,9 +10,11 @@ interface CryptoManager {
     cryptography: Cryptography,
     key: SecretKey,
   ): Cipher
+
   fun getBaseDecryptCipher(
     cryptography: Cryptography,
     key: SecretKey,
+    encryptedData: ByteArray,
   ): Cipher
 
   fun encryptData(
@@ -56,7 +58,17 @@ class CryptoManagerImpl(
   override fun getBaseDecryptCipher(
     cryptography: Cryptography,
     key: SecretKey,
-  ): Cipher = getCipher(cryptography = cryptography)
+    encryptedData: ByteArray,
+  ): Cipher = getCipher(cryptography = cryptography).apply {
+    val ivSize = encryptedData[0].toInt()
+    val iv = encryptedData.copyOfRange(1, ivSize + 1)
+
+    init(
+      Cipher.DECRYPT_MODE,
+      key,
+      if (cryptography == Cryptography.AES_GCM_NoPadding) GCMParameterSpec(128, iv) else IvParameterSpec(iv),
+    )
+  }
 
   override fun encryptData(
     data: ByteArray,
@@ -118,13 +130,15 @@ class CryptoManagerImpl(
     cryptography: Cryptography,
   ): ByteArray? {
     return try {
-      val cipher = getCipher(cryptography = cryptography)
+      val cipher = initialCipher ?: getCipher(cryptography = cryptography)
 
       val ivSize = concatenatedData[0].toInt()
       val iv = concatenatedData.copyOfRange(1, ivSize + 1)
       val data = concatenatedData.copyOfRange(ivSize + 1, concatenatedData.size)
 
-      cipher.init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, iv))
+      if (initialCipher == null) {
+        cipher.init(Cipher.DECRYPT_MODE, key, if (cryptography == Cryptography.AES_GCM_NoPadding) GCMParameterSpec(128, iv) else IvParameterSpec(iv))
+      }
 
       cipher.doFinal(data)
     } catch (e: Exception) {

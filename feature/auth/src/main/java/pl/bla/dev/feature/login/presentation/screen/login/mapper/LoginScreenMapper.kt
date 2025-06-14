@@ -11,11 +11,14 @@ import pl.bla.dev.feature.login.presentation.screen.login.mapper.LoginScreenMapp
 interface LoginScreenMapper : Mapper<Params, LoginVM.ScreenData> {
   data class Params(
     val state: LoginVM.State,
+    val onBiometricOpenClick: () -> Unit,
     val onLoginClick: () -> Unit,
     val onStartClick: () -> Unit,
     val onPasswordValueChanged: (String) -> Unit,
     val onForgotPasswordClick: () -> Unit,
     val onBackClick: () -> Unit,
+    val onToPasswordLoginClick: () -> Unit,
+    val onToBiometricLoginClick: () -> Unit,
   )
 }
 
@@ -24,6 +27,17 @@ class LoginScreenMapperImpl : LoginScreenMapper {
     when (params.state) {
       LoginVM.State.Initial -> LoginVM.ScreenData.Initial(
         onBackClick = params.onBackClick,
+      )
+      is LoginVM.State.Biometric -> LoginVM.ScreenData.BiometricScreen(
+        appName = "TravelPlanner",
+        welcomeLabel = "Witaj ${params.state.userName}!",
+        onBackClick = params.onBackClick,
+        loginBiometricLabel = "Zaloguj się biometrycznie",
+        passwordLoginButtonData = SmallButtonData.Tertiary(
+          text = "Zaloguj się przez hasło",
+          onClick = params.onToPasswordLoginClick,
+        ),
+        onBiometricOpenClick = params.onBiometricOpenClick,
       )
       is LoginVM.State.Login -> LoginVM.ScreenData.LoginScreen(
         appName = "TravelPlanner",
@@ -47,6 +61,10 @@ class LoginScreenMapperImpl : LoginScreenMapper {
           },
         ),
         onBackClick = params.onBackClick,
+        biometricLoginButtonData = SmallButtonData.Tertiary(
+          text = "Zaloguj się biometrycznie",
+          onClick = params.onToBiometricLoginClick,
+        ).takeIf { params.state.fromBiometric }
       )
       is LoginVM.State.Registration -> LoginVM.ScreenData.RegistrationScreen(
         appName = "TravelPlanner",

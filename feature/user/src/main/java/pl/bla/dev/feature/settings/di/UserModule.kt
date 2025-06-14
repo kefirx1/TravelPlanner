@@ -19,6 +19,7 @@ import pl.bla.dev.feature.settings.contract.domain.usecase.CancelTravelUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.ChangeUserPasswordUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.ClearUserSessionUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKAndInjectCacheUC
+import pl.bla.dev.feature.settings.contract.domain.usecase.DecryptUserDEKByBiometricAndInjectCacheUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.FetchNewTravelConfigUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetFullTravelDataUC
 import pl.bla.dev.feature.settings.contract.domain.usecase.GetSavedNewTravelConfigUC
@@ -46,6 +47,7 @@ import pl.bla.dev.feature.settings.domain.usecase.CancelTravelUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.ChangeUserPasswordUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.ClearUserSessionUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.DecryptUserDEKAndInjectCacheUCImpl
+import pl.bla.dev.feature.settings.domain.usecase.DecryptUserDEKByBiometricAndInjectCacheUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.FetchNewTravelConfigUCImpl
 import pl.bla.dev.feature.settings.domain.usecase.GetCountryTravelConfigByIdUC
 import pl.bla.dev.feature.settings.domain.usecase.GetCountryTravelConfigByIdUCImpl
@@ -295,6 +297,23 @@ object UserModule {
     userRepository: UserRepository,
   ): IsBiometricEnabledUC = IsBiometricEnabledUCImpl(
     userRepository = userRepository,
+  )
+
+  @Provides
+  fun provideDecryptUserDEKByBiometricAndInjectCacheUC(
+    masterKeyProvider: MasterKeyProvider,
+    secretKeyProvider: SecretKeyProvider,
+    cryptoManager: CryptoManager,
+    userRepository: UserRepository,
+    base64Coder: Base64Coder,
+    biometricManager: BiometricPromptManager,
+  ): DecryptUserDEKByBiometricAndInjectCacheUC = DecryptUserDEKByBiometricAndInjectCacheUCImpl(
+    masterKeyProvider = masterKeyProvider,
+    secretKeyProvider = secretKeyProvider,
+    cryptoManager = cryptoManager,
+    userRepository = userRepository,
+    base64Coder = base64Coder,
+    biometricManager = biometricManager,
   )
 
 }

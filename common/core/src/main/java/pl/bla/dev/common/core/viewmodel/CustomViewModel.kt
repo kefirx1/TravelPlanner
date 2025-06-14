@@ -28,8 +28,8 @@ abstract class CustomViewModel<STATE, SCREEN_DATA, NAV_ACTION>(
       state.collect { newState ->
         try {
           if (!stateAlreadyChanged) {
-            onStateEnter(newState = newState)
             stateAlreadyChanged = true
+            onStateEnter(newState = newState)
           }
           _screenData.emit(mapScreenData())
         } catch (_: NullPointerException) { }

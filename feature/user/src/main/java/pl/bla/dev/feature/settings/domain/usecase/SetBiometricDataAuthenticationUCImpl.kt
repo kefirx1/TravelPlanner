@@ -56,7 +56,7 @@ class SetBiometricDataAuthenticationUCImpl(
             data = dek.encoded,
             key = kekBiometric,
             cryptography = Cryptography.AES_CBC_PKCS7,
-            initialCipher = initCipher,
+            initialCipher = result.cipher,
           ) ?: return Either.Left(AppError.DefaultError(Exception("Encryption failed")))
 
           val userSettings = userRepository.getUserSettings() ?: return Either.Left(
